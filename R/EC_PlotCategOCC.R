@@ -1,5 +1,15 @@
-# Load and export plot function for categorical predictor variables for 
-# the occurrence data
+#' Load and export plot function for categorical predictor variables for
+#' the occurrence data
+#' 
+#' @param dataToExplore 
+#' @param listVars 
+#' @param outerTitle 
+#' @param fnamePrefix 
+#' @param outputdir 
+#'
+#' @export EC_PlotCategOCC
+#' @importFrom 
+#' 
 
 EC_PlotCategOCC <- function(dataToExplore, listVars, outerTitle="", 
                             fnamePrefix="occurrence_predictors_", outputdir="output") {

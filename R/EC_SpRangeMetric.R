@@ -1,11 +1,20 @@
-# function to compute and save species range change metric as geotif file
+#' Function to compute and save species range change metric as geotif file
+#'
+#' @param prob_rasters 
+#' @param threshold 
+#' @param outfilename 
+#'
+#' @export
+#' @importFrom 
+#' 
 
 EC_SpRangeMetric <- function(prob_rasters, threshold, outfilename) {
   # return 1 for Blank, 3 for Expansion, 0 for Contraction and 2 for No Change
   rangeChange <- overlay(as.integer(prob_rasters[[1]] >= threshold),
                          as.integer(prob_rasters[[2]] >= threshold),
                          fun=function(fp, cp) { return((2 * fp) + 1 - cp)})
-  writeRaster(rangeChange, outfilename, format="GTiff", options=c("COMPRESS=LZW", "TILED=YES"), overwrite=TRUE)
+  writeRaster(rangeChange, outfilename, format="GTiff",
+              options=c("COMPRESS=LZW", "TILED=YES"), overwrite=TRUE)
   
   # compute the area for each change category
   grid_area <- raster.from.asc(grid.area(asc.from.raster(rangeChange)))

@@ -1,6 +1,16 @@
-# This function just need to be used if raster layers are not ligned up
-# correctly.
-#
+#' This function just need to be used if raster layers are not ligned up
+#' correctly.
+#'
+#' @param raster.filenames 
+#' @param raster.types 
+#' @param reference 
+#' @param overwrite 
+#'
+#' @export
+#' @importFrom gdalUtils gdalwarp
+#'             raster raster
+#'             rgdal GDALinfo
+#' 
 
 EC_RasterWarp <- function(raster.filenames, raster.types, reference, overwrite=TRUE) {
 
@@ -11,7 +21,7 @@ EC_RasterWarp <- function(raster.filenames, raster.types, reference, overwrite=T
       dtype <- as.character(mdata[['GDType']])
       hasNoDataValues <- mdata[['hasNoDataValue']]
       
-      r <- EC_RasterLoad(filename) # warp, crop and rescale raster file if necessary
+      r <- EC_RasterLoad(filename)  # warp, crop and rescale raster file if necessary
       dir <- dirname(filename)
       temp_raster <- file.path(dir, paste0(basename(tempfile()), '.tif'))
       te <- extent(reference)
@@ -47,7 +57,7 @@ EC_RasterWarp <- function(raster.filenames, raster.types, reference, overwrite=T
         rasterfilename = filename 
       }
 
-      r <- raster(rasterfilename)
+      r <- raster::raster(rasterfilename)
       if (filetype == "categorical") { # convert to factor if categorical
         r = as.factor(r)
       }

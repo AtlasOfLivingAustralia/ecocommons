@@ -1,5 +1,15 @@
-# Patch Biomod2 sample.factor.levels function
-# Need to check if it is the samw; if yes, delete
+#' Patch Biomod2 sample.factor.levels function
+#' Need to check if it is the same; if yes, delete
+#' Three functions: 'EC_SampleFactorLevels', 'EC_SampleFactorLevelsRaster'
+#' and 'EC_SampleFactorLevelsDataFrame'
+#'
+#' @param x 
+#' @param mask.out 
+#' @param mask.in 
+#'
+#' @export
+#' @importFrom 
+#' 
 
 EC_SampleFactorLevels <- function(x, mask.out = NULL, mask.in = NULL){
   if(inherits(x, 'Raster')){

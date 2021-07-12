@@ -1,5 +1,15 @@
-# Load and export plot function for categorical predictor variables for 
-# the background data
+#' Load and export plot function for categorical predictor variables for
+#' the background data
+#' 
+#' @param dataToExplore 
+#' @param listVars 
+#' @param outerTitle 
+#' @param fnamePrefix 
+#' @param outputdir 
+#'
+#' @export EC_PlotCategBG
+#' @importFrom 
+#' 
 
 EC_PlotCategBG <- function(dataToExplore, listVars, outerTitle="", 
                            fnamePrefix="background_predictors_", outputdir="output") {

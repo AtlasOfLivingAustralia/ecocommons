@@ -1,3 +1,13 @@
+#' Function to save projection 
+#'
+#' @param proj.model 
+#' @param species_algo_str 
+#' @param filename_ext 
+#'
+#' @export
+#' @importFrom 
+#'
+
 EC_SaveProjection <- function(proj.model, species_algo_str, filename_ext=NULL) {
   if (!is.null(filename_ext)) {
     basename = paste("proj", 'current', species_algo_str, filename_ext, sep="_")

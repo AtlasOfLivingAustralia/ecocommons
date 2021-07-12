@@ -1,18 +1,31 @@
+#' Computes the Area/Extent of Occuppancy (AOO/EOO) for species of interest
+#'
+#' @param occur
+#' @param species
+#'
+#' @export EC_AreaExtentOccupancy
+#' @importFrom conR AOO.computing
+#'             conR IUCN.eval
+#'             dplyr bind_rows
+#'
+#' 
 EC_AreaExtentOccupancy <- function(occur, species) {
   writeLines('Compute Area Extent Occuopancy ...')
-  data(land) #land is built in to the package, it is possible to add own shapefile if needed
+  data(land) #land is built in to the package; possible to add own shapefile if needed
 
-  cnames = names(occur)
-  occur$Species = species
+  cnames <- names(occur)
+  occur$Species <- species
   if (!('year' %in% cnames)) {
     occur = occur[, c('lat','lon','species')]
 
     # Get AOO value
-    aoo <- AOO.computing(occur, Cell_size_AOO=2, nbe.rep.rast.AOO=0,
-                         parallel=FALSE, NbeCores =2, show_progress=FALSE, export_shp=FALSE)
+    aoo <- conR::AOO.computing(occur, Cell_size_AOO=2, nbe.rep.rast.AOO=0,
+                         parallel=FALSE, NbeCores =2, show_progress=FALSE, 
+                         export_shp=FALSE)
 
     # Generate table with AOO and EOO values
-    aoo_eoo <- IUCN.eval(occur, file_name=file.path(EC.env$outputdir, paste0("aoo_eoo_", species, ".csv")))
+    aoo_eoo <- conR::IUCN.eval(occur, file_name=file.path(EC.env$outputdir, 
+                                                          paste0("aoo_eoo_", species, ".csv")))
     aoo_eoo <- aoo_eoo[c('taxa', 'EOO', 'AOO', 'Nbe_unique_occ.')]
     colnames(aoo_eoo) <- c('taxa', 'EOO', 'AOO', 'Number of unique occurrences')
     write.csv(aoo_eoo, file=file.path(EC.env$outputdir, paste0("aoo_eoo_", species, "_maxent.csv")))
@@ -73,13 +86,13 @@ EC_AreaExtentOccupancy <- function(occur, species) {
                 parallel=FALSE, NbeCores=2)
     })
 
-    aoo_eoo_year <- bind_rows(aoo_eoo_result)  # combine the rows of the list into a data frame
+    aoo_eoo_year <- dplyr::bind_rows(aoo_eoo_result)  # combine the rows of the list into a data frame
     aoo_eoo_year['year'] = names(aoo_eoo_result)
 
     aoo_eoo_year = aoo_eoo_year[c('year', 'EOO', 'AOO', 'Nbe_unique_occ.')]
     names(aoo_eoo_year) <- c('year', 'EOO', 'AOO', 'Number of unique occurrences')
     ofname = file.path(EC.env$outputdir, paste0('aoo_eoo_year_', species, '_maxtent.csv'))
-    write.csv(aoo_eoo_year, ofname, row.names = TRUE)  # the csv should show the year (subset) in the first column and then add the 4 columns ID, EOO, AOO, Nbe_unique_occ
+    write.csv(aoo_eoo_year, ofname, row.names = TRUE)  # should show the year=first column and 4 columns: ID, EOO, AOO, Nbe_unique_occ
 
     # Plot time series to show trend in AOO and EOO over time
     aoo_time_series = t(data.matrix(aoo_eoo_year['AOO']))

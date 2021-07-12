@@ -1,23 +1,43 @@
-# Use BIOMOD_FormatingData function from 'biomod2' package to format user
-# input data
-#
-# It generates pseudo absence points if true absence data are not available or
-# adds pseudo absence data to an existing absence dataset.
+#' Use BIOMOD_FormatingData function from 'biomod2' package to format user
+#' input data
+#' 
+#' It generates pseudo absence points if true absence data are not available or
+#' adds pseudo absence data to an existing absence dataset
+#' 
+#' @param true.absen 
+#' @param pseudo.absen.points 
+#' @param pseudo.absen.strategy 
+#' @param pseudo.absen.disk.min 
+#' @param pseudo.absen.disk.max 
+#' @param pseudo.absen.sre.quant 
+#' @param climate.data 
+#' @param occur 
+#' @param species.name 
+#' @param save.pseudo.absen 
+#' @param save.env.absen 
+#' @param save.env.occur 
+#' @param generate.background.data 
+#' @param species_algo_str 
+#'
+
+#' @export EC_FormatDataBIOMOD2
+#' @importFrom biomod2 BIOMOD_FormatingData
+#'
 
 EC_FormatDataBIOMOD2 <- function(true.absen=NULL,
-                                   pseudo.absen.points=0,
-                                   pseudo.absen.strategy='random',
-                                   pseudo.absen.disk.min=0,
-                                   pseudo.absen.disk.max=NULL,
+                                   pseudo.absen.points = 0,
+                                   pseudo.absen.strategy = 'random',
+                                   pseudo.absen.disk.min = 0,
+                                   pseudo.absen.disk.max = NULL,
                                    pseudo.absen.sre.quant = 0.025,
-                                   climate.data=NULL,
-                                   occur=NULL,
-                                   species.name=NULL,
-                                   save.pseudo.absen=TRUE,
-                                   save.env.absen=TRUE,
-                                   save.env.occur=TRUE,
-                                   generate.background.data=FALSE,
-                                   species_algo_str=NULL) {
+                                   climate.data = NULL,
+                                   occur = NULL,
+                                   species.name = NULL,
+                                   save.pseudo.absen = TRUE,
+                                   save.env.absen = TRUE,
+                                   save.env.occur = TRUE,
+                                   generate.background.data = FALSE,
+                                   species_algo_str = NULL) {
   
   # Initialise parameters to default value if not specified
   if (is.null(pseudo.absen.strategy)) {
@@ -39,7 +59,7 @@ EC_FormatDataBIOMOD2 <- function(true.absen=NULL,
   }
   else {
     absen <- true.absen
-    if (!is.null(climate.data) && nrow(true.absen) > 0) { # ensure true absence dataset is in same projection system as climate.
+    if (!is.null(climate.data) && nrow(true.absen) > 0) { # ensure true absence dataset is in same projection as climate
       absen <- EC_DataProjection(true.absen, climate.data)
     }
     pseudo.absen.rep = 0 # do not generate pseudo absence point when true absence points are available
@@ -48,7 +68,7 @@ EC_FormatDataBIOMOD2 <- function(true.absen=NULL,
     cat("No pseudo absence point is generated.")
   }
   
-  # Generate background data as pseudo absence points
+  # generate background data as pseudo absence points
   if (pseudo.absen.strategy != 'none' & generate.background.data) {
     biomod.data.pa <- c(rep(1, nrow(occur)), rep(0, nrow(absen)))
     myBackgrdData <-
@@ -62,11 +82,11 @@ EC_FormatDataBIOMOD2 <- function(true.absen=NULL,
                            PA.dist.max = pseudo.absen.disk.max,
                            PA.sre.quant = pseudo.absen.sre.quant)
     
-    # Get background data as absence data
+    # get background data as absence data
     colnames(myBackgrdData@coord) <- c('lon', 'lat')
     absen <- myBackgrdData@coord[c(which(is.na(myBackgrdData@data.species))), c('lon', 'lat')]
     
-    # Do not generate pseudo absence in next call to BIOMOD_FormatingData
+    # do not generate pseudo absence in next call to BIOMOD_FormatingData
     pseudo.absen.rep = 0
     pseudo.absen.strategy = 'none'
   }
@@ -86,7 +106,7 @@ EC_FormatDataBIOMOD2 <- function(true.absen=NULL,
                          PA.dist.max = pseudo.absen.disk.max,
                          PA.sre.quant = pseudo.absen.sre.quant)
   
-  # Save the pseudo absence points generated to file
+  # save the pseudo absence points generated to file
   pa_filename <- EC_OutfileName(filename="pseudo_absences", id_str=species_algo_str, ext="csv")
   absenv_filename <- EC_OutfileName(filename="absence_environmental", id_str=species_algo_str, ext="csv")
   occenv_filename <- EC_OutfileName(filename="occurrence_environmental", id_str=species_algo_str, ext="csv")
@@ -104,17 +124,17 @@ EC_FormatDataBIOMOD2 <- function(true.absen=NULL,
   else if (nrow(absen) > 0) {
     # save true-absence/background data generated
     if (!is.null(true.absen)) {
-      pa_filename = EC_OutfileName(filename="absence", id_str=species_algo_str, ext="csv") # rename true-absence file
+      pa_filename = EC_OutfileName(filename="absence", id_str=species_algo_str, ext="csv")  # rename true-absence file
     }
     EC_WriteCSV(absen, pa_filename, rownames = FALSE)
     
     if (save.env.absen) {
-      EC_MergeSave(climate.data, absen, species.name, absenv_filename) # save the true absence points/background points with environmental variables
+      EC_MergeSave(climate.data, absen, species.name, absenv_filename)  # save the true absence points/background points with environmental variables
     }
   }
   
   if (save.env.occur) {
-    EC_MergeSave(climate.data, occur, species.name, occenv_filename) # save the occurrence datasets with environmental variables
+    EC_MergeSave(climate.data, occur, species.name, occenv_filename)  # save the occurrence datasets with environmental variables
   }
   
   return(myBiomodData)

@@ -1,12 +1,19 @@
-# function to plot projection tiff file (with histogram)
+#' Function to plot projection tiff file (with histogram)
+#'
+#' @param inputfile 
+#' @param main 
+#'
+#' @export
+#' @importFrom rasterVis
+#' 
 
 EC_PlotProjection <- function(inputfile, main) {
-  my.at <- seq(0,1.0,by=0.1)  # breaks of the color key
-  my.labs.at <- seq(0,1.0,by=0.25)
-  my.lab <- seq(0,1.0,by=0.25)
+  my.at <- seq(0,1.0, by=0.1)  # breaks of the color key
+  my.labs.at <- seq(0,1.0, by=0.25)
+  my.lab <- seq(0,1.0, by=0.25)
   my.col <- colorRampPalette(c("grey90","yellow4","green4"))(100)
   
-  # Read in tiff input file as rasterstack and plot it
+  # read in tiff input file as rasterstack and plot it
   require('rasterVis')
   levelplot(stack(raster(inputfile)),
             at=my.at,

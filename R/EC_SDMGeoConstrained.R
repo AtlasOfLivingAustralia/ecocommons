@@ -1,9 +1,24 @@
 # Function to geographically constrained the species distribution modelling
-# The constraint is the intersection between the occurrence's convex-hull 
-# polygon and the constraint. Otherwise, actual constraint is the convex-hull 
-# polygon.
-# A buffer of width 1-resolution cell is applied to avoid missing environment
-# values along the boundary of the polygon.
+#' The constraint is the intersection between the occurrence's convex-hull 
+#' polygon and the constraint. Otherwise, actual constraint is the convex-hull 
+#' polygon
+#' A buffer of width 1-resolution cell is applied to avoid missing environment
+#' values along the boundary of the polygon
+#'
+#' @param rasterstack 
+#' @param occur 
+#' @param absen 
+#' @param raw_geojson 
+#' @param generateCHull 
+#'
+#' @export EC_SDMGeoConstrained
+#' @importFrom rgdal readOGR
+#'             rgeos gBuffer
+#'             rjson fromJSON
+#'             sp SpatialPolygons
+#'             sp SpatialPoints
+#'             
+#'
 
 EC_SDMGeoConstrained <- function(rasterstack, occur, absen, raw_geojson, generateCHull) {
   
@@ -13,9 +28,10 @@ EC_SDMGeoConstrained <- function(rasterstack, occur, absen, raw_geojson, generat
   
   geojson_crs <- CRS("+init=epsg:3857") # create a geojson for convex-hull polygon if no geojson
   if (is.null(raw_geojson)) {
-    parsed_geojson <- SpatialPolygons(list(Polygons(list(Polygon(rbind(c(1,1)))), ID=1)), proj4string=crs(rasterstack))
+    parsed_geojson <- sp::SpatialPolygons(list(Polygons(list(Polygon(rbind(c(1,1)))), ID=1)),
+                                      proj4string=crs(rasterstack))
   } else {
-    parsed_geojson <- readOGR(dsn = raw_geojson, layer = "OGRGeoJSON", verbose = FALSE)
+    parsed_geojson <- rgdal::readOGR(dsn = raw_geojson, layer = "OGRGeoJSON", verbose = FALSE)
     geojson_crs <- crs(parsed_geojson)
   }
   
@@ -25,7 +41,7 @@ EC_SDMGeoConstrained <- function(rasterstack, occur, absen, raw_geojson, generat
   
   if (!is.null(occur)) {
     
-    occurSP <- SpatialPoints(occur)  # constrain the occurrence points
+    occurSP <- sp::SpatialPoints(occur)  # constrain the occurrence points
     if (is.na(crs(occurSP))) {
       crs(occurSP) <- '+init=epsg:4326'
     }
@@ -44,11 +60,13 @@ EC_SDMGeoConstrained <- function(rasterstack, occur, absen, raw_geojson, generat
       }
       else {
         region_offset <- as.double(region_offset)
-        region_offset <- ifelse(!is.na(region_offset) && is.numeric(region_offset), region_offset/111.0, 0) # convert from km to degree
+        region_offset <- ifelse(!is.na(region_offset) && is.numeric(region_offset),
+                                region_offset/111.0, 0) # convert from km to degree
       }
       
       chcoords <- occurSP@coords[chull(occurSP@coords[,1:2]),]
-      chullPolygon <- SpatialPolygons(list(Polygons(list(Polygon(chcoords[,1:2], hole=FALSE)), ID=1)), proj4string=crs(parsed_geojson))
+      chullPolygon <- raster::SpatialPolygons(list(Polygons(list(Polygon(chcoords[,1:2], hole=FALSE)),
+                                                    ID=1)), proj4string=crs(parsed_geojson))
       if (!is.null(raw_geojson)) {
         parsed_geojson <- intersect(parsed_geojson, chullPolygon)
       }
@@ -57,7 +75,8 @@ EC_SDMGeoConstrained <- function(rasterstack, occur, absen, raw_geojson, generat
       }
     }
     
-    parsed_geojson <- gBuffer(parsed_geojson, byid=TRUE, width=max(region_offset, max(res(rasterstack@layers[[1]])))) #create a buffer of width 1-resolution cell
+    parsed_geojson <- rgeos::gBuffer(parsed_geojson, byid=TRUE, width=max(region_offset,
+                                                                   max(res(rasterstack@layers[[1]])))) #create buffer of width 1-resolution cell
     
     if (generateCHull) {
       filename <- file.path(EC.env$outputdir, 'modelling_region.json')

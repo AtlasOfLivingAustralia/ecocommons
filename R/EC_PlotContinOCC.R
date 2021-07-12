@@ -1,8 +1,21 @@
-# Load and export plot function for continuous predictor variables for 
-# the occurrence data
+#' Load and export plot function for continuous predictor variables for 
+#' the occurrence data
+#'
+#' @param dataToExplore 
+#' @param listVars 
+#' @param doCorrelation 
+#' @param outerTitle 
+#' @param fnamePrefix 
+#' @param outputdir 
+#'
+#' @export EC_PlotContinOCC
+#' @ImportFrom
+#'
+#' 
 
 EC_PlotContinOCC <- function(dataToExplore, listVars, doCorrelation=TRUE, 
-                                 outerTitle="", fnamePrefix="occurrence_predictors_", outputdir="output")  {
+                                 outerTitle="", fnamePrefix="occurrence_predictors_",
+                             outputdir="output")  {
   
   nVars = length(listVars)
   

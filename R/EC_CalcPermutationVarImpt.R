@@ -1,10 +1,21 @@
+#' Get the environmental variables and values used to create the model and
+#' performs permutations
+#' 
+#' @param out.model 
+#' @param model.eval 
+#' @param model.name 
+#' @param occur 
+#' @param bkgd 
+#' @param species_algo_str 
+#'
+#' @export EC_CalcPermutationVarImpt
+#' @ImportFrom dismo evaluate
+#'
 EC_CalcPermutationVarImpt <- function(out.model, model.eval,
                                        model.name, occur, bkgd, species_algo_str) {
-  # get the enviromental variables and values used to create the model
-  # EMG this is duplicated from above, should be able to combine or find an easier way to determine
   if (model.name == "brt") {
-    model.values = matrix(out.model$data$x, ncol=length(out.model$var.names))
-    env.vars = out.model$var.names
+    model.values <- matrix(out.model$data$x, ncol=length(out.model$var.names))
+    env.vars <- out.model$var.names
     colnames(model.values) = env.vars
   } else if (model.name %in% c("geoIDW", "voronoiHull")) {
     model.values = rbind(out.model@presence, out.model@absence)
@@ -19,17 +30,17 @@ EC_CalcPermutationVarImpt <- function(out.model, model.eval,
     p.swd=occur
     a.swd=bkgd
     # get the AUC from the original model evaluation
-    init.auc = round(model.eval@auc, digits=3)
+    init.auc <- round(model.eval@auc, digits=3)
     # create a table to hold the output
-    permvarimpt.out = matrix(NA, nrow=length(env.vars), ncol=4)
-    dimnames(permvarimpt.out) = list(env.vars, c("init.auc", "sample.auc", "change.auc", "percent"))
+    permvarimpt.out <- matrix(NA, nrow=length(env.vars), ncol=4)
+    dimnames(permvarimpt.out) <- list(env.vars, c("init.auc", "sample.auc", "change.auc", "percent"))
     permvarimpt.out[,"init.auc"] = rep(init.auc, length(env.vars))
     # create a copy of the occurrence and background environmental data
     sample.p = p.swd[,env.vars, drop=FALSE]
     sample.a = a.swd[,env.vars, drop=FALSE]
     # check for and remove any NA's present in the data
-    no.na.sample.p = na.omit(sample.p);
-    no.na.sample.a = na.omit(sample.a)
+    no.na.sample.p <- na.omit(sample.p);
+    no.na.sample.a <- na.omit(sample.a)
     if (nrow(no.na.sample.p) != nrow(sample.p)) {
       write(paste("EC.calculatePermutationVarImpt(): NA's were removed from presence data!"), stdout())
     }
@@ -43,9 +54,11 @@ EC_CalcPermutationVarImpt <- function(out.model, model.eval,
       no.na.sample.a[,v] = sample(x=no.na.sample.a[,v], replace=FALSE)
       # re-evaluate model with sampled env values
       if (model.name == "brt") {
-        sample.eval = dismo::evaluate(p=no.na.sample.p, a=no.na.sample.a, model=out.model, n.trees=out.model$gbm.call$best.trees, type="response")
+        sample.eval <- dismo::evaluate(p=no.na.sample.p, a=no.na.sample.a,
+                                      model=out.model, n.trees=out.model$gbm.call$best.trees,
+                                      type="response")
       } else {
-        sample.eval = dismo::evaluate(p=no.na.sample.p, a=no.na.sample.a, model=out.model)
+        sample.eval <- dismo::evaluate(p=no.na.sample.p, a=no.na.sample.a, model=out.model)
       }
       # get the new auc
       permvarimpt.out[v,"sample.auc"] = round(sample.eval@auc, digits=3)

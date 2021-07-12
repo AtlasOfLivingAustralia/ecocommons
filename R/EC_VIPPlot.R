@@ -1,14 +1,30 @@
+#' Generate a VIP plot
+#'
+#' @param fittedmodel 
+#' @param method 
+#' @param cor.method 
+#' @param pdf 
+#' @param biom_vi 
+#' @param output.table 
+#' @param data1 
+#' @param this.dir 
+#' @param filename 
+#'
+#' @export EC_VIPplot
+#' @importFrom  caret, ggdendro, ggplot2, mgcv, reshape2, rpart 
+#' 
+
 EC_VIPplot <- function(fittedmodel=NULL,
                        method=c("glm","cta","gam","ann", "rf", "gbm", "mars", "maxent"),
                        cor.method=c("pearson","spearman"),
                        pdf=TRUE, biom_vi=FALSE,output.table=FALSE, data1, this.dir, filename)
 {
-  library("ggplot2")
-  library("reshape2")
-  library("mgcv")
-  library("rpart")
   library("caret")
   library("ggdendro")
+  library("ggplot2")
+  library("mgcv")
+  library("reshape2")
+  library("rpart")
 
   # README notes:
   # (1) fittedmodel: the fitted model object obtained running the biomod2 function'BIOMOD_Modeling'.

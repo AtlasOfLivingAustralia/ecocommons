@@ -1,9 +1,17 @@
-# Define helper functions to print parameters
-#
-# The EcoCommons plattform computes many Species Distribution Modelling
-# algorithms to be selected by the user. Each algorithm requires a specific
-# set of parameters. This funtion simply aims to compute simple names for
-# parameters and assign the necessary parameters to run specific algorithm.
+#' Define helper functions to print parameters
+#'
+#' The EcoCommons plattform computes many Species Distribution Modelling
+#' algorithms to be selected by the user. Each algorithm requires a specific
+#' set of parameters. This funtion simply aims to compute simple names for
+#' parameters and assign the necessary parameters to run specific algorithm.
+#'
+#' @param param 
+#' @param value 
+#'
+#' @export
+#' @importFrom 
+#' 
+
 
 # # Check if libraries are installed, install if necessary and then load them
 # necessary <- c("ggplot2","tools", "rjson", "dismo", "gbm", "rgdal", "rgeos", "pROC", "png", "gstat", "gdalUtils", "ggdendro", "raster","biomod2","rasterVis") #list the libraries needed
@@ -23,10 +31,7 @@
 # params <- rjson::fromJSON(file="~/Documents/BCCVL_scripts/test_script.json")
 # EC.params <- params$params
 # EC.env <- params$env
-# rm(params)
-
-
-
+# rm(params
 
 
 EC_RenameParameters <- function (param, value) {

@@ -1,9 +1,16 @@
-# Read species presence/absence data
+#' Read species presence/absence data
 #
-# To run Species Distribution Models (SDMs) we first need to set up the
-# necessary dataset. This script aims to check if the species geographic
-# data is on the right format to be read. It means that latitude and longitude
-# should be numeric, and month and year information shoud be kept.
+#' To run Species Distribution Models (SDMs) we first need to set up the
+#' necessary dataset. This script aims to check if the species geographic
+#' data is on the right format to be read. It means that latitude and longitude
+#' should be numeric, and month and year information shoud be kept
+#'
+#' @param filename 
+#' @param month_filter 
+#'
+#' @export EC_ReadSp
+#' @importFrom 
+#' 
 
 EC_ReadSp <- function(filename, month_filter=NULL) {
   if (!is.null(filename)) {  # return NULL if filename is not given

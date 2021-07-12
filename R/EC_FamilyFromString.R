@@ -1,9 +1,15 @@
-# Function created to get family from a string (character) in a safe way
-# works for all variants of the R family object (e.g. see ?family)
+#' Function created to get family from a string (character) in a safe way
+#' works for all variants of the R family object (e.g. see ?family)
+#'
+#' @param s 
+#'
+#' @export EC_FamilyFromString
+#' @ImportFrom
+#' 
 
 EC_FamilyFromString <- function(s) {
-  s=gsub(pattern="\"|| ", replacement="", s) # strip quotes and spaces
-  f=gsub(pattern="\\(.*\\)", replacement="", s) # the name of the function
+  s = gsub(pattern="\"|| ", replacement="", s) # strip quotes and spaces
+  f = gsub(pattern="\\(.*\\)", replacement="", s) # the name of the function
   
   allowable= c("binomial",
                "gaussian",
@@ -20,9 +26,9 @@ EC_FamilyFromString <- function(s) {
   }
   
   fargs=gsub(pattern=".*\\(||\\)",
-             replacement="",
-             sub(pattern=f,
-                 replacement="",
+             replacement = "",
+             sub(pattern = f,
+                 replacement = "",
                  s)) #get the args inside the parentheses
   args=list()
   

@@ -1,4 +1,12 @@
-# load raster and assign projection (crs) if missing
+#' Load raster and assign projection (crs) if missing
+#'
+#' @param filename 
+#'
+
+#' @export EC_ReadRaster
+#' @importFrom raster raster
+#'             raster CRS
+#' 
 
 EC_ReadRaster <- function(filename) {
   r = raster(filename)
