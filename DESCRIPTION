@@ -1,4 +1,4 @@
-Package: ecocommons_rpackage
+Package: ecocommons
 Title: Functions for the EcoCommons plattform
 Version: 0.0.0.9000
 Authors@R: 
@@ -10,6 +10,9 @@ Authors@R:
 Description: This package aims to provide a series of useful functions to run
              species distribution models and other spatial analyses on the 
              EcoCommons platform
+Depends:
+   R (>= 4.0.0)
+Imports: terra, dplyr
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Encoding: UTF-8

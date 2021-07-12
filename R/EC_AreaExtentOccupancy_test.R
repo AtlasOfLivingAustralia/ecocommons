@@ -4,7 +4,8 @@
 #' @param species
 #'
 #' @return
-#' @export
+#' @export EC_AreaExtentOccupancy_test
+#' @importFrom dplyr bind_rows
 #'
 #' @examples
 

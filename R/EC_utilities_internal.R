@@ -5,25 +5,25 @@
 # set of parameters. This funtion simply aims to compute simple names for
 # parameters and assign the necessary parameters to run specific algorithm.
 
-# Check if libraries are installed, install if necessary and then load them
-necessary <- c("ggplot2","tools", "rjson", "dismo", "gbm", "rgdal", "rgeos", "pROC", "png", "gstat", "gdalUtils", "ggdendro", "raster","biomod2","rasterVis") #list the libraries needed
-
-###REMOVED NOW JUST FOR TEST:::: "SDMTools",‘spatial.tools’ and ‘rmaxent’
-
-installed <- necessary %in% installed.packages() #check if library is installed
-if (length(necessary[!installed]) >= 1) {
-  install.packages(necessary[!installed], dep = T) #if library is not installed, install it
-}
-for (lib in necessary) {
-  library(lib,character.only = T) #load the libraries
-}
-
-# Load the parameters
-# The 'param.json' file used here is generated on EcoCommons python script
-params <- rjson::fromJSON(file="~/Documents/BCCVL_scripts/test_script.json")
-EC.params <- params$params
-EC.env <- params$env
-rm(params)
+# # Check if libraries are installed, install if necessary and then load them
+# necessary <- c("ggplot2","tools", "rjson", "dismo", "gbm", "rgdal", "rgeos", "pROC", "png", "gstat", "gdalUtils", "ggdendro", "raster","biomod2","rasterVis") #list the libraries needed
+# 
+# ###REMOVED NOW JUST FOR TEST:::: "SDMTools",‘spatial.tools’ and ‘rmaxent’
+# 
+# installed <- necessary %in% installed.packages() #check if library is installed
+# if (length(necessary[!installed]) >= 1) {
+#   install.packages(necessary[!installed], dep = T) #if library is not installed, install it
+# }
+# for (lib in necessary) {
+#   library(lib,character.only = T) #load the libraries
+# }
+# 
+# # Load the parameters
+# # The 'param.json' file used here is generated on EcoCommons python script
+# params <- rjson::fromJSON(file="~/Documents/BCCVL_scripts/test_script.json")
+# EC.params <- params$params
+# EC.env <- params$env
+# rm(params)
 
 
 
@@ -196,11 +196,9 @@ EC_ParameterPrint <- function(params) {
 
 
 # Print out parameters used
-EC_ParameterPrint(EC.params)
+# EC_ParameterPrint(EC.params)
 
 # print a warning when there is a problem logging the data
 EC_LogWarning <-function(str, prefix="EcoCommons Warning: ") {
   print(paste(prefix, str, sep=""))
 }
-
-
