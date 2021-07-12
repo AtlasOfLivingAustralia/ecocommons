@@ -1,0 +1,18 @@
+Package: ecocommons_rpackage
+Title: Functions for the EcoCommons plattform
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Jessica",
+           family = "Fenker",
+           role = c("aut", "cre"),
+           email = "first.last@example.com",
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: This package aims to provide a series of useful functions to run
+             species distribution models and other spatial analyses on the 
+             EcoCommons platform
+License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
+    license
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
