@@ -3,8 +3,6 @@
 #' @param data 
 #' @param climate.data 
 #'
-
-#' @export
 #' @importFrom raster compareCRS
 #' 
 

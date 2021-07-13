@@ -4,9 +4,6 @@
 #' @param cellsize 
 #' @param r 
 #'
-
-#' @export
-#' @importFrom 
 #' 
 
 EC_GridInfo <- function(lats,cellsize, r=6378137) {

@@ -9,7 +9,6 @@
 #' @param outputdir 
 #'
 #' @export EC_PlotContinOCC
-#' @ImportFrom
 #'
 #' 
 

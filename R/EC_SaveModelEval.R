@@ -1,3 +1,14 @@
+#' Save a evalution model for all statistics
+#'
+#' @param out.evaluation 
+#' @param out.stats 
+#' @param out.lossfunction 
+#' @param species_algo_str 
+#'
+#' @export EC_SaveModelEval
+#'
+#'
+
 EC_SaveModelEval <- function(out.evaluation, out.stats, out.lossfunction, species_algo_str){
   EC_WriteCSV(data.frame(out.evaluation),
               name = paste0(paste("Evaluation-data", species_algo_str, sep="_"), ".csv"))

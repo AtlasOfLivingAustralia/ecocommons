@@ -10,8 +10,6 @@
 #' @param selected_layers 
 #' @param overwrite 
 #'
-#' @export
-#' @importFrom 
 #' 
 
 EC_RasterResampled  <- function(raster.filenames, raster.types, 

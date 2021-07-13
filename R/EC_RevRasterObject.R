@@ -2,8 +2,6 @@
 #'
 #' @param rasterObject 
 #'
-#' @export
-#' @importFrom 
 #' 
 
 EC_RevRasterObject <- function(rasterObject) {

@@ -4,8 +4,8 @@
 #' @param species_algo_str 
 #' @param filename_ext 
 #'
-#' @export
-#' @importFrom 
+#' @export EC_SaveProjection
+#'
 #'
 
 EC_SaveProjection <- function(proj.model, species_algo_str, filename_ext=NULL) {

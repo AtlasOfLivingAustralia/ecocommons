@@ -6,9 +6,9 @@
 #' @param noDataValue 
 #'
 #' @export
-#' @ImportFrom raster dataType
-#'             raster raster
-#'             raster writeRaster
+#' @importFrom raster dataType
+#' @importFrom raster raster
+#' @importFrom raster writeRaster
 #' 
 
 EC_GRDtoGTIFF <- function(folder, algorithm, filename_ext=NULL, noDataValue=NULL) {

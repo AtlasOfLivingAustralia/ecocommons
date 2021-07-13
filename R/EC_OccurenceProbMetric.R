@@ -5,7 +5,7 @@
 #'
 #' @export EC_OccurenceProbMetric
 #' @importFrom raster overlay
-#'             raster writeRaster
+#' @importFrom raster writeRaster
 #' 
 
 EC_OccurenceProbMetric <- function(prob_rasters, outfilename) {

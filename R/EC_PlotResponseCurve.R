@@ -6,7 +6,7 @@
 #' @param oformat 
 #'
 #' @export EC_PlotResponseCurve
-#' @importFrom 
+#' 
 #' 
 
 EC_PlotResponseCurve <- function(model, predvars, species, oformat) {  # overall response curves

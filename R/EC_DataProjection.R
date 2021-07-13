@@ -9,8 +9,8 @@
 #'
 #' @export EC_DataProjection
 #' @importFrom raster compareCRS
-#'             sp SpatialPoints
-#'             sp spTransform
+#' @importFrom sp SpatialPoints
+#' @importFrom sp spTransform
 #' 
 
 EC_DataProjection <- function(data, climate.data) {

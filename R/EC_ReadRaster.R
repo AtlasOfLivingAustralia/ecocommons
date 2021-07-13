@@ -2,10 +2,10 @@
 #'
 #' @param filename 
 #'
-
 #' @export EC_ReadRaster
 #' @importFrom raster raster
-#'             raster CRS
+#' @importFrom raster CRS
+#' 
 #' 
 
 EC_ReadRaster <- function(filename) {

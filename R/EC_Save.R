@@ -5,7 +5,7 @@
 #' @param outputdir 
 #'
 #' @export EC_Save
-#' @importFrom 
+#' 
 #' 
 
 EC_Save <- function(robj, name, outputdir=EC.env$outputdir) {

@@ -8,7 +8,7 @@
 #' @param outputdir 
 #'
 #' @export EC_PlotCategBG
-#' @importFrom 
+#' 
 #' 
 
 EC_PlotCategBG <- function(dataToExplore, listVars, outerTitle="", 

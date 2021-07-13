@@ -6,8 +6,9 @@
 #' @param species_algo_str 
 #'
 #' @export EC_CreateResponseCurve
-#' @importFrom 
 #' 
+#' 
+
 EC_CreateResponseCurve <- function(out.model, model.name, species_algo_str) {
   if (model.name == "brt") {
     model.values <- matrix(out.model$data$x, ncol=length(out.model$var.names))
@@ -36,7 +37,8 @@ EC_CreateResponseCurve <- function(out.model, model.name, species_algo_str) {
                                                   species_algo_str, i)), width=700, height=900)
       par(mfrow = c(6,3)) # No of rows X No of columns
 
-      # Allow each environmental variable to vary, keeping other variable at average, and predict suitability
+      # Allow each environmental variable to vary, keeping other variable 
+      # at average, and predict suitability
       rcurves = list()
       for (j in ((i*curvesPerPage + 1):min((i+1)*curvesPerPage, ncol(mean.values)))) {
         range.values = seq(min(model.values[,j], na.rm=TRUE),

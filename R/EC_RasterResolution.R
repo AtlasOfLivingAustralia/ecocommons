@@ -8,8 +8,6 @@
 #' @param resamplingflag 
 #' @param selected_layers 
 #'
-#' @export
-#' @importFrom 
 #' 
 
 EC_RasterResolution <- function(rasters, resamplingflag, selected_layers) {

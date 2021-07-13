@@ -13,10 +13,10 @@
 #'
 #' @export EC_SDMGeoConstrained
 #' @importFrom rgdal readOGR
-#'             rgeos gBuffer
-#'             rjson fromJSON
-#'             sp SpatialPolygons
-#'             sp SpatialPoints
+#' @importFrom rgeos gBuffer
+#' @importFrom rjson fromJSON
+#' @importFrom sp SpatialPolygons
+#' @importFrom sp SpatialPoints
 #'             
 #'
 

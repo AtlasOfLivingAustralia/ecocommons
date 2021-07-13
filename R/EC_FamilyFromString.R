@@ -4,7 +4,7 @@
 #' @param s 
 #'
 #' @export EC_FamilyFromString
-#' @ImportFrom
+#' 
 #' 
 
 EC_FamilyFromString <- function(s) {

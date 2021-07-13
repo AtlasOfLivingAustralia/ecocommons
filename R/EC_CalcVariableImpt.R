@@ -6,10 +6,10 @@
 #' @param num_samples 
 #' @param species_algo_str 
 #'
-#' @return
 #' @export EC_CalcVariableImpt
 #' 
 #' 
+
 EC_CalcVariableImpt <- function(out.model, model.name, num_samples, species_algo_str) {
 
   if (model.name == "brt") {

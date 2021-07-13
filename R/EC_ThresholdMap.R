@@ -6,7 +6,6 @@
 #' @param threshold 
 #'
 #' @export EC_ThresholdMap
-#' @importFrom 
 #' 
 
 EC_ThresholdMap <- function(proj_raster, threshold) {

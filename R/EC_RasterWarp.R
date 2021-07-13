@@ -8,8 +8,8 @@
 #'
 #' @export
 #' @importFrom gdalUtils gdalwarp
-#'             raster raster
-#'             rgdal GDALinfo
+#' @importFrom raster raster
+#' @importFrom rgdal GDALinfo
 #' 
 
 EC_RasterWarp <- function(raster.filenames, raster.types, reference, overwrite=TRUE) {

@@ -7,8 +7,6 @@
 #' @param mask.out 
 #' @param mask.in 
 #'
-#' @export
-#' @importFrom 
 #' 
 
 EC_SampleFactorLevels <- function(x, mask.out = NULL, mask.in = NULL){

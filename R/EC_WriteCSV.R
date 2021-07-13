@@ -6,7 +6,7 @@
 #' @param rownames 
 #'
 #' @export EC_WriteCSV
-#' @importFrom 
+#' 
 #' 
 
 EC_WriteCSV <- function(robj, name, outputdir=EC.env$outputdir, rownames=TRUE) {

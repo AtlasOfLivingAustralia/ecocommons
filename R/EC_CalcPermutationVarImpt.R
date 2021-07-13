@@ -9,7 +9,7 @@
 #' @param species_algo_str 
 #'
 #' @export EC_CalcPermutationVarImpt
-#' @ImportFrom dismo evaluate
+#' @importFrom dismo evaluate
 #'
 EC_CalcPermutationVarImpt <- function(out.model, model.eval,
                                        model.name, occur, bkgd, species_algo_str) {

@@ -1,3 +1,14 @@
+#' SAve output in PDF format
+#'
+#' @param ... 
+#' @param filename 
+#' @param aspdf 
+#' @param outputdir 
+#'
+#' @export EC_SavePDF
+#' @importFrom gridExtra
+#'
+
 EC_SavePDF <- function(..., filename, aspdf, outputdir=EC.env$outputdir)
 {
   library("gridExtra")

@@ -5,8 +5,8 @@
 #'
 #' @export EC_AreaExtentOccupancy
 #' @importFrom conR AOO.computing
-#'             conR IUCN.eval
-#'             dplyr bind_rows
+#' @importFrom conR IUCN.eval
+#' @importFrom dplyr bind_rows
 #'
 #' 
 EC_AreaExtentOccupancy <- function(occur, species) {

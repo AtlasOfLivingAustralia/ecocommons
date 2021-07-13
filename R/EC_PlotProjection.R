@@ -3,8 +3,8 @@
 #' @param inputfile 
 #' @param main 
 #'
-#' @export
 #' @importFrom rasterVis
+#' 
 #' 
 
 EC_PlotProjection <- function(inputfile, main) {

@@ -6,8 +6,6 @@
 #' @param spname 
 #' @param ofname 
 #'
-#' @export
-#' @importFrom 
 #' 
 
 EC_MergeSave <- function(env, csvdata, spname, ofname) {

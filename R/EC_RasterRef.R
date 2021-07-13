@@ -9,6 +9,7 @@
 #' @export
 #' @importFrom raster csr
 #' 
+#' 
 
 EC_RasterRef <- function(rasters, resamplingflag, selected_layers) {
   empty.rasters <- lapply(rasters, function(x) { projectExtent(x, crs(x)) })  # create list of empty rasters

@@ -7,8 +7,8 @@
 
 #' @export EC_CreateBiasedBackgroundData
 #' @importFrom raster extract
-#'             raster raster
-#'             sp SpatialPoints
+#' @importFrom raster raster
+#' @importFrom sp SpatialPoints
 #'
 
 EC_CreateBiasedBackgroundData <- function(bg, biasfile, bgsize) {

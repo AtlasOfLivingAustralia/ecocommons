@@ -2,8 +2,6 @@
 #'
 #' @param model.file 
 #'
-#' @export
-#' @importFrom 
 #' 
 
 EC_GetModelObject <- function(model.file=EC.env$inputmodel) {

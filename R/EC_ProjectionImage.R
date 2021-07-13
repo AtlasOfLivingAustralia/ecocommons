@@ -7,8 +7,6 @@
 #' @param outputdir 
 #' @param filename_ext 
 #'
-#' @export
-#' @importFrom 
 #' 
 
 EC_ProjectionImage <- function(inputfile, projection.name, species, 

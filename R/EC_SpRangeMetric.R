@@ -4,8 +4,6 @@
 #' @param threshold 
 #' @param outfilename 
 #'
-#' @export
-#' @importFrom 
 #' 
 
 EC_SpRangeMetric <- function(prob_rasters, threshold, outfilename) {

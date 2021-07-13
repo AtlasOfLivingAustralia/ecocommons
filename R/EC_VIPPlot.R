@@ -11,8 +11,12 @@
 #' @param filename 
 #'
 #' @export EC_VIPplot
-#' @importFrom  caret, ggdendro, ggplot2, mgcv, reshape2, rpart 
-#' 
+#' @importFrom caret
+#' @importFrom ggdendro
+#' @importFrom ggplot2
+#' @importFrom mgcv
+#' @importFrom reshape2
+#' @importFrom rpart
 
 EC_VIPplot <- function(fittedmodel=NULL,
                        method=c("glm","cta","gam","ann", "rf", "gbm", "mars", "maxent"),

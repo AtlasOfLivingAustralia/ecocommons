@@ -7,7 +7,7 @@
 
 #' @export
 #' @importFrom raster crop
-#'             raster mask
+#' @importFrom raster mask
 #'
 
 EC_Mask <- function(raster, parsed_geojson) {

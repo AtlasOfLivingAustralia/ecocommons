@@ -8,7 +8,7 @@
 #' @param outputdir 
 #'
 #' @export EC_PlotCategOCC
-#' @importFrom 
+#' 
 #' 
 
 EC_PlotCategOCC <- function(dataToExplore, listVars, outerTitle="", 

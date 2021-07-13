@@ -5,10 +5,10 @@
 #'
 #' @export 
 #' @importFrom raster raster
-#'             SDMTools COGravity
+#' @importFrom SDMTools COGravity
 #' 
 #' 
-#' 
+
 EC_CentreofGravityMetric <- function(projfiles, outfilename) {
   future_proj <- raster::raster(projfiles[[1]])
   current_proj <- raster::raster(projfiles[[2]])
@@ -23,13 +23,17 @@ EC_CentreofGravityMetric <- function(projfiles, outfilename) {
   
   results <- as.data.frame(matrix(ncol=5, nrow=3))
   rownames(results) <- c('Centre_of_Range', 'Minimum', 'Maximum')
-  colnames(results) <- c('current_latitude', 'current_longitude', 'future_latitude', 'future_longitude', 'change_in_m')
-  results[1,] = EC_Distance(current_cog['COGy'], current_cog['COGx'], future_cog['COGy'], future_cog['COGx'])
+  colnames(results) <- c('current_latitude', 'current_longitude',
+                         'future_latitude', 'future_longitude', 'change_in_m')
+  results[1,] = EC_Distance(current_cog['COGy'], current_cog['COGx'],
+                            future_cog['COGy'], future_cog['COGx'])
+  
   results[2,] = EC_Distance(min(coordinates(current_proj)[,2]),
                               min(coordinates(current_proj)[,1]),
                               min(coordinates(future_proj)[,2]),
                               min(coordinates(future_proj)[,1])
   )
+ 
   results[3,] = EC_Distance(max(coordinates(current_proj)[,2]),
                               max(coordinates(current_proj)[,1]),
                               max(coordinates(future_proj)[,2]),

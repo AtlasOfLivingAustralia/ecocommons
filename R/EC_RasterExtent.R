@@ -7,6 +7,7 @@
 #' @export
 #' @importFrom raster intersect
 #'
+#'
 
 EC_RasterExtent <- function(rasters, common.crs) {
   extent.list = lapply(rasters, function(r) { extent(projectExtent(r, common.crs)) }) # intersect all extents

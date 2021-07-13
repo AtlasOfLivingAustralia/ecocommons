@@ -1,3 +1,12 @@
+#' Title
+#'
+#' @param loaded.names 
+#' @param biomod.model 
+#' @param species_algo_str 
+#'
+#' @importFrom biomod2
+#'
+
 EC_SaveBIOMODModelEval <- function(loaded.names, biomod.model, species_algo_str) {
 
   evaluation = get_evaluations(biomod.model)

@@ -1,4 +1,15 @@
-# function to save projection output raster
+#' Function to save projection output raster
+#'
+#' @param model.obj 
+#' @param projection.name 
+#' @param species 
+#' @param species_algo_str 
+#' @param outputdir 
+#' @param filename_ext 
+#'
+#' @export EC_SaveModelProjection
+#'
+#' 
 
 EC_SaveModelProjection <- function(model.obj, projection.name, species, 
                                      species_algo_str, outputdir=EC.env$outputdir, filename_ext=NULL) {
