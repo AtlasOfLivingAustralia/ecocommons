@@ -1,0 +1,300 @@
+############################################################
+###     EcoCommons script to ANN - using biomod2     ###
+############################################################
+##
+## Author details: EcoCommons Platform, Contact details: emailadress@
+## Copyright statement: This script is the product of EcoCommons etc.
+## Date : ??
+## Script and data info:
+##  This script runs the artificial Neural Network (ANN) algorithm 
+##  (ref) for Species Distribution Modelling, a machine learning method,
+##  using the biomod2 package on R and the input data generated on the 
+##  EcoCommons platform.
+
+#===================================================================
+## Load and edit your dataset
+
+# The lon/lat of the observation records -- minimum of 2 column matrix
+occur.data <- EC.params$species_occurrence_dataset$filename
+occur.species <- EC.params$species_occurrence_dataset$species
+month.filter <- EC.params$species_filter #if user has any filters set for the analyses
+
+# The lon/lat of the background / absence points -- 2 column matrix
+absen.data <- EC.params$species_absence_dataset$filename
+
+# The current environment data -- list of layers' file names
+enviro.data.current <- lapply(EC.params$environmental_datasets,
+                              function(x) {
+                                fname = x$filename
+                                return(fname)
+                              }
+)
+
+# Type name in terms of continuous or categorical
+enviro.data.type <- lapply(EC.params$environmental_datasets, function(x) x$type)
+# Layer names for the current environmental layers used
+enviro.data.layer <- lapply(EC.params$environmental_datasets, function(x) x$layer)
+
+# Add geographic constraints
+enviro.data.constraints <- readLines(EC.params$modelling_region$filename)
+
+# Indicate if you wish to generate and apply convex-hull polygon of occurrence
+# dataset to constraint
+enviro.data.generateCHull <- ifelse(is.null(EC.params$generate_convexhull), 
+                                    FALSE, as.logical(EC.params$generate_convexhull))
+
+# Indicate whether to generate unconstrained map or not. TRUE by default
+enviro.data.genUnconstraintMap <- ifelse(is.null(EC.params$unconstraint_map), 
+                                         TRUE, as.logical(EC.params$unconstraint_map))
+# Resampling (up / down scaling) if scale_down is TRUE, return 'lowest'
+enviro.data.resampling <- ifelse(is.null(EC.params$scale_down) ||
+                                   as.logical(EC.params$scale_down),
+                                 'highest', 'lowest')
+
+#===================================================================
+## BIOMOD2 Models
+
+# General parameters to perform any biomod modelling
+
+biomod.NbRunEval <- EC.params$nb_run_eval  # default 10; n-fold cross-validation
+biomod.DataSplit <- EC.params$data_split # default 100; % for calibrating/training, remainder for testing
+biomod.Yweights <- NULL #response points weights
+biomod.Prevalence <- EC.params$prevalence #default NULL; or a 0-1 numeric to build "weighted response weights"
+biomod.VarImport <- EC.params$var_import # default 0; number of resampling of each explanatory variable to measure the relative importance of each variable for each selected model
+#EMG this parameter needs to be specified in order to get VariableImportance metrics during model evaluation
+biomod.models.eval.meth <- c("KAPPA", "TSS", "ROC" ,"FAR", "SR", "ACCURACY", "BIAS", "POD", "CSI", "ETS") #vector of evaluation metrics
+biomod.rescal.all.models <- EC.params$rescale_all_models #if true, all model prediction will be scaled with a binomial GLM
+biomod.do.full.models <- EC.params$do_full_models #if true, models calibrated and evaluated with the whole dataset are done; ignored if DataSplitTable is filled
+biomod.modeling.id <- EC.params$modeling_id #character, the ID (=name) of modeling procedure. A random number by default
+# biomod.DataSplitTable <- NULL #a matrix, data.frame or a 3D array filled with TRUE/FALSE to specify which part of data must be used for models calibration (TRUE) and for models validation (FALSE). Each column correspund to a "RUN". If filled, args NbRunEval, DataSplit and do.full.models will be ignored
+# EMG Need to test whether a NULL values counts as an argument
+biomod.species.name <- occur.species # used for various path and file name generation
+projection.name <- "current"  #basename(enviro.data.current)
+species_algo_str <- ifelse(is.null(EC.params$subset), 
+                          sprintf("%s_ann", biomod.species.name), 
+                          sprintf("%s_ann_%s", biomod.species.name, EC.params$subset))
+
+
+# model-specific arguments to create a biomod model
+model.options.ann <- list(
+	NbCV <- EC.params$nbcv, #nb of cross validation to find best size and decay parameters
+	size <- EC.params$size, #number of units in the hidden layer
+	decay <- EC.params$decay, #parameter for weight decay
+	rang <- EC.params$rang, #Initial random weights on [-rang, rang]
+	maxit <- EC.params$maxit #maximum number of iterations. Default 100
+)
+
+############### BIOMOD2 Models ###############
+#
+# general parameters to project any biomod modelling
+#
+#modeling.output #"BIOMOD.models.out" object produced by a BIOMOD_Modeling run
+#new.env #a set of explanatory variables onto which models will be projected; 
+# must match variable names used to build the models
+#proj.name #a character defining the projection name (a new folder will be created with this name)
+# pseudo absences
+biomod.PA.nb.rep = 0
+biomod.PA.nb.absences = 0
+
+biomod.xy.new.env = NULL #optional coordinates of new.env data. Ignored if new.env is a rasterStack
+biomod.selected.models = EC.params$selected_models #'all' when all models have to be used to render projections or a subset vector of modeling.output models computed (eg, = grep('_RF', getModelsBuiltModels(myBiomodModelOut)))
+# EMG If running one model at a time, this parameter becomes irrevelant
+biomod.binary.meth = NULL #a vector of a subset of models evaluation method computed in model creation
+biomod.filtered.meth = NULL #a vector of a subset of models evaluation method computed in model creation
+biomod.compress = EC.params$compress # default 'gzip'; compression format of objects stored on your hard drive. May be one of `xz', `gzip' or NULL
+biomod.build.clamping.mask = FALSE #if TRUE, a clamping mask will be saved on hard drive
+opt.biomod.silent = FALSE #logical, if TRUE, console outputs are turned off
+opt.biomod.do.stack = TRUE #logical, if TRUE, attempt to save all projections in a unique object i.e RasterStack
+opt.biomod.keep.in.memory = TRUE #logical, if FALSE only the link pointing to a hard drive copy of projections are stored in output object
+opt.biomod.output.format = NULL #'.Rdata', '.grd' or '.img'; if NULL, and new.env is not a Raster class, output is .RData defining projections saving format (on hard drive)
+
+
+# model accuracy statistics
+# these are available from dismo::evaluate.R NOT originally implemented in biomod2::Evaluate.models.R
+dismo.eval.method <- c("ODP", "TNR", "FPR", "FNR", "NPP", "MCR", "OR")
+# and vice versa
+
+# model accuracy statistics - combine stats from dismo and biomod2 for consistent output
+model.accuracy <- c(dismo.eval.method, biomod.models.eval.meth)
+# TODO: these functions are used to evaluate the model ... configurable?
+
+# read current climate data
+# TODO: check env.data for spatial reference
+current.climate.scenario <- EC_EnviroStack(enviro.data.current, enviro.data.type, enviro.data.layer, resamplingflag=enviro.data.resampling)
+
+###read in the necessary observation, background and environmental data
+occur <- EC_ReadSp(occur.data, month.filter) #read in the observation data lon/lat
+absen <- EC_ReadSp(absen.data, month.filter) #read in the observation data lon/lat
+
+# geographically constrained modelling
+if (!is.null(enviro.data.constraints) || enviro.data.generateCHull) {
+  constrainedResults = EC_SDMGeoConstrained(current.climate.scenario, occur, absen, enviro.data.constraints, enviro.data.generateCHull);
+
+  # Save a copy of the climate dataset
+  current.climate.scenario.orig <- current.climate.scenario  
+  current.climate.scenario <- constrainedResults$raster
+  occur <- constrainedResults$occur
+  absen <- constrainedResults$absen
+}
+
+# Determine the number of pseudo absence points from pa_ratio
+pa_ratio <- EC.params$pa_ratio
+pa_number_point = 0
+if (pa_ratio > 0) {
+  pa_number_point = floor(pa_ratio * nrow(occur))
+}
+
+
+###run the models and store models
+############### BIOMOD2 Models ###############
+# 1. Format the data
+# 2. Define the model options
+# 3. Compute the model
+# NOTE: Model evaluation is included as part of model creation
+
+# BIOMOD_Modeling(data, models = c('GLM','GBM','GAM','CTA','ANN','SRE','FDA','MARS','RF','MAXENT'), models.options = NULL,
+#	NbRunEval=1, DataSplit=100, Yweights=NULL, Prevalence=NULL, VarImport=0, models.eval.meth = c('KAPPA','TSS','ROC'),
+#	SaveObj = TRUE, rescal.all.models = TRUE, do.full.models = TRUE, modeling.id = as.character(format(Sys.time(), '%s')),
+#	...)
+#
+# data	BIOMOD.formated.data object returned by BIOMOD_FormatingData
+# models vector of models names choosen among 'GLM', 'GBM', 'GAM', 'CTA', 'ANN', 'SRE', 'FDA', 'MARS', 'RF' and 'MAXENT'
+# models.options BIOMOD.models.options object returned by BIOMOD_ModelingOptions
+# NbRunEval	Number of Evaluation run
+# DataSplit	% of data used to calibrate the models, the remaining part will be used for testing
+# Yweights response points weights
+# Prevalence either NULL (default) or a 0-1 numeric used to build 'weighted response weights'
+# VarImport	Number of permutation to estimate variable importance
+# models.eval.meth vector of names of evaluation metric among 'KAPPA', 'TSS', 'ROC', 'FAR', 'SR', 'ACCURACY', 'BIAS', 'POD', 'CSI' and 'ETS'
+# SaveObj keep all results and outputs on hard drive or not (NOTE: strongly recommended)
+# rescal.all.models	if true, all model prediction will be scaled with a binomial GLM
+# do.full.models if true, models calibrated and evaluated with the whole dataset are done
+# modeling.id character, the ID (=name) of modeling procedure. A random number by default.
+# ... further arguments :
+# DataSplitTable : a matrix, data.frame or a 3D array filled with TRUE/FALSE to specify which part of data must be used for models calibration (TRUE) and for models validation (FALSE). Each column correspund to a 'RUN'. If filled, args NbRunEval, DataSplit and do.full.models will be ignored.
+
+###############
+#
+# ANN - artificial neural network (nnet)
+#
+###############
+
+# myBiomodOptions <- BIOMOD_ModelingOptions(ANN = list(NbCV = 5, rang = 0.1, maxit = 200))
+# NbCV : nb of cross validation to find best size and decay parameters
+# rang : Initial random weights on [-rang, rang]
+# maxit : maximum number of iterations. Default 100
+
+# 1. Format the data as required by the biomod package
+model.data <- EC_FormatDataBIOMOD2(true.absen         = absen,
+                                  pseudo.absen.points    = pa_number_point,
+                                  pseudo.absen.strategy  = EC.params$pa_strategy,
+                                  pseudo.absen.disk.min  = EC.params$pa_disk_min,
+                                  pseudo.absen.disk.max  = EC.params$pa_disk_max,
+                                  pseudo.absen.sre.quant = EC.params$pa_sre_quant,
+                                  climate.data           = current.climate.scenario,
+                                  occur                  = occur,
+                                  species.name           = biomod.species.name,
+                                  species_algo_str       = species_algo_str)
+
+# 2. Define the model options
+model.options <- BIOMOD_ModelingOptions(ANN = model.options.ann)
+# 3. Compute the model
+model.sdm <-
+    BIOMOD_Modeling(data              = model.data,
+                    models            = c('ANN'),
+                    models.options    = model.options,
+                    NbRunEval         = biomod.NbRunEval,
+                    DataSplit         = biomod.DataSplit,
+                    Yweights          = biomod.Yweights,
+                    Prevalence        = biomod.Prevalence,
+                    VarImport         = biomod.VarImport,
+                    models.eval.meth  = biomod.models.eval.meth,
+                    SaveObj           = TRUE,
+                    rescal.all.models = biomod.rescal.all.models,
+                    do.full.models    = biomod.do.full.models,
+                    modeling.id       = biomod.modeling.id
+                    )
+
+# save the VIP plot
+x.data <- attr(model.data,"data.env.var")
+y.data <- attr(model.data,"data.species")
+data1 <- data.frame(y.data,x.data)
+EC_VIPplot(method="ann", data1=data1, pdf=TRUE, 
+              filename=paste('vip_plot', species_algo_str, sep="_"), 
+              this.dir=paste(biomod.species.name, "/models/EcoCommons", sep=""))
+
+#save out the model object
+# TODO: biomod stores the model already in species/species.EcoCommons.models.out
+# TODO: get species name into this somehow -> requires archive generation on input to do the same
+EC_Save(model.sdm, name="model.object.RData")
+
+
+# Do projection over current climate scenario without constraint only if all env data layers are continuous.
+if (enviro.data.genUnconstraintMap && 
+   all(enviro.data.type == 'continuous') && 
+   (!is.null(enviro.data.constraints) || enviro.data.generateCHull)) {
+    model.proj <-
+        BIOMOD_Projection(modeling.output     = model.sdm,
+                          new.env             = current.climate.scenario.orig,
+                          proj.name           = projection.name,
+                          xy.new.env          = biomod.xy.new.env,
+                          selected.models     = biomod.selected.models,
+                          binary.meth         = biomod.binary.meth,
+                          filtered.meth       = biomod.filtered.meth,
+                          #compress            = biomod.compress,
+                          build.clamping.mask = biomod.build.clamping.mask,
+                          silent              = opt.biomod.silent,
+                          do.stack            = opt.biomod.do.stack,
+                          keep.in.memory      = opt.biomod.keep.in.memory,
+                          output.format       = opt.biomod.output.format,
+                          on_0_1000           = FALSE)
+
+    # remove the current.climate.scenario to release disk space
+    EC_RevRasterObject(current.climate.scenario.orig)
+
+    # convert projection output from grd to gtiff
+    EC_GRDtoGTIFF(file.path(getwd(),
+                               biomod.species.name,
+                               paste("proj", projection.name, sep="_")),
+                     algorithm=ifelse(is.null(EC.params$subset), "ann", sprintf("ann_%s", EC.params$subset)), 
+                     filename_ext="unconstrained")
+
+    # save the projection
+    EC_SaveProjection(model.proj, species_algo_str, filename_ext="unconstrained")
+}
+
+# predict for current climate scenario
+# TODO: would I want to use saveObj here again?
+model.proj <-
+    BIOMOD_Projection(modeling.output     = model.sdm,
+                      new.env             = current.climate.scenario,
+                      proj.name           = projection.name,  #basename(enviro.data.current), {{ species }}
+                      xy.new.env          = biomod.xy.new.env,
+                      selected.models     = biomod.selected.models,
+                      binary.meth         = biomod.binary.meth,
+                      filtered.meth       = biomod.filtered.meth,
+                      #compress            = biomod.compress,
+                      build.clamping.mask = biomod.build.clamping.mask,
+                      silent              = opt.biomod.silent,
+                      do.stack            = opt.biomod.do.stack,
+                      keep.in.memory      = opt.biomod.keep.in.memory,
+                      output.format       = opt.biomod.output.format,
+                      on_0_1000           = FALSE)
+
+# remove the current.climate.scenario to release disk space
+EC_RevRasterObject(current.climate.scenario)
+
+# convert projection output from grd to gtiff
+# TODO: get proj4string in here somewhere and use in grdtogtiff
+EC_GRDtoGTIFF(file.path(getwd(),
+                           biomod.species.name,
+                           paste("proj", projection.name, sep="_")), 
+                 algorithm=ifelse(is.null(EC.params$subset), "ann", sprintf("ann_%s", EC.params$subset)))
+
+# output is saved as part of the projection, format specified in arg 'opt.biomod.output.format'
+# evaluate model
+loaded.model <- BIOMOD_LoadModels(model.sdm, models="ANN") # load model
+EC_SaveBIOMODModelEval(loaded.model, model.sdm, species_algo_str)
+
+# save the projection
+EC_SaveProjection(model.proj, species_algo_str)

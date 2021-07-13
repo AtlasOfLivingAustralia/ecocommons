@@ -21,7 +21,7 @@ EC_RasterWarp <- function(raster.filenames, raster.types, reference, overwrite=T
       dtype <- as.character(mdata[['GDType']])
       hasNoDataValues <- mdata[['hasNoDataValue']]
       
-      r <- EC_RasterLoad(filename)  # warp, crop and rescale raster file if necessary
+      r <- EC_ReadRaster(filename)  # warp, crop and rescale raster file if necessary
       dir <- dirname(filename)
       temp_raster <- file.path(dir, paste0(basename(tempfile()), '.tif'))
       te <- extent(reference)

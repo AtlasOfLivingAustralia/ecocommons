@@ -14,7 +14,7 @@
 
 EC_RasterResampled  <- function(raster.filenames, raster.types, 
                                 resamplingflag, selected_layers=NULL, overwrite=TRUE) {
-  rasters <- lapply(raster.filenames, EC_RasterLoad)
+  rasters <- lapply(raster.filenames, EC_ReadRaster)
 
   reference <- EC_RasterRef(rasters, resamplingflag, selected_layers) # determine common raster shape
 

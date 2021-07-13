@@ -10,80 +10,16 @@
 ##  (Philips et al. 2004) for Species Distribution Modelling, using the 
 ##  biomod2 package on R and the input data generated on the EcoCommons 
 ##  platform.
+##
+## IMPORTANT: please run the 'EcoCommons_source' script before run each
+##            algorithm
 
-# source("~/Documents/BCCVL_scripts/bccvl_modified.R")
-# library("EcoCommons_package")
+library("EcoCommons")
 
 #===================================================================
-## Load and edit your dataset
+## Load and edit your dataset with parameters specific to MaxEnt
 
-# The lon/lat of the observation records -- minimum of 2 column matrix
-occur.data <- EC.params$species_occurrence_dataset$filename
-occur.species <- EC.params$species_occurrence_dataset$species
-month.filter <- EC.params$species_filter #if user has any filters set for the analyses
-
-# The lon/lat of the background / absence points -- 2 column matrix
-absen.data <- EC.params$species_absence_dataset$filename
-# OPTIONAL: bias file from user
-bias.data <- EC.params$bias_dataset$filename
-
-# The current environment data -- list of layers' file names
-enviro.data.current <- lapply(EC.params$environmental_datasets,
-                             function(x) {
-                                fname = x$filename
-                                return(fname)
-                             }
-)
-
-# Type name in terms of continuous or categorical
-enviro.data.type <- lapply(EC.params$environmental_datasets, function(x) x$type)
-# Layer names for the current environmental layers used
-enviro.data.layer <- lapply(EC.params$environmental_datasets, function(x) x$layer)
-
-# OPTIONAL- you can add a geographic constraints
-enviro.data.constraints <- EC.params$modelling_region
-if (is.null(enviro.data.constraints) || enviro.data.constraints == '') {
-  enviro.data.constraints = NULL
-} else {
-  enviro.data.constraints = readLines(EC.params$modelling_region$filename)
-}
-
-# Indicate if you wish to generate and apply convex-hull polygon of occurrence
-# dataset to constraint
-enviro.data.generateCHull <- ifelse(is.null(EC.params$generate_convexhull), 
-                                    FALSE, as.logical(EC.params$generate_convexhull))
-
-# Indicate whether to generate unconstrained map or not. TRUE by default
-enviro.data.genUnconstraintMap <- ifelse(is.null(EC.params$unconstraint_map), 
-                                         TRUE, as.logical(EC.params$unconstraint_map))
-# Resampling (up / down scaling) if scale_down is TRUE, return 'lowest'
-enviro.data.resampling <- ifelse(is.null(EC.params$scale_down) ||
-                                as.logical(EC.params$scale_down),
-                                'highest', 'lowest')
-
-# Read current climate data
-current.climate.scenario <- EC_EnviroStack(enviro.data.current, 
-                                           enviro.data.type, enviro.data.layer, 
-                                           resamplingflag=enviro.data.resampling)
-
-# Read in the necessary observation, background and environmental data
-occur <- EC_SpRead(occur.data, month.filter) #read in the observation lon/lat
-absen <- EC_SpRead(absen.data, month.filter) #read in the absence lon/lat
-
-# Geographically constrained modelling
-if (!is.null(enviro.data.constraints) || enviro.data.generateCHull) {
-  constrainedResults <- EC_SDMGeoConstrained(current.climate.scenario, occur, 
-                                             absen, enviro.data.constraints,
-                                             enviro.data.generateCHull);
-
-  # Save a copy of the climate dataset
-  current.climate.scenario.orig <- current.climate.scenario
-  current.climate.scenario <- constrainedResults$raster
-  occur <- constrainedResults$occur
-  absen <- constrainedResults$absen
-}
-
-# The number of background points
+# Set number of background points
 pa_number_point <- EC.params$maximumbackground
 
 # Generate background data, if not supplied

@@ -12,7 +12,7 @@ Description: This package aims to provide a series of useful functions to run
              EcoCommons platform
 Depends:
    R (>= 4.0.0)
-Imports: terra, dplyr
+Imports: biomod2, ConR, dismo, dplyr, gdalUtils, gridExtra, raster, rasterVis, rgeos, rgdal, rjson, sp
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Encoding: UTF-8

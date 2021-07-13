@@ -4,8 +4,8 @@
 #' @param species
 #'
 #' @export EC_AreaExtentOccupancy
-#' @importFrom conR AOO.computing
-#' @importFrom conR IUCN.eval
+#' @importFrom ConR AOO.computing
+#' @importFrom ConR IUCN.eval
 #' @importFrom dplyr bind_rows
 #'
 #' 
@@ -19,12 +19,12 @@ EC_AreaExtentOccupancy <- function(occur, species) {
     occur = occur[, c('lat','lon','species')]
 
     # Get AOO value
-    aoo <- conR::AOO.computing(occur, Cell_size_AOO=2, nbe.rep.rast.AOO=0,
+    aoo <- ConR::AOO.computing(occur, Cell_size_AOO=2, nbe.rep.rast.AOO=0,
                          parallel=FALSE, NbeCores =2, show_progress=FALSE, 
                          export_shp=FALSE)
 
     # Generate table with AOO and EOO values
-    aoo_eoo <- conR::IUCN.eval(occur, file_name=file.path(EC.env$outputdir, 
+    aoo_eoo <- ConR::IUCN.eval(occur, file_name=file.path(EC.env$outputdir, 
                                                           paste0("aoo_eoo_", species, ".csv")))
     aoo_eoo <- aoo_eoo[c('taxa', 'EOO', 'AOO', 'Nbe_unique_occ.')]
     colnames(aoo_eoo) <- c('taxa', 'EOO', 'AOO', 'Number of unique occurrences')
