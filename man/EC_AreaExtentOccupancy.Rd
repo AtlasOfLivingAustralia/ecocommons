@@ -7,7 +7,9 @@
 EC_AreaExtentOccupancy(occur, species)
 }
 \arguments{
-\item{species}{}
+\item{occur}{add description here}
+
+\item{species}{add description here}
 }
 \description{
 Computes the Area/Extent of Occuppancy (AOO/EOO) for species of interest

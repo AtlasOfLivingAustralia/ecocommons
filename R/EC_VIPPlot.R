@@ -11,12 +11,13 @@
 #' @param filename 
 #'
 #' @export EC_VIPplot
-#' @importFrom caret
-#' @importFrom ggdendro
-#' @importFrom ggplot2
-#' @importFrom mgcv
-#' @importFrom reshape2
-#' @importFrom rpart
+#' @importFrom biomod2 get_formal_model
+#' @importFrom biomod2 variables_importance
+#' @importFrom ggdendro dendro_data
+#' @importFrom ggdendro theme_dendro
+#' @importFrom ggplot2 ggplot
+#' @importFrom mgcv gam
+#' @importFrom reshape2 melt
 
 EC_VIPplot <- function(fittedmodel=NULL,
                        method=c("glm","cta","gam","ann", "rf", "gbm", "mars", "maxent"),
@@ -127,7 +128,7 @@ EC_VIPplot <- function(fittedmodel=NULL,
     lower_tri <- xx
     lower_tri[upper.tri(lower_tri)] <- NA
 
-    xx.ml <- melt(lower_tri,na.rm=TRUE)  #the argument 'na.rm=TRUE' seems not working)
+    xx.ml <- reshape2::melt(lower_tri,na.rm=TRUE)  #the argument 'na.rm=TRUE' seems not working)
 
     corx = xx.ml[,3]
     rm = which(is.na(corx)==TRUE)

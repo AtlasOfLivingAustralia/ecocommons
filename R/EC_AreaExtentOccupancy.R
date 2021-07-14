@@ -1,7 +1,7 @@
 #' Computes the Area/Extent of Occuppancy (AOO/EOO) for species of interest
 #'
-#' @param occur
-#' @param species
+#' @param occur add description here
+#' @param species add description here
 #'
 #' @export EC_AreaExtentOccupancy
 #' @importFrom ConR AOO.computing

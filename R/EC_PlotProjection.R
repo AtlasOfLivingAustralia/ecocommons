@@ -3,7 +3,7 @@
 #' @param inputfile 
 #' @param main 
 #'
-#' @importFrom rasterVis
+#' @importFrom rasterVis levelplot
 #' 
 #' 
 

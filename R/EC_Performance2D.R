@@ -10,9 +10,9 @@
 #' @param kill.plot 
 #'
 #' @export
-#' @importFrom gridExtra
-#' @importFrom pROC
-#' @importFrom reshape2
+#' @importFrom pROC auc
+#' @importFrom pROC roc
+#' @importFrom reshape2 melt
 #' 
 #' 
 
@@ -247,8 +247,8 @@ EC_Performance2D <- function(obs, pred, species_algo_str, make.plot="EcoCommons"
   }
 
   # auc = Area Under the (ROC) Curve
-  roc <- roc(truth, pred)
-  auc <- auc(roc)
+  roc <- pROC::roc(truth, pred)
+  auc <- pROC::auc(roc)
 
   # Compile the information into dataframes
   temp <- data.frame(list(tpv=list.tpv, tpr=tpr, fpr=fpr,  tnr=tnr,
@@ -313,10 +313,9 @@ EC_Performance2D <- function(obs, pred, species_algo_str, make.plot="EcoCommons"
   #########################################################################
 
   if (make.plot!="") {
-    library(reshape2)
     # reshape the data so that it is in long rather than wide format
     # (= each row represents one item, labels are specified by 'measure' column; used by ggplot2)
-    errs <- melt(temp, id.var="tpv", measure.var=c("tpr", "tnr", "fpr", "fnr", "fdr",
+    errs <- reshape2::melt(temp, id.var="tpv", measure.var=c("tpr", "tnr", "fpr", "fnr", "fdr",
                                                    "fors", "L.diag", "L.pred", "L.all", "L.eq.diag"))
     names(errs)[2] <- c("measure")
 

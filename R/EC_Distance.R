@@ -8,7 +8,7 @@
 #'
 #' @export EC_Distance
 #' @importFrom raster atan2
-#' @importFrom SDMTools
+#' @importFrom geosphere distGeo
 #' 
 
 EC_Distance <- function(lat1, lon1=NULL, lat2=NULL, lon2=NULL, bearing=FALSE) {
@@ -30,8 +30,8 @@ EC_Distance <- function(lat1, lon1=NULL, lat2=NULL, lon2=NULL, bearing=FALSE) {
   
   # Cycle through and output the new data
   output <- data.frame(lat1=lat1, lon1=lon1, lat2=lat2, lon2=lon2)
-  output$distance <- round(.Call('Dist',output$lat1, output$lon1, output$lat2,
-                                 output$lon2, PACKAGE='SDMTools'),2)  # round to the nearest mm
+  output$distance <- round(.Call('distGeo',output$lat1, output$lon1, output$lat2,
+                                 output$lon2, PACKAGE='geosphere'),2)  # round to the nearest mm
   if (bearing) {  # if requested, calculate bearing
     lat1<- lat1 * pi/180; lat2= lat2 * pi/180; lon1=lon1 * pi/180;
     lon2= lon2 * pi/180  # convert to radians

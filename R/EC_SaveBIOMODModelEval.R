@@ -4,8 +4,12 @@
 #' @param biomod.model 
 #' @param species_algo_str 
 #'
-#' @importFrom biomod2
-#'
+#' @importFrom biomod2 get_evaluations
+#' @importFrom biomod2 get_predictions
+#' @importFrom biomod2 get_formal_data
+#' @importFrom biomod2 get_variables_importance
+#' @importFrom biomod2 get_formal_data
+#' 
 
 EC_SaveBIOMODModelEval <- function(loaded.names, biomod.model, species_algo_str) {
 

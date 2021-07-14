@@ -100,7 +100,7 @@ enviro.data.constraints <- EC.params$modelling_region
 if (is.null(enviro.data.constraints) || enviro.data.constraints == '') {
   enviro.data.constraints = NULL
 } else {
-  enviro.data.constraints = readLines(EC.params$modelling_region$filename)
+  enviro.data.constraints <- readLines(EC.params$modelling_region$filename)
 }
 
 # Indicate if you wish to generate and apply convex-hull polygon of occurrence
@@ -142,15 +142,14 @@ if (!is.null(enviro.data.constraints) || enviro.data.generateCHull) {
 #===================================================================
 ## Species trait data
 
-
 # Link to input dataset csv file
-trait.data.filename = EC.params$traits_dataset$filename
+trait.data.filename <- EC.params$traits_dataset$filename
 # Link to variable names of input dataset
-trait.data.params = EC.params$traits_dataset_params
+trait.data.params <- EC.params$traits_dataset_params
 # Read in the trait data
-trait.data = read.csv(trait.data.filename)
+trait.data <- read.csv(trait.data.filename)
 # Get the species
-trait.species =EC.params$species
+trait.species <-EC.params$species
 
 
 writeLines("Done!")

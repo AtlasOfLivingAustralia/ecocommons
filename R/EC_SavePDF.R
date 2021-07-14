@@ -6,7 +6,7 @@
 #' @param outputdir 
 #'
 #' @export EC_SavePDF
-#' @importFrom gridExtra
+#' @importFrom gridExtra grid.arrange
 #'
 
 EC_SavePDF <- function(..., filename, aspdf, outputdir=EC.env$outputdir)
