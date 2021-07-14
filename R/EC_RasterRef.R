@@ -7,7 +7,8 @@
 #' @param selected_layers 
 #'
 #' @export
-#' @importFrom raster csr
+#' @importFrom raster crs
+#' @importFrom sp CRS
 #' 
 #' 
 

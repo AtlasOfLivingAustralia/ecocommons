@@ -4,7 +4,7 @@
 #'
 #' @export EC_ReadRaster
 #' @importFrom raster raster
-#' @importFrom raster CRS
+#' @importFrom sp CRS
 #' 
 #' 
 
