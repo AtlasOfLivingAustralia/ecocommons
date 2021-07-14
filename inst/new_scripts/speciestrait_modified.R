@@ -1,6 +1,6 @@
-############################################################
-###     EcoCommons script to Species Traits Aalysis      ###
-############################################################
+#############################################################
+###     EcoCommons script to Species Traits Analysis      ###
+#############################################################
 ##
 ## Author details: EcoCommons Platform, Contact details: emailadress@
 ## Copyright statement: This script is the product of EcoCommons etc.
@@ -55,22 +55,22 @@ library("rpart")
 formulae_cta <- bccvl.trait.gen_formulae(trait.data.params, include_rf=TRUE)
 for (formula in formulae) {
     trait_name <- gsub("[_ ]", "-", trimws(formula$trait))
-    trait.cta.options <- list(formula = formula(formula$formula), # formula should be: trait ~ env1 + env2 + env3 etc 
+    trait.cta.options <- list(formula = formula(formula$formula),  # should be: trait ~ env1 + env2 + env3 etc 
                               method = ifelse(formula$type == 'continuous',
-                                              'anova', 'class'), # should be "class" for categorical trait data, and "anova" for continuous trait data
-                              na.action = na.rpart, # default action deletes observations for which trait value is missing, but keeps those in which one or more environmental variables are missing
+                                              'anova', 'class'),  # "class"-categorical trait data; "anova"- continuous
+                              na.action = na.rpart,  # deletes info on which trait value is missing
                               model = FALSE,
                               x = FALSE,
                               y = FALSE,
-                              control = list(minsplit = EC.params$control_minsplit, #the minimum number of observations that must exist in a node in order for a split to be attempted
-                                             minbucket = EC.params$control_minbucket, #the minimum number of observations in any terminal node
-                                             cp = EC.params$control_cp, #complexity parameter
-                                             maxcompete = EC.params$control_maxcompete, # number of competitor splits retained in the output
-                                             maxsurrogate = EC.params$control_maxsurrogate, # number of surrogate splits retained in the output
-                                             usesurrogate = EC.params$control_usesurrogate, # how to use surrogates in splitting process
-                                             surrogatestyle = EC.params$control_surstyle, # controls the selection of a best surrogate
-                                             xval = EC.params$control_xval, #number of cross-validations
-                                             maxdepth = EC.params$control_maxdepth  #Set the maximum depth of any node of the final tree, with the root node counted as depth 0. Values greater than 30 rpart will give nonsense results on 32-bit machines
+                              control = list(minsplit = EC.params$control_minsplit,  # minimum number of observations in a node for a split
+                                             minbucket = EC.params$control_minbucket,  # minimum number of observations in any terminal node
+                                             cp = EC.params$control_cp,  # complexity parameter
+                                             maxcompete = EC.params$control_maxcompete,  # number of competitor splits retained in the output
+                                             maxsurrogate = EC.params$control_maxsurrogate,  # number of surrogate splits retained in the output
+                                             usesurrogate = EC.params$control_usesurrogate,  # how to use surrogates in splitting process
+                                             surrogatestyle = EC.params$control_surstyle,  # controls the selection of a best surrogate
+                                             xval = EC.params$control_xval,  # number of cross-validations
+                                             maxdepth = EC.params$control_maxdepth  # maximum depth of any node of the final tree.root node=depth 0
                                              )
                               )
 
@@ -160,6 +160,10 @@ for (formula in formulae) {
 #===================================================================
 ## GLM
 ##
+# Load the library
+library("MASS")
+library("nnet")
+
 
 ## DEFINITION
 
@@ -168,33 +172,32 @@ species_algo_str <- sprintf("%s_glm", trait.species)
 
 # Geographically constrained modelling and merge the environmental data into trait.data
 if (!is.null(trait.data)) {
-  merged.result = bccvl.trait.constraint.merge(trait.data, trait.data.params, environ.rasterstack, enviro.data.constraints, enviro.data.generateCHall)
-  trait.data = merged.result$data
-  trait.data.params = merged.result$params
-  environ.constrained.rasterstack = merged.result$raster
+  merged.result <- bccvl.trait.constraint.merge(trait.data, trait.data.params,
+                                                environ.rasterstack,
+                                                enviro.data.constraints,
+                                                enviro.data.generateCHull)
+  trait.data <- merged.result$data
+  trait.data.params <- merged.result$params
+  environ.constrained.rasterstack <- merged.result$raster
 }
 
 ## MODEL
 
-# Load the library
-library("MASS")
-library("nnet")
-
 # Generate a formula for each trait
-formulae = bccvl.trait.gen_formulae(trait.data.params)
+formulae_glm <- bccvl.trait.gen_formulae(trait.data.params)
 for (formula in formulae) {
   
-  # Run model - with polr function for ordinal traits, multinom function for nominal traits, glm function for continuous traits
-  na_action = get0(EC.params$na_action)
+  # polr function for ordinal traits, multinom function for nominal traits, glm function for continuous traits
+  na_action <- get0(EC.params$na_action)
   if (is.null(na_action)) {
     na_action = get("na.fail")
   }
   # Replace underscore and white-space with dash in trait-name for use in output filename
-  traitname = gsub("[_ ]", "-", trimws(formula$trait))
+  traitname <- gsub("[_ ]", "-", trimws(formula$trait))
   if (formula$type == 'ordinal') {
     library(visreg)
     output_filename = paste0(traitname, "_polr_results.txt")
-    glm.result = polr(formula=formula(formula$formula),
+    glm.result <- polr(formula=formula(formula$formula),
                       data=trait.data,
                       weights=NULL,
                       na.action=na_action,
@@ -214,7 +217,7 @@ for (formula in formulae) {
                           model=TRUE)
   } else {
     output_filename = paste0(traitname, "_glm_results.txt")
-    glm.result = glm(formula=formula(formula$formula),
+    glm.result <- glm(formula=formula(formula$formula),
                      family=EC_FamilyFromString(EC.params$family),
                      data= trait.data,
                      weights=NULL,
@@ -234,26 +237,28 @@ for (formula in formulae) {
                    fnamePrefix = paste0(traitname, '_', trait.species, '_glm_'))
     
     # Do projection only if there is no fixed factors i.e. all env variables of env dataset.
-    env.names = names(environ.rasterstack)
+    env.names <- names(environ.rasterstack)
     if (all(unlist(lapply(formula$env, function(x) x %in% env.names)))) {
       # Do projection over constrained region
       if (is.null(environ.constrained.rasterstack)) {
-        env.data = as.data.frame(environ.rasterstack, xy=TRUE)
+        env.data <- as.data.frame(environ.rasterstack, xy=TRUE)
       }
       else {
-        env.data = as.data.frame(environ.constrained.rasterstack, xy=TRUE)
+        env.data <- as.data.frame(environ.constrained.rasterstack, xy=TRUE)
       }
-      proj  = predict.glm(glm.result, env.data)
+      proj  <- predict.glm(glm.result, env.data)
       
       # combine the coordinates and projection value to generate a raster
-      proj1 = cbind(env.data[,c("x", "y")], proj)
-      proj.raster = rasterFromXYZ(proj1)
+      proj1 <- cbind(env.data[,c("x", "y")], proj)
+      proj.raster <- rasterFromXYZ(proj1)
       
       # Save projection as geotif and png
       bccvl.saveModelProjection(proj.raster, projection.name, formula$trait, species_algo_str)
       
       # Do projection over unconstrained region only if all env variables are not categorical
-      if (!is.null(environ.constrained.rasterstack) && all(unlist(lapply(environ.rasterstack@layers, function(lyr) return(!lyr@data@isfactor))))) {
+      if (!is.null(environ.constrained.rasterstack) && all(unlist(lapply(environ.rasterstack@layers,
+                                                                         function(lyr)
+                                                                           return(!lyr@data@isfactor))))) {
         env.data = as.data.frame(environ.rasterstack, xy=TRUE)
         proj  = predict.glm(glm.result, env.data)
         
@@ -262,18 +267,107 @@ for (formula in formulae) {
         proj.raster = rasterFromXYZ(proj1)
         
         # Save projection as geotif and png
-        bccvl.saveModelProjection(proj.raster, projection.name, formula$trait, species_algo_str, filename_ext="unconstrained")
+        bccvl.saveModelProjection(proj.raster, projection.name, formula$trait,s
+                                  pecies_algo_str, filename_ext="unconstrained")
       }
     }
   }
   
   # Save the model to file
-  bccvl.save(glm.result, paste0(traitname, "_glm_model.object.RData"))
+  EC_Save(glm.result, paste0(traitname, "_glm_model.object.RData"))
   
   ## Save the results as text to file for each trait
   s <- summary(glm.result) 
   bccvl.write.text(s, output_filename)
 }
+
+
+#===================================================================
+## Trai Difference- GLM
+##
+
+## Runs a Generalized Linear Model to test how traits differ among species
+
+# Load the library
+library("MASS")
+library("nnet")  
+
+# Empty environmental dataset as it is not needed
+environ.rasterstack = stack()
+crs(environ.rasterstack) <- '+init=epsg:4326'
+
+# Geographically constrained modelling; just need to constraint the trait-data
+if (!is.null(trait.data)) {
+  merged.result <- bccvl.trait.constraint.merge(trait.data, trait.data.params,
+                                               environ.rasterstack,
+                                               enviro.data.constraints,
+                                               generateCHull=FALSE,
+                                               generateGeoconstraint=FALSE)
+  trait.data <- merged.result$data
+  trait.data.params <- merged.result$params
+}
+
+
+## MODEL
+
+
+# Generate the formulae to test differences among species for each trait separately
+formulae_traitdiffglm <- bccvl.trait.gen_formulae(trait.data.params, trait_diff=TRUE)
+# polr function for ordinal traits, multinom function for nominal traits, glm function for continuous traits
+na_action = get0(EC.params$na_action)
+if (is.null(na_action)) {
+  na_action = get("na.fail")
+}
+for (formula in formulae) {
+  traitname = gsub("[_ ]", "-", trimws(formula$trait))
+  if (formula$type == 'ordinal') {
+    output_filename = paste0(traitname, "_diffpolr_results.txt")
+    glm.result <- polr(formula=formula(formula$formula),
+                      data=trait.data,
+                      weights=NULL,
+                      na.action=na_action,
+                      contrasts=NULL,
+                      Hess=TRUE,
+                      model=TRUE,
+                      method="logistic")
+  } else if (formula$type == 'nominal') {
+    output_filename = paste0(traitname, "_diffnom_results.txt")
+    glm.result <- multinom(formula=formula(formula$formula),
+                          data=trait.data,
+                          weights=NULL,
+                          na.action=na_action,
+                          contrasts=NULL,
+                          summ=0,        
+                          model=TRUE)
+  } else {
+    output_filename = paste0(traitname, "_diffglm_results.txt")
+    glm.result <- glm(formula=formula(formula$formula),
+                     family=family_from_string(EC.params$family),
+                     data= trait.data,
+                     weights=NULL,
+                     na.action=na_action,
+                     start=NULL,
+                     etastart=NULL,
+                     mustart=NULL,
+                     offset=NULL,
+                     model=TRUE,
+                     method=EC.params$method,
+                     x=FALSE,
+                     y=FALSE,
+                     contrasts=NULL)
+  }
+  
+  ## Save the result to file
+  # Save the model
+  EC_Save(glm.result, paste0(traitname, "_diffglm_model.object.RData"))
+  
+  ## Save the results as text to file for each trait
+  s <- summary(glm.result) 
+  bccvl.write.text(s, output_filename)
+}
+
+
+
 
 #===================================================================
 ## GLMM
@@ -287,7 +381,7 @@ library(ordinal)
 
 # Generate a formula for each trait
 # trait ~ fixed1 + fixed2 + (1|random1) + (1|random2)
-formulae = bccvl.trait.gen_formulae(trait.data.params, include_rf=TRUE)
+formulae_glmm <- bccvl.trait.gen_formulae(trait.data.params, include_rf=TRUE)
 for (formula in formulae) {
   # Run model - with clmm function for ordinal traits, glmer function for nominal traits, glmer function for continuous traits
   # Todo: not sure whether 'glmer' works for nominal trait data - need to further look into this
@@ -299,7 +393,7 @@ for (formula in formulae) {
   traitname = gsub("[_ ]", "-", trimws(formula$trait))
   if (formula$type == 'ordinal') {
     output_filename = paste0(traitname, "_clmm_results.txt")
-    glmm.result = clmm(formula=formula(formula$formula),
+    glmm.result <- clmm(formula=formula(formula$formula),
                        data=trait.data,
                        weights=NULL,
                        na.action=na_action,
@@ -308,7 +402,7 @@ for (formula in formulae) {
                        model=TRUE)
   } else if (formula$type == 'nominal') {
     output_filename = paste0(traitname, "_nom_results.txt")
-    glmm.result = glmer(formula=formula(formula$formula),
+    glmm.result <- glmer(formula=formula(formula$formula),
                         data=trait.data,
                         weights=NULL,
                         na.action=na_action,
@@ -317,7 +411,7 @@ for (formula in formulae) {
                         model=TRUE)
   } else {
     output_filename = paste0(traitname, "_glmer_results.txt")
-    glmm.result = glmer(formula=formula(formula$formula),
+    glmm.result <- glmer(formula=formula(formula$formula),
                         family=EC_FamilyFromString(EC.params$family),
                         data= trait.data,
                         weights=NULL,
@@ -331,7 +425,7 @@ for (formula in formulae) {
   
   ## Save the result to file
   # Save the model
-  bccvl.save(glmm.result, paste0(traitname, "_glmm_model.object.RData"))
+  EC_Save(glmm.result, paste0(traitname, "_glmm_model.object.RData"))
   
   ## Save the results as text to file for each trait
   s <- summary(glmm.result) 

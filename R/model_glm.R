@@ -1,73 +1,54 @@
 #' model_glm
 #' 
-#' Function to run a glm within EcoCommons
+#' Function to run a Generalized Linear Model (GLM) within EcoCommons. It is an
+#' statistic regression, fitted with maximum likelihood estimation for data 
+#' with non-normal distribution
 #' 
-#' 
-#' @param x a list (S3?) created from a json file, containing $params & $env (formerly bccvl.params & bccvl.env)
-# @param bccvl.params Parameters object; appears to be a nested named list. Consider converting to S3
-# @param bccvl.env Environment object; as for bccvl.params. Consider converting to S3
-# @param occur.data filename for occurence data - generated from bccvl.params
-# @param absen.data filename for absence data - generated from bccvl.params
-# @param enviro.data.current list of filenames for climate data - generated from bccvl.params
-# @param enviro.data.type continuous - generated from bccvl.params
+#' @param x a list (S3?) created from a json file, containing $params & $env (formerly EC.params & EC.env)
+# @param EC.params Parameters object; appears to be a nested named list. Consider converting to S3
+# @param EC.env Environment object; as for EC.params. Consider converting to S3
+# @param occur.data filename for occurence data - generated from EC.params
+# @param absen.data filename for absence data - generated from EC.params
+# @param enviro.data.current list of filenames for climate data - generated from EC.params
+# @param enviro.data.type continuous - generated from EC.params
 # @param opt.tails predict parameter - not used anywhere in script
-# @param outputdir root folder for output data - generated from bccvl.env
+# @param outputdir root folder for output data - generated from EC.env
 #'
 #' @export model_glm
 
 
-model_glm <- function(x){ # bccvl.params, bccvl.env){
+model_glm <- function(x){ # EC.params, EC.env){
 
 
-  #define the working directory
+  # Define the working directory
   # NOTE: This section commented out in source code
   # directories <- set_directories(x$env)
 
-  # set data for modelling
+  # Set data for modelling
   response_info <- build_response_glm(x$params)
   predictor_info <- build_predictor_glm(x$params)
 
-  # parameters to perform any biomod modelling
+  # Parameters to perform any biomod modelling
   model_options_glm <- build_glm_options(x$params)
   model_options_biomod <- build_biomod_options(x$params, response_info)
 
   ## MW CLEANED UP TO HERE ##
 
-  # model accuracy statistics
-  # these are available from dismo::evaluate.R NOT originally implemented in biomod2::Evaluate.models.R
-  dismo.eval.method = c("ODP", "TNR", "FPR", "FNR", "NPP", "MCR", "OR")
+  ## Model accuracy statistics
+  # Available from dismo::evaluate.R. Not originally implemented in biomod2::Evaluate.models.R
+  dismo.eval.method <- c("ODP", "TNR", "FPR", "FNR", "NPP", "MCR", "OR")
 
-  # model accuracy statistics - combine stats from dismo and biomod2 for consistent output
-  model.accuracy = c(dismo.eval.method, biomod.models.eval.meth)
-  # TODO: these functions are used to evaluate the model ... configurable?
-
-  # read current climate data
-  current.climate.scenario = bccvl.enviro.stack(enviro.data.current, enviro.data.type, enviro.data.layer, resamplingflag=enviro.data.resampling)
-
-  ###read in the necessary observation, background and environmental data
-  occur = bccvl.species.read(occur.data, month.filter) #read in the observation data lon/lat
-  absen = bccvl.species.read(absen.data, month.filter) #read in the observation data lon/lat
-
-  # geographically constrained modelling
-  if (!is.null(enviro.data.constraints) || enviro.data.generateCHall) {
-    constrainedResults = bccvl.sdm.geoconstrained(current.climate.scenario, occur, absen, enviro.data.constraints, enviro.data.generateCHall);
-
-    # Save a copy of the climate dataset
-    current.climate.scenario.orig <- current.climate.scenario  
-    current.climate.scenario <- constrainedResults$raster
-    occur <- constrainedResults$occur
-    absen <- constrainedResults$absen
-  }
+  # Combine stats from dismo and biomod2 for consistent output
+  model.accuracy <- c(dismo.eval.method, biomod.models.eval.meth)
 
   # Determine the number of pseudo absence points from pa_ratio
-  pa_ratio = bccvl.params$pa_ratio
-  pa_number_point = 0
+  pa_ratio <- EC.params$pa_ratio
+  pa_number_point <- 0
   if (pa_ratio > 0) {
-    pa_number_point = floor(pa_ratio * nrow(occur))
+    pa_number_point <- floor(pa_ratio * nrow(occur))
   }
 
-  ###run the models and store models
-  ############### BIOMOD2 Models ###############
+  ### BIOMOD2 Models
   # 1. Format the data
   # 2. Define the model options
   # 3. Compute the model
@@ -118,12 +99,12 @@ model_glm <- function(x){ # bccvl.params, bccvl.env){
   #		trace - logical indicating if output should be produced for each iteration
 
   # 1. Format the data as required by the biomod package
-  model.data = bccvl.biomod2.formatData(true.absen         = absen,
+  model.data <- EC_FormatDataBIOMOD2 (true.absen         = absen,
                                     pseudo.absen.points    = pa_number_point,
-                                    pseudo.absen.strategy  = bccvl.params$pa_strategy,
-                                    pseudo.absen.disk.min  = bccvl.params$pa_disk_min,
-                                    pseudo.absen.disk.max  = bccvl.params$pa_disk_max,
-                                    pseudo.absen.sre.quant = bccvl.params$pa_sre_quant,
+                                    pseudo.absen.strategy  = EC.params$pa_strategy,
+                                    pseudo.absen.disk.min  = EC.params$pa_disk_min,
+                                    pseudo.absen.disk.max  = EC.params$pa_disk_max,
+                                    pseudo.absen.sre.quant = EC.params$pa_sre_quant,
                                     climate.data           = current.climate.scenario,
                                     occur                  = occur,
                                     species.name           = biomod.species.name,
@@ -151,19 +132,19 @@ model_glm <- function(x){ # bccvl.params, bccvl.env){
   # save the VIP plot
   x.data <- attr(model.data,"data.env.var")
   y.data <- attr(model.data,"data.species")
-  data1 = data.frame(y.data,x.data)
-  bccvl.VIPplot(method="glm", data1=data1, pdf=TRUE, 
+  data1 <- data.frame(y.data,x.data)
+  EC_VIPplot(method="glm", data1=data1, pdf=TRUE, 
                 filename=paste('vip_plot', species_algo_str, sep="_"), 
                 this.dir=paste(biomod.species.name, "/models/bccvl", sep=""))
 
   # model output saved as part of BIOMOD_Modeling() # EMG not sure how to retrieve
   #save out the model object
-  bccvl.save(model.sdm, name="model.object.RData")
+  EC_Save(model.sdm, name="model.object.RData")
 
   # Do projection over current climate scenario without constraint only if all env data layers are continuous.
   if (enviro.data.genUnconstraintMap &&
      all(enviro.data.type == 'continuous') && 
-     (!is.null(enviro.data.constraints) || enviro.data.generateCHall)) {
+     (!is.null(enviro.data.constraints) || enviro.data.generateCHull)) {
       model.proj <-
           BIOMOD_Projection(modeling.output     = model.sdm,
                             new.env             = current.climate.scenario.orig,
@@ -181,17 +162,18 @@ model_glm <- function(x){ # bccvl.params, bccvl.env){
                             on_0_1000           = FALSE)
       
       # remove the current climate rasters to release disk space
-      bccvl.remove.rasterObject(current.climate.scenario.orig)
+      EC_RevRasterObject(current.climate.scenario.orig)
 
       # convert projection output from grd to gtiff
-      bccvl.grdtogtiff(file.path(getwd(),
+      EC_GRDtoGTIFF(file.path(getwd(),
                                  biomod.species.name,
                                  paste("proj", projection.name, sep="_")), 
-                       algorithm=ifelse(is.null(bccvl.params$subset), "glm", sprintf("glm_%s", bccvl.params$subset)),
+                       algorithm=ifelse(is.null(EC.params$subset), "glm",
+                                        sprintf("glm_%s", EC.params$subset)),
                        filename_ext="unconstrained")
 
       # save the projection
-      bccvl.saveProjection(model.proj, species_algo_str, filename_ext="unconstrained")
+      EC_SaveProjection(model.proj, species_algo_str, filename_ext="unconstrained")
   }
 
   # predict for current climate scenario
@@ -212,21 +194,21 @@ model_glm <- function(x){ # bccvl.params, bccvl.env){
                         on_0_1000 = FALSE)
 
   # remove the current.climate.scenario to release disk space
-  bccvl.remove.rasterObject(current.climate.scenario)
+  EC_RevRasterObject(current.climate.scenario)
 
   # convert projection output from grd to gtiff
-  bccvl.grdtogtiff(file.path(getwd(),
+  EC_GRDtoGTIFF(file.path(getwd(),
                              biomod.species.name,
                              paste("proj", projection.name, sep="_")),
-                   algorithm=ifelse(is.null(bccvl.params$subset), "glm", sprintf("glm_%s", bccvl.params$subset)))
+                   algorithm=ifelse(is.null(EC.params$subset), "glm", sprintf("glm_%s", EC.params$subset)))
 
 
   # output is saved as part of the projection, format specified in arg 'opt.biomod.output.format'
-  loaded.model = BIOMOD_LoadModels(model.sdm, models="GLM")
-  bccvl.saveBIOMODModelEvaluation(loaded.model, model.sdm, species_algo_str) 	# save output
+  loaded.model <- BIOMOD_LoadModels(model.sdm, models="GLM")
+  EC_SaveModelEval(loaded.model, model.sdm, species_algo_str) 	# save output
 
   # save the projection
-  bccvl.saveProjection(model.proj, species_algo_str)
+  EC_SaveProjection(model.proj, species_algo_str)
 
   return() # not set yet
 
@@ -265,13 +247,15 @@ build_predictor_glm <- function(a){
     #layer names for the current environmental layers used
     layer = lapply(a$environmental_datasets, function(x) x$layer),
     #geographic constraints.
-    constraints = readLines(a$modelling_region$filename),
+    constraints <- readLines(a$modelling_region$filename),
     #Indicate to generate and apply convex-hull polygon of occurrence dataset to constraint
-    generateCHall = ifelse(is.null(a$generate_convexhull), FALSE, as.logical(bccvl.params$generate_convexhull)),
+    generateCHull <- ifelse(is.null(a$generate_convexhull), FALSE,
+                            as.logical(EC.params$generate_convexhull)),
     #Indicate whether to generate unconstraint map or not. True by default
-    genUnconstraintMap = ifelse(is.null(a$unconstraint_map), TRUE, as.logical(a$unconstraint_map)),
+    genUnconstraintMap <- ifelse(is.null(a$unconstraint_map), TRUE,
+                                as.logical(a$unconstraint_map)),
     # resampling (up / down scaling) if scale_down is TRUE, return 'lowest'
-    resampling = ifelse(is.null(a$scale_down) ||
+    resampling <- ifelse(is.null(a$scale_down) ||
                                     as.logical(a$scale_down),
                                     'highest', 'lowest')
   )
@@ -299,7 +283,7 @@ build_glm_options <- function(a){
 #proj.name #a character defining the projection name (a new folder will be created with this name)
 # pseudo absences
 build_biomod_options <- function(
-  a, # formerly bccvl.params,
+  a, # formerly EC.params,
   response_info # from build_response_glm()
 ){
   list(

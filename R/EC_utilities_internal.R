@@ -14,7 +14,7 @@
 # # Check if libraries are installed, install if necessary and then load them
 # necessary <- c("ggplot2","tools", "rjson", "dismo", "gbm", "rgdal", "rgeos", "pROC", "png", "gstat", "gdalUtils", "ggdendro", "raster","biomod2","rasterVis") #list the libraries needed
 # 
-# ###REMOVED NOW JUST FOR TEST:::: "SDMTools",‘spatial.tools’ and ‘rmaxent’
+# ###REMOVED NOW JUST FOR TEST "SDMTools",‘spatial.tools’ and ‘rmaxent’
 # 
 # installed <- necessary %in% installed.packages() #check if library is installed
 # if (length(necessary[!installed]) >= 1) {

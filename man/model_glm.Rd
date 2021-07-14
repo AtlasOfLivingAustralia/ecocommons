@@ -7,8 +7,10 @@
 model_glm(x)
 }
 \arguments{
-\item{x}{a list (S3?) created from a json file, containing $params & $env (formerly bccvl.params & bccvl.env)}
+\item{x}{a list (S3?) created from a json file, containing $params & $env (formerly EC.params & EC.env)}
 }
 \description{
-Function to run a glm within EcoCommons
+Function to run a Generalized Linear Model (GLM) within EcoCommons. It is an
+statistic regression, fitted with maximum likelihood estimation for data
+with non-normal distribution
 }
