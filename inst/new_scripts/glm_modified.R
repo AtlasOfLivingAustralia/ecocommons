@@ -22,63 +22,63 @@ library("EcoCommons")
 
 # extract params
 # define the lon/lat of the observation records -- 2 column matrix of longitude and latitude
-occur.data = bccvl.params$species_occurrence_dataset$filename
-occur.species = bccvl.params$species_occurrence_dataset$species
-month.filter = bccvl.params$species_filter
+occur.data = EC.params$species_occurrence_dataset$filename
+occur.species = EC.params$species_occurrence_dataset$species
+month.filter = EC.params$species_filter
 #define the the lon/lat of the background / psuedo absence points to use -- 2 column matrix of longitude and latitude
-absen.data = bccvl.params$species_absence_dataset$filename
+absen.data = EC.params$species_absence_dataset$filename
 #define the current enviro data to use
-enviro.data.current = lapply(bccvl.params$environmental_datasets, function(x) x$filename)
+enviro.data.current = lapply(EC.params$environmental_datasets, function(x) x$filename)
 #type in terms of continuous or categorical
-enviro.data.type = lapply(bccvl.params$environmental_datasets, function(x) x$type)
+enviro.data.type = lapply(EC.params$environmental_datasets, function(x) x$type)
 #layer names for the current environmental layers used
-enviro.data.layer = lapply(bccvl.params$environmental_datasets, function(x) x$layer)
+enviro.data.layer = lapply(EC.params$environmental_datasets, function(x) x$layer)
 #geographic constraints.
-enviro.data.constraints = readLines(bccvl.params$modelling_region$filename)
+enviro.data.constraints = readLines(EC.params$modelling_region$filename)
 #Indicate to generate and apply convex-hull polygon of occurrence dataset to constraint
-enviro.data.generateCHall = ifelse(is.null(bccvl.params$generate_convexhull), FALSE, as.logical(bccvl.params$generate_convexhull))
+enviro.data.generateCHull = ifelse(is.null(EC.params$generate_convexhull), FALSE, as.logical(EC.params$generate_convexhull))
 #Indicate whether to generate unconstraint map or not. True by default
-enviro.data.genUnconstraintMap = ifelse(is.null(bccvl.params$unconstraint_map), TRUE, as.logical(bccvl.params$unconstraint_map))
+enviro.data.genUnconstraintMap = ifelse(is.null(EC.params$unconstraint_map), TRUE, as.logical(EC.params$unconstraint_map))
 # resampling (up / down scaling) if scale_down is TRUE, return 'lowest'
-enviro.data.resampling = ifelse(is.null(bccvl.params$scale_down) ||
-                                as.logical(bccvl.params$scale_down),
+enviro.data.resampling = ifelse(is.null(EC.params$scale_down) ||
+                                as.logical(EC.params$scale_down),
                                 'highest', 'lowest')
 
 ############### BIOMOD2 Models ###############
 #
 # general parameters to perform any biomod modelling
 #
-biomod.NbRunEval = bccvl.params$nb_run_eval  # default 10; n-fold cross-validation; ignored if DataSplitTable is filled
-biomod.DataSplit = bccvl.params$data_split # default 100; % for calibrating/training, remainder for testing; ignored if DataSplitTable is filled
+biomod.NbRunEval = EC.params$nb_run_eval  # default 10; n-fold cross-validation; ignored if DataSplitTable is filled
+biomod.DataSplit = EC.params$data_split # default 100; % for calibrating/training, remainder for testing; ignored if DataSplitTable is filled
 biomod.Yweights = NULL #response points weights
-biomod.Prevalence = bccvl.params$prevalence #either NULL (default) or a 0-1 numeric used to build "weighted response weights"
-biomod.VarImport = bccvl.params$var_import # default 0; number of resampling of each explanatory variable to measure the relative importance of each variable for each selected model
+biomod.Prevalence = EC.params$prevalence #either NULL (default) or a 0-1 numeric used to build "weighted response weights"
+biomod.VarImport = EC.params$var_import # default 0; number of resampling of each explanatory variable to measure the relative importance of each variable for each selected model
 #EMG this parameter needs to be specified in order to get VariableImportance metrics during model evaluation
 biomod.models.eval.meth = c("KAPPA", "TSS", "ROC" ,"FAR", "SR", "ACCURACY", "BIAS", "POD", "CSI", "ETS") #vector of evaluation metrics
-biomod.rescal.all.models = bccvl.params$rescale_all_models #if true, all model prediction will be scaled with a binomial GLM
-biomod.do.full.models = bccvl.params$do_full_models #if true, models calibrated and evaluated with the whole dataset are done; ignored if DataSplitTable is filled
-biomod.modeling.id = bccvl.params$modeling_id  #character, the ID (=name) of modeling procedure. A random number by default
+biomod.rescal.all.models = EC.params$rescale_all_models #if true, all model prediction will be scaled with a binomial GLM
+biomod.do.full.models = EC.params$do_full_models #if true, models calibrated and evaluated with the whole dataset are done; ignored if DataSplitTable is filled
+biomod.modeling.id = EC.params$modeling_id  #character, the ID (=name) of modeling procedure. A random number by default
 # biomod.DataSplitTable = NULL #a matrix, data.frame or a 3D array filled with TRUE/FALSE to specify which part of data must be used for models calibration (TRUE) and for models validation (FALSE). Each column correspund to a "RUN". If filled, args NbRunEval, DataSplit and do.full.models will be ignored
 # EMG Need to test whether a NULL values counts as an argument
 biomod.species.name = occur.species # used for various path and file name generation
 projection.name = "current"  #basename(enviro.data.current)
-species_algo_str = ifelse(is.null(bccvl.params$subset), 
+species_algo_str = ifelse(is.null(EC.params$subset), 
                           sprintf("%s_glm", occur.species), 
-                          sprintf("%s_glm_%s", occur.species, bccvl.params$subset))
+                          sprintf("%s_glm_%s", occur.species, EC.params$subset))
 
 
 # model-specific arguments to create a biomod model
 model.options.glm <- list(
-	type = bccvl.params$type,	#"simple", "quadratic" or "polynomial"; switched off if myFormula is not NULL
-	interaction.level = bccvl.params$interaction_level, #integer corresponding to the interaction level between variables considered; switched off if myFormula is not NULL
+	type = EC.params$type,	#"simple", "quadratic" or "polynomial"; switched off if myFormula is not NULL
+	interaction.level = EC.params$interaction_level, #integer corresponding to the interaction level between variables considered; switched off if myFormula is not NULL
 	# myFormula = NULL, #specific formula; if not NULL, type and interaction.level are args are switched off
-	test = bccvl.params$test, #"AIC", "BIC" or "none"
-	family = bccvl.params$family, #"binomial", "gaussian", "gamma", "inverse.gaussian", "poisson", "quasi", "quasibinomial", "quasipoisson"
-	mustart = bccvl.params$mustart, #starting values for the vector of means
+	test = EC.params$test, #"AIC", "BIC" or "none"
+	family = EC.params$family, #"binomial", "gaussian", "gamma", "inverse.gaussian", "poisson", "quasi", "quasibinomial", "quasipoisson"
+	mustart = EC.params$mustart, #starting values for the vector of means
 	control = list(
-		epsilon = bccvl.params$control_epsilon, #positive convergence tolerance e
-		maxit = bccvl.params$control_maxit, #integer giving the maximal number of IWLS iterations
-		trace = bccvl.params$control_trace #logical indicating if output should be produced for each iteration
+		epsilon = EC.params$control_epsilon, #positive convergence tolerance e
+		maxit = EC.params$control_maxit, #integer giving the maximal number of IWLS iterations
+		trace = EC.params$control_trace #logical indicating if output should be produced for each iteration
 	)
 )
 
@@ -94,11 +94,11 @@ biomod.PA.nb.rep = 0
 biomod.PA.nb.absences = 0
 
 biomod.xy.new.env = NULL #optional coordinates of new.env data. Ignored if new.env is a rasterStack
-biomod.selected.models = bccvl.params$selected_models #'all' when all models have to be used to render projections or a subset vector of modeling.output models computed (eg, = grep('_RF', getModelsBuiltModels(myBiomodModelOut)))
+biomod.selected.models = EC.params$selected_models #'all' when all models have to be used to render projections or a subset vector of modeling.output models computed (eg, = grep('_RF', getModelsBuiltModels(myBiomodModelOut)))
 # EMG If running one model at a time, this parameter becomes irrevelant
 biomod.binary.meth = NULL #a vector of a subset of models evaluation method computed in model creation
 biomod.filtered.meth = NULL #a vector of a subset of models evaluation method computed in model creation
-biomod.compress = bccvl.params$compress # default 'gzip'; compression format of objects stored on your hard drive. May be one of `xz', `gzip' or NULL
+biomod.compress = EC.params$compress # default 'gzip'; compression format of objects stored on your hard drive. May be one of `xz', `gzip' or NULL
 biomod.build.clamping.mask = FALSE #if TRUE, a clamping mask will be saved on hard drive
 opt.biomod.silent = FALSE #logical, if TRUE, console outputs are turned off
 opt.biomod.do.stack = TRUE #logical, if TRUE, attempt to save all projections in a unique object i.e RasterStack
@@ -115,15 +115,15 @@ model.accuracy = c(dismo.eval.method, biomod.models.eval.meth)
 # TODO: these functions are used to evaluate the model ... configurable?
 
 # read current climate data
-current.climate.scenario = bccvl.enviro.stack(enviro.data.current, enviro.data.type, enviro.data.layer, resamplingflag=enviro.data.resampling)
+current.climate.scenario = EC_EnviroStack(enviro.data.current, enviro.data.type, enviro.data.layer, resamplingflag=enviro.data.resampling)
 
 ###read in the necessary observation, background and environmental data
-occur = bccvl.species.read(occur.data, month.filter) #read in the observation data lon/lat
-absen = bccvl.species.read(absen.data, month.filter) #read in the observation data lon/lat
+occur = EC_ReadSp(occur.data, month.filter) #read in the observation data lon/lat
+absen = EC_ReadSp(absen.data, month.filter) #read in the observation data lon/lat
 
 # geographically constrained modelling
-if (!is.null(enviro.data.constraints) || enviro.data.generateCHall) {
-  constrainedResults = bccvl.sdm.geoconstrained(current.climate.scenario, occur, absen, enviro.data.constraints, enviro.data.generateCHall);
+if (!is.null(enviro.data.constraints) || enviro.data.generateCHull) {
+  constrainedResults = EC_SDMGeoConstrained(current.climate.scenario, occur, absen, enviro.data.constraints, enviro.data.generateCHull);
 
   # Save a copy of the climate dataset
   current.climate.scenario.orig <- current.climate.scenario  
@@ -133,7 +133,7 @@ if (!is.null(enviro.data.constraints) || enviro.data.generateCHall) {
 }
 
 # Determine the number of pseudo absence points from pa_ratio
-pa_ratio = bccvl.params$pa_ratio
+pa_ratio = EC.params$pa_ratio
 pa_number_point = 0
 if (pa_ratio > 0) {
   pa_number_point = floor(pa_ratio * nrow(occur))
@@ -191,12 +191,12 @@ if (pa_ratio > 0) {
 #		trace - logical indicating if output should be produced for each iteration
 
 # 1. Format the data as required by the biomod package
-model.data = bccvl.biomod2.formatData(true.absen         = absen,
+model.data = EC_FormatDataBIOMOD2(true.absen         = absen,
                                   pseudo.absen.points    = pa_number_point,
-                                  pseudo.absen.strategy  = bccvl.params$pa_strategy,
-                                  pseudo.absen.disk.min  = bccvl.params$pa_disk_min,
-                                  pseudo.absen.disk.max  = bccvl.params$pa_disk_max,
-                                  pseudo.absen.sre.quant = bccvl.params$pa_sre_quant,
+                                  pseudo.absen.strategy  = EC.params$pa_strategy,
+                                  pseudo.absen.disk.min  = EC.params$pa_disk_min,
+                                  pseudo.absen.disk.max  = EC.params$pa_disk_max,
+                                  pseudo.absen.sre.quant = EC.params$pa_sre_quant,
                                   climate.data           = current.climate.scenario,
                                   occur                  = occur,
                                   species.name           = biomod.species.name,
@@ -225,18 +225,18 @@ model.sdm <-
 x.data <- attr(model.data,"data.env.var")
 y.data <- attr(model.data,"data.species")
 data1 = data.frame(y.data,x.data)
-bccvl.VIPplot(method="glm", data1=data1, pdf=TRUE, 
+EC_VIPplot(method="glm", data1=data1, pdf=TRUE, 
               filename=paste('vip_plot', species_algo_str, sep="_"), 
-              this.dir=paste(biomod.species.name, "/models/bccvl", sep=""))
+              this.dir=paste(biomod.species.name, "/models/EcoCommons", sep=""))
 
 # model output saved as part of BIOMOD_Modeling() # EMG not sure how to retrieve
 #save out the model object
-bccvl.save(model.sdm, name="model.object.RData")
+EC_Save(model.sdm, name="model.object.RData")
 
 # Do projection over current climate scenario without constraint only if all env data layers are continuous.
 if (enviro.data.genUnconstraintMap &&
    all(enviro.data.type == 'continuous') && 
-   (!is.null(enviro.data.constraints) || enviro.data.generateCHall)) {
+   (!is.null(enviro.data.constraints) || enviro.data.generateCHull)) {
     model.proj <-
         BIOMOD_Projection(modeling.output     = model.sdm,
                           new.env             = current.climate.scenario.orig,
@@ -254,17 +254,17 @@ if (enviro.data.genUnconstraintMap &&
                           on_0_1000           = FALSE)
     
     # remove the current climate rasters to release disk space
-    bccvl.remove.rasterObject(current.climate.scenario.orig)
+    EC_RevRasterObject(current.climate.scenario.orig)
 
     # convert projection output from grd to gtiff
-    bccvl.grdtogtiff(file.path(getwd(),
+    EC_GRDtoGTIFF(file.path(getwd(),
                                biomod.species.name,
                                paste("proj", projection.name, sep="_")), 
-                     algorithm=ifelse(is.null(bccvl.params$subset), "glm", sprintf("glm_%s", bccvl.params$subset)),
+                     algorithm=ifelse(is.null(EC.params$subset), "glm", sprintf("glm_%s", EC.params$subset)),
                      filename_ext="unconstrained")
 
     # save the projection
-    bccvl.saveProjection(model.proj, species_algo_str, filename_ext="unconstrained")
+    EC_SaveProjection(model.proj, species_algo_str, filename_ext="unconstrained")
 }
 
 # predict for current climate scenario
@@ -285,18 +285,18 @@ model.proj <-
                       on_0_1000 = FALSE)
 
 # remove the current.climate.scenario to release disk space
-bccvl.remove.rasterObject(current.climate.scenario)
+EC_RevRasterObject(current.climate.scenario)
 
 # convert projection output from grd to gtiff
-bccvl.grdtogtiff(file.path(getwd(),
+EC_GRDtoGTIFF(file.path(getwd(),
                            biomod.species.name,
                            paste("proj", projection.name, sep="_")),
-                 algorithm=ifelse(is.null(bccvl.params$subset), "glm", sprintf("glm_%s", bccvl.params$subset)))
+                 algorithm=ifelse(is.null(EC.params$subset), "glm", sprintf("glm_%s", EC.params$subset)))
 
 
 # output is saved as part of the projection, format specified in arg 'opt.biomod.output.format'
 loaded.model = BIOMOD_LoadModels(model.sdm, models="GLM")
-bccvl.saveBIOMODModelEvaluation(loaded.model, model.sdm, species_algo_str) 	# save output
+EC_SaveBIOMODModelEval(loaded.model, model.sdm, species_algo_str) 	# save output
 
 # save the projection
-bccvl.saveProjection(model.proj, species_algo_str)
+EC_SaveProjection(model.proj, species_algo_str)
