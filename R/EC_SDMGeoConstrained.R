@@ -68,7 +68,8 @@ EC_SDMGeoConstrained <- function(rasterstack, occur, absen, raw_geojson, generat
       }
       
       chcoords <- occurSP@coords[chull(occurSP@coords[,1:2]),]
-      chullPolygon <- raster::SpatialPolygons(list(Polygons(list(Polygon(chcoords[,1:2], hole=FALSE)),
+      chullPolygon <- raster::SpatialPolygons(list(Polygons(list(Polygon(chcoords[,1:2],
+                                                                         hole=FALSE)),
                                                     ID=1)), proj4string=crs(parsed_geojson))
       if (!is.null(raw_geojson)) {
         parsed_geojson <- intersect(parsed_geojson, chullPolygon)

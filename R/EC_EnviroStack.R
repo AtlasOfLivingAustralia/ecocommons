@@ -9,9 +9,11 @@
 #' @param selected_layers 
 #'
 #' @export EC_EnviroStack
+#' @importFrom raster compareRaster
 #' @importFrom raster stack
 #' @importFrom raster crs
-#' @importFrom sp CRS
+#' @importFrom raster projectExtent
+#' @importFrom rgdal CRSargs
 #' @importFrom gdalUtils gdalwarp
 #' @importFrom raster raster
 #' @importFrom rgdal GDALinfo
@@ -33,13 +35,13 @@ EC_EnviroStack <- function(filenames, types, layernames, resamplingflag,
 
 ## Load rasters, determine common projection and convert categorical
 ## rasters to factors
-EC_RasterResampled  <- function(raster.filenames, raster.types, 
+EC_RasterResampled  <- function(raster_filenames, raster_types, 
                                 resamplingflag, selected_layers=NULL, overwrite=TRUE) {
-  rasters <- lapply(raster.filenames, EC_ReadRaster)
+  rasters <- lapply(raster_filenames, EC_ReadRaster)
   
   reference <- EC_RasterRef(rasters, resamplingflag, selected_layers) # determine common raster shape
   
-  rasters <- EC_RasterWarp(raster.filenames, raster.types, 
+  rasters <- EC_RasterWarp(raster_filenames, raster_types, 
                            reference, overwrite) # adjust rasters spatially and convert categorical to factors
   
   return(rasters)
@@ -48,10 +50,10 @@ EC_RasterResampled  <- function(raster.filenames, raster.types,
 
 
 ## Just need to be used if raster layers are not aligned up correctly
-EC_RasterWarp <- function(raster.filenames, raster.types, reference, overwrite=TRUE) {
+EC_RasterWarp <- function(raster_filenames, raster_types, reference, overwrite=TRUE) {
   
   rasters <- mapply(
-    function(filename, filetype) {
+    function(filename, type) {
       gdinfo <- rgdal::GDALinfo(filename)
       mdata <- attr(gdinfo, 'df')
       dtype <- as.character(mdata[['GDType']])
@@ -65,7 +67,7 @@ EC_RasterWarp <- function(raster.filenames, raster.types, reference, overwrite=T
       # This is to fix issue with NA value being treated as value 0 if nodatavalue is not set.
       if (hasNoDataValues) {
         gdalUtils::gdalwarp(filename, temp_raster,
-                            s_srs=CRSargs(crs(r)), t_srs=CRSargs(crs(reference)),
+                            s_srs = rgdal::CRSargs(crs(r)), t_srs = rgdal::CRSargs(crs(reference)),
                             te=c(te@xmin, te@ymin, te@xmax, te@ymax),
                             ts=c(ncol(reference), nrow(reference)),
                             # tr=c(...), ... either this or ts
@@ -77,7 +79,7 @@ EC_RasterWarp <- function(raster.filenames, raster.types, reference, overwrite=T
       }
       else {
         gdalUtils::gdalwarp(filename, temp_raster,
-                            s_srs=CRSargs(crs(r)), t_srs=CRSargs(crs(reference)),
+                            s_srs = rgdal::CRSargs(crs(r)), t_srs = rgdal::CRSargs(crs(reference)),
                             te=c(te@xmin, te@ymin, te@xmax, te@ymax),
                             ts=c(ncol(reference), nrow(reference)),
                             # tr=c(...), ... either this or ts
@@ -94,12 +96,12 @@ EC_RasterWarp <- function(raster.filenames, raster.types, reference, overwrite=T
       }
       
       r <- raster::raster(rasterfilename)
-      if (filetype == "categorical") { # convert to factor if categorical
+      if (type == "categorical") { # convert to factor if categorical
         r = as.factor(r)
       }
       return(r)
     },
-    raster.filenames, raster.types)
+    raster_filenames, raster_types)
   return(rasters)
 }
 
@@ -108,14 +110,14 @@ EC_RasterWarp <- function(raster.filenames, raster.types, reference, overwrite=T
 ## established, it will be projected in EPSG:4326, common in EcoCommons
 
 EC_RasterRef <- function(rasters, resamplingflag, selected_layers) {
-  empty.rasters <- lapply(rasters, function(x) { projectExtent(x, crs(x)) })  # create list of empty rasters
+  empty.rasters <- lapply(rasters, function(x) { raster::projectExtent(x, crs(x)) })  # create list of empty rasters
   common.crs <- crs(empty.rasters[[1]]) # choose a common.crs if all crs in rasters are the same use that one
   
-  if (! do.call(compareRaster, c(empty.rasters, extent=FALSE, rowcol=FALSE, 
+  if (! do.call(raster::compareRaster, c(empty.rasters, extent=FALSE, rowcol=FALSE, 
                                  prj=TRUE, res=FALSE, orig=FALSE, rotation=FALSE, stopiffalse=FALSE))) {
-    common.crs = CRS("+init=epsg:4326") # common projection adopted in EcoCommons
+    common.crs = crs("+init=epsg:4326") # common projection adopted in EcoCommons
     EC_LogWarning(sprintf("Auto projecting to common CRS: %s", common.crs))
-    empty.rasters = lapply(empty.rasters, function(x) { projectExtent(x, common.crs) })
+    empty.rasters = lapply(empty.rasters, function(x) { raster::projectExtent(x, common.crs) })
   }
   
   ce <- EC_RasterExtent(empty.rasters, common.crs)
@@ -147,7 +149,7 @@ EC_RasterRef <- function(rasters, resamplingflag, selected_layers) {
 ## common.crs: crs to use to calculate intersection
 
 EC_RasterExtent <- function(rasters, common.crs) {
-  extent.list = lapply(rasters, function(r) { extent(projectExtent(r, common.crs)) }) # intersect all extents
+  extent.list = lapply(rasters, function(r) { extent(raster::projectExtent(r, common.crs)) }) # intersect all extents
   
   common.extent = Reduce(raster::intersect, extent.list) # if all extents are the same (used to print warning)
   

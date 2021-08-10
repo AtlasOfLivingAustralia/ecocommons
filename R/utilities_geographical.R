@@ -7,7 +7,8 @@ build_geographical_options <- function(
   a, # formerly EC.params
   response_info, # from build_response()
   model_algorithm){
-  # Set parameters for any biomod2 modelling
+  # Build evaluation parameters for biomod2 and dismo modelling
+  # 
   list(
     biomod_eval_method <- c("KAPPA", "TSS", "ROC" ,"FAR", "SR", "ACCURACY",
                             "BIAS", "POD", "CSI", "ETS"), #vector of evaluation metrics
@@ -33,7 +34,8 @@ model_geographical_data <- function(
   predictor_info,  # from build_predictor
   a,  # formerly EC.params
   model_options_biomod){  # from build_geographical_options
-
+  # Set parameters on biomod2 format to run modelling
+  #
   EC_FormatDataBIOMOD2 (true.absen             = predictor_info$absen,
                         pseudo.absen.points    = pa_number_point,
                         pseudo.absen.strategy  = a$pa_strategy,
@@ -54,13 +56,10 @@ save_geographical_model_object<-function(
   model_compute_sdm,  # from model_compute
   model_algorithm,
   model_options_biomod){  # from build_biomod_functions
-
+  # Save the model and projection to personal computer
+  #
   # Save out the model object
   EC_Save(model_sdm, name = "model.object.RData")
-
-  # Predict for given climate scenario
-  model.proj <- predict(model_sdm, predictor_info$current_climate[[1]],
-                        mask=TRUE)
 
   # Remove the current climate rasters to release disk space
   EC_RevRasterObject(predictor_info$current_climate_orig)

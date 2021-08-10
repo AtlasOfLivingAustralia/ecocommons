@@ -5,7 +5,7 @@ build_biomod_options <- function(
   a, # formerly EC.params
   response_info, # from build_response()
   model_algorithm){
-  # Set parameters for any biomod2 modelling
+  # Build evaluation parameters for biomod2 and dismo modelling
   list(
     NbRunEval  = a$nb_run_eval,  # default 10; n-fold cross-validation
     DataSplit  = a$data_split,  # default 100; % for calibrating/training
@@ -39,8 +39,8 @@ build_biomod_options <- function(
                                       response_info$occur_species, a$subset)),
     PA_nb_rep = 0,
     PA_nb_absences = 0,
-    xy_new_env = NULL,  # optional coordinates of new.env data. Ignored if new.env is a rasterStack
-    selected_models = a$selected_models,  # default = all;  when a subset vector of modeling.output models  is to ne computed
+    xy_new_env = NULL,  # optional coordinates. Ignored if new.env is a rasterStack
+    selected_models = a$selected_models,  # default = all;  when a subset vector of modeling.output models  is to be computed
     binary_method = NULL,  # vector/subset of models evaluation method computed in model creation
     filtered_method = NULL,  # a vector of a subset of models evaluation method computed in model creation
     compress = a$compress,  # default 'gzip'; compress objects stored on your hard drive

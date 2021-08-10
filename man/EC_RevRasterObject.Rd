@@ -7,7 +7,7 @@
 EC_RevRasterObject(rasterObject)
 }
 \arguments{
-\item{rasterObject}{}
+\item{rasterObject}{#@importFrom spatial.tools raster_to_filenamesraster filename ### OR ### terra sources}
 }
 \description{
 Remove raster object and its associated raster files (i.e. grd and gri) if any

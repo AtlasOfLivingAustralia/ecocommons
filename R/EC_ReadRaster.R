@@ -9,9 +9,9 @@
 #' 
 
 EC_ReadRaster <- function(filename) {
-  r = raster(filename)
+  r = raster::raster(filename)
   if (is.na(crs(r))) {
-    crs(r) = CRS("+init=epsg:4326")
+    crs(r) <- CRS("+init=epsg:4326")
   }
   return(r)
 }

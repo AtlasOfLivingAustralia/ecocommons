@@ -4,9 +4,9 @@
 #' 
 #' @param file a file path
 #'
-#' @export read_json
+#' @export EC_ReadJson
 
-read_json <- function(file){
+EC_ReadJson <- function(file){
   
   result <- rjson::fromJSON(file = file)
   class(result) <- "model_parameters"
@@ -19,7 +19,3 @@ print.model_parameters <- function(x){
   str(x, max.level = 2)
 }
 
-
-# testing
-# test <- read_json("./ecocommons/inst/variables/test_script_circles.json")
-# print(test)

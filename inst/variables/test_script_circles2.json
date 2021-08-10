@@ -22,10 +22,10 @@
         "bias_dataset": null,
         "function": "circles", 
         "modelling_region": {
-            "filename": "~/Documents/BCCVL_scripts/sdmwork/modelling_region-redland.json"
+           "filename": "~/Documents/GitHub/ecocommons_ALA/inst/variables/modelling_region-redland.json"
         }, 
-        "generate_convexhull": false, 
-        "unconstraint_map": true, 
+        "generate_convexhull": true, 
+        "unconstraint_map": false, 
         "modeling_id": "EcoCommons",
         "selected_models": "all",
 

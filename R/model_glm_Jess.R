@@ -16,14 +16,6 @@
 
 model_glm <- function(x){ # EC.params, EC.env){
 
-  # Define the working directory
-  # NOTE: This section commented out in source code
-  # directories <- set_directories(x$env)
-
-  # Set data for modelling
-  response_info <- build_response(x$params)  # species data
-  predictor_info <- build_predictor(x$params,response_info)  # environmental data
-
   # Set parameters to perform modelling
   model_algorithm <- 'GLM'
   # specific parameters to run GLM algorithm

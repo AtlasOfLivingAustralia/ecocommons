@@ -1,8 +1,9 @@
 #' Remove raster object and its associated raster files (i.e. grd and gri) if any
 #'
-#' @param rasterObject 
+#' #@param rasterObject 
 #'
-#' 
+#' #@importFrom spatial.tools raster_to_filenames
+#' # raster filename ### OR ### terra sources
 
 EC_RevRasterObject <- function(rasterObject) {
   raster_filenames <- raster_to_filenames(rasterObject, unique = TRUE)

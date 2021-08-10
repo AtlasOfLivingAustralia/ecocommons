@@ -12,21 +12,12 @@
 #'
 
 model_circles<- function(x){ # EC.params, EC.env){
-  
-  # Define the working directory
-  # NOTE: This section commented out in source code
-  # directories <- set_directories(x$env)
-  
-  # Set data for modelling
-  response_info <- build_response(x$params)  # species data
-  predictor_info <- build_predictor(x$params,response_info)  # environmental data
-  
-  
+
   # Set parameters to perform modelling
   model_algorithm <- 'circles'
-  ## specific parameters to run Circles algorithm
+  # Specific parameters to run Circles algorithm
   model_options_circles <- build_circles_options(x$params)
-  ## general parameters to run biomod2 package modelling on Geographical algorithms
+  # General parameters to run biomod2 package modelling on Geographical algorithms
   model_options_biomod <- build_geographical_options(x$params, response_info,
                                                model_algorithm)
   
@@ -51,6 +42,9 @@ model_circles<- function(x){ # EC.params, EC.env){
     model.sdm = dismo::circles(p=occur, d=opt.d, lonlat=TRUE)
   }
   
+  # Predict for given climate scenario
+  model.proj <- predict(model_sdm, predictor_info$current_climate[[1]],
+                        mask=TRUE)
   # Save out the model object
   model_save <- save_geographical_model_object(model_compute_sdm,
                                   model_algorithm,
@@ -65,9 +59,9 @@ model_circles<- function(x){ # EC.params, EC.env){
 # subfunctions to run model_circles()
 
 build_circles_options <- function(a){
-  # Set specific parameters to run circles
+  # Set specific parameters to run "circles"
   list(
-    opt.d = a$d # radius around circles, if not specified it is computed from the mean inter-point distance 
+    opt.d = a$d # radius around circles; if not specified it is computed from the mean inter-point distance 
  )
 }
 
