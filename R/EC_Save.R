@@ -4,11 +4,11 @@
 #' @param name 
 #' @param outputdir 
 #'
-#' @export EC_Save
+#' @export EC_save
 #' 
 #' 
 
-EC_Save <- function(robj, name, outputdir=EC.env$outputdir) {
+EC_save <- function(robj, name, outputdir=EC.env$outputdir) {
   filename = file.path(outputdir, name)
   save(robj, file=filename)
 }

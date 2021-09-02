@@ -57,7 +57,7 @@ EC_CalcVariableImpt <- function(out.model, model.name, num_samples, species_algo
     # calculate mean variable importance, normalize to percentages, and write results
     varimpt.out[,num_samples+1] = round(rowMeans(varimpt.out, na.rm=TRUE), digits=3)
     varimpt.out[,num_samples+2] = round((varimpt.out[,num_samples+1]/sum(varimpt.out[,num_samples+1]))*100, digits=0)
-    EC_WriteCSV(varimpt.out, name=sprintf("biomod2_like_VariableImportance_%s.csv", species_algo_str))
+    EC_write_csv(varimpt.out, name=sprintf("biomod2_like_VariableImportance_%s.csv", species_algo_str))
   } else {
     write(paste(species, ": Cannot calculate variable importance for ", 
                 model.name, "object", sep=" "), stdout())

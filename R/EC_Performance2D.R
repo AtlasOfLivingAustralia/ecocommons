@@ -9,7 +9,6 @@
 #' @param make.plot 
 #' @param kill.plot 
 #'
-#' @export
 #' @importFrom pROC auc
 #' @importFrom pROC roc
 #' @importFrom reshape2 melt

@@ -42,7 +42,7 @@ EC_SaveBIOMODModelEval <- function(loaded.names, biomod.model, species_algo_str)
     variableImpt = get_variables_importance(biomod.model)
     if (!is.na(variableImpt)) {
       #EMG Note this will throw a warning message if variables (array) are returned
-      EC_WriteCSV(variableImpt,
+      EC_write_csv(variableImpt,
                   name=paste("variableImportance", model_name, species_algo_str, "csv", sep="."))
     } else {
       message("VarImport argument not specified during model creation!")

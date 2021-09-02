@@ -20,7 +20,6 @@
         ],
         "species_absence_dataset": null, 
         "bias_dataset": null,
-        "function": "circles", 
         "modelling_region": {
            "filename": "~/Documents/GitHub/ecocommons_ALA/inst/variables/modelling_region-redland.json"}, 
         "generate_convexhull": false, 

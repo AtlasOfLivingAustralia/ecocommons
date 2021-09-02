@@ -71,7 +71,7 @@ EC_CalcPermutationVarImpt <- function(out.model, model.eval,
       }
     }
     permvarimpt.out[,"percent"] = round((permvarimpt.out[,"change.auc"]/sum(permvarimpt.out[,"change.auc"]))*100, digits=0)
-    EC_WriteCSV(permvarimpt.out, name=sprintf("maxent_like_VariableImportance_%s.csv", species_algo_str))
+    EC_write_csv(permvarimpt.out, name=sprintf("maxent_like_VariableImportance_%s.csv", species_algo_str))
   } else {
     write(paste(species, ": Cannot calculate maxent-like variable importance for ", model.name, "object", sep=" "), stdout())
   }
