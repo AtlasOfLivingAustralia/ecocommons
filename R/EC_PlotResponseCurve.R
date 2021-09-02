@@ -6,8 +6,6 @@
 #' @param oformat 
 #'
 #' @export EC_PlotResponseCurve
-#' 
-#' 
 
 EC_PlotResponseCurve <- function(model, predvars, species, oformat) {  # overall response curves
   png(filename <- file.path(EC.env$outputdir, paste0("response_curves_",

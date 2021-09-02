@@ -3,8 +3,6 @@
 #' @param lats 
 #' @param cellsize 
 #' @param r 
-#'
-#' 
 
 EC_GridInfo <- function(lats,cellsize, r=6378137) {
   r2 = r^2 #radius of earth

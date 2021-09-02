@@ -10,8 +10,6 @@
 #' @importFrom dismo voronoiHull
 #'
 #' @export EC_modelling_voronoihull
-#'
-#'
 
 EC_modelling_voronoihull<- function(  a,# EC.params
                                       response_info,  # from EC_build_response

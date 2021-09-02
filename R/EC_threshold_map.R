@@ -6,7 +6,6 @@
 #' @param threshold 
 #'
 #' @export EC_threshold_map
-#' 
 
 EC_threshold_map <- function(proj_raster, threshold) {
   writeLines('Generating presence/absence map ...')

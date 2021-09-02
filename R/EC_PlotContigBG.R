@@ -8,9 +8,7 @@
 #' @param fnamePrefix 
 #' @param outputdir 
 #'
-#' @export EC_PlotContinBG
-#'
-#'  
+#' @export EC_PlotContinBG 
 
 EC_PlotContinBG <- function(dataToExplore, listVars, doCorrelation=TRUE, 
                                 outerTitle="", fnamePrefix="background_predictors_", outputdir="output")  {

@@ -8,8 +8,6 @@
 #' @param outputdir 
 #'
 #' @export EC_PlotCategBG
-#' 
-#' 
 
 EC_PlotCategBG <- function(dataToExplore, listVars, outerTitle="", 
                            fnamePrefix="background_predictors_", outputdir="output") {

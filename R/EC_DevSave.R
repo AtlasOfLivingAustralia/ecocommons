@@ -4,8 +4,6 @@
 #' @param ext 
 #'
 #' @export EC_DevSave
-#'
-#'
 
 EC_DevSave <- function(fileroot, ext=".pdf") {
   if (ext==".eps") {dev.copy2eps(file=paste(fileroot,ext,sep="."))

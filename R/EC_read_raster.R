@@ -2,11 +2,9 @@
 #'
 #' @param filename 
 #'
-#' @export EC_ReadRaster
+#' @export EC_read_raster
 #' @importFrom raster raster
 #' @importFrom sp CRS
-#' 
-#' 
 
 EC_read_raster <- function(filename) {
   r = raster::raster(filename)

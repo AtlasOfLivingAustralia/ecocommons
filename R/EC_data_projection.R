@@ -11,7 +11,6 @@
 #' @importFrom raster compareCRS
 #' @importFrom sp SpatialPoints
 #' @importFrom sp spTransform
-#' 
 
 EC_data_projection <- function(data, climate.data) {
   if (!is.null(data) & !raster::compareCRS(data, climate.data, verbatim=TRUE)) {

@@ -8,8 +8,6 @@
 #' @importFrom dismo circles
 #'
 #' @export EC_modelling_circles
-#' 
-#'
 
 EC_modelling_circles<- function( a,  # EC.params
                                  response_info,  # from EC_build_response

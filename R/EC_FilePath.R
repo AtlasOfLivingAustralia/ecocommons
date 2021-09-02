@@ -6,8 +6,6 @@
 #' @param outputdir 
 #' @param filename_ext 
 #' @param file_ext 
-#' 
-#' 
 
 EC_FilePath <- function(file_type, projection_name, species, 
                         outputdir = EC.env$outputdir, filename_ext=NULL, file_ext='tif') {

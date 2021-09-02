@@ -5,8 +5,6 @@
 #' @param filename_ext 
 #'
 #' @export EC_save_projection
-#'
-#'
 
 EC_save_projection <- function(proj.model, species_algo_str, filename_ext=NULL) {
   if (!is.null(filename_ext)) {

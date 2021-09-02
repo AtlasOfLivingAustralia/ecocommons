@@ -12,9 +12,6 @@
 #' @importFrom pROC auc
 #' @importFrom pROC roc
 #' @importFrom reshape2 melt
-#' 
-#' 
-
 
 absmean <- function(x) abs(mean(x, na.rm=T))
 absdiff <- function(x) abs(diff(x, na.rm=T))

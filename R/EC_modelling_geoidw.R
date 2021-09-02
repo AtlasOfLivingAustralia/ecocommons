@@ -11,8 +11,6 @@
 #' @importFrom dismo geoIDW
 #'
 #' @export EC_modelling_geoidw
-#'
-#'
 
 EC_modelling_geoidw<- function(  a,# EC.params
                                  response_info,  # from EC_build_response

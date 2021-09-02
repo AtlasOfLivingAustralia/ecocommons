@@ -8,8 +8,6 @@
 #' @param outputdir 
 #'
 #' @export EC_PlotCategOCC
-#' 
-#' 
 
 EC_PlotCategOCC <- function(dataToExplore, listVars, outerTitle="", 
                             fnamePrefix="occurrence_predictors_", outputdir="output") {

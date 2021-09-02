@@ -9,6 +9,7 @@
 #' @importFrom dplyr bind_rows
 #'
 #' 
+
 EC_area_occupancy <- function(occur, species) {
   writeLines('Compute Area Extent Occuopancy ...')
   data(land) #land is built in to the package; possible to add own shapefile if needed

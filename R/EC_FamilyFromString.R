@@ -4,8 +4,6 @@
 #' @param s 
 #'
 #' @export EC_FamilyFromString
-#' 
-#' 
 
 EC_FamilyFromString <- function(s) {
   s = gsub(pattern="\"|| ", replacement="", s) # strip quotes and spaces

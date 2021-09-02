@@ -7,9 +7,7 @@
 # @param EC.params Parameters object; appears to be a nested named list. Consider converting to S3
 # @param EC.env Environment object; as for EC.params. Consider converting to S3
 #'
-#'
 #' @export EC_modelling_sre
-#'
 
 EC_modelling_sre<- function(x){ # EC.params, EC.env){
 

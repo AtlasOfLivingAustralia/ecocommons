@@ -9,7 +9,6 @@
 #' @importFrom biomod2 get_formal_data
 #' @importFrom biomod2 get_variables_importance
 #' @importFrom biomod2 get_formal_data
-#' 
 
 EC_SaveBIOMODModelEval <- function(loaded.names, biomod.model, species_algo_str) {
 

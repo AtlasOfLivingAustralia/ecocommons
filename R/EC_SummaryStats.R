@@ -9,7 +9,6 @@
 #'
 #' @export EC_SummaryStats
 #' @importFrom dismo evaluate
-#' 
 
 EC_SummaryStats <- function(occur, absen, model, predictor, species) {
   writeLines('Compute evaluation statistics ...')

@@ -8,8 +8,6 @@
 #' @param filename_ext 
 #'
 #' @export EC_SaveModelProjection
-#'
-#' 
 
 EC_SaveModelProjection <- function(model.obj, projection.name, species, 
                                      species_algo_str, outputdir=EC.env$outputdir, filename_ext=NULL) {

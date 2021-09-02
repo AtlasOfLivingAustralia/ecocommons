@@ -9,7 +9,6 @@
 #' @importFrom raster dataType
 #' @importFrom raster raster
 #' @importFrom raster writeRaster
-#' 
 
 EC_GRD_to_GTIFF <- function(folder, algorithm, filename_ext=NULL, noDataValue=NULL) {
   grdfiles <- list.files(path=folder,

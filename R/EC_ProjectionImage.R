@@ -6,8 +6,6 @@
 #' @param species_algo_str 
 #' @param outputdir 
 #' @param filename_ext 
-#'
-#' 
 
 EC_ProjectionImage <- function(inputfile, projection.name, species, 
                                      species_algo_str, outputdir=EC.env$outputdir, filename_ext=NULL) {

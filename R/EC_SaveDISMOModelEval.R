@@ -8,7 +8,6 @@
 #'
 #' @export EC_SaveDISMOModelEval
 #' @importFrom dismo evaluate
-#'
 
 EC_SaveDISMOModelEval <- function(model.name, model.obj, occur, bkgd, species.name) {
   species_algo_str = paste(species.name, model.name, sep="_")

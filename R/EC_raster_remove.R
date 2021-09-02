@@ -3,7 +3,6 @@
 #' #@param rasterObject 
 #'
 #' #@importFrom spatial.tools raster_to_filenames
-#' # raster filename ### OR ### terra sources
 
 EC_raster_remove <- function(rasterObject) {
   raster_filenames <- raster::filename(rasterObject)

@@ -11,7 +11,7 @@
 #' @export EC_raster_stack
 #' @importFrom gdalUtils gdalwarp
 #' @importFrom raster compareRaster
-#' @importFrom raster CRS
+#' @importFrom sp CRS
 #' @importFrom raster intersect
 #' @importFrom raster projectExtent
 #' @importFrom raster raster

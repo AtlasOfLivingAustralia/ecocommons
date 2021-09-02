@@ -1,7 +1,6 @@
 #' Function to crop the raster to the extent of the constraint region and
 #' mask it
 #'
-#'
 #' @export EC_mask
 
 EC_mask <- function(current_climate, parsed_geojson) {

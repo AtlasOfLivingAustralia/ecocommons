@@ -9,8 +9,6 @@
 #' @param month_filter 
 #'
 #' @export EC_read_sp
-#' 
-#' 
 
 EC_read_sp <- function(filename, month_filter=NULL) {
   if (!is.null(filename)) {  # return NULL if filename is not given

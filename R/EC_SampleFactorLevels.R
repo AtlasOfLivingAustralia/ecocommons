@@ -5,9 +5,7 @@
 #'
 #' @param x 
 #' @param mask.out 
-#' @param mask.in 
-#'
-#' 
+#' @param mask.in  
 
 EC_SampleFactorLevels <- function(x, mask.out = NULL, mask.in = NULL){
   if(inherits(x, 'Raster')){

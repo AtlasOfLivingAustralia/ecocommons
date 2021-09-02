@@ -22,7 +22,6 @@
 
 #' @export EC_format_biomod2
 #' @importFrom biomod2 BIOMOD_FormatingData
-#'
 
 EC_format_biomod2 <- function (true.absen               = NULL,
                                pseudo.absen.points      = 0,

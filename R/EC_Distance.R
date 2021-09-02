@@ -9,7 +9,6 @@
 #' @export EC_Distance
 #' @importFrom raster atan2
 #' @importFrom geosphere distGeo
-#' 
 
 EC_Distance <- function(lat1, lon1=NULL, lat2=NULL, lon2=NULL, bearing=FALSE) {
   if (is.data.frame(lat1) | is.matrix(lat1)) {  # if yes, break it out to individual vectors

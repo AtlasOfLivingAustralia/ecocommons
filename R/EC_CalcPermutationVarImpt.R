@@ -11,6 +11,7 @@
 #' @export EC_CalcPermutationVarImpt
 #' @importFrom dismo evaluate
 #'
+
 EC_CalcPermutationVarImpt <- function(out.model, model.eval,
                                        model.name, occur, bkgd, species_algo_str) {
   if (model.name == "brt") {

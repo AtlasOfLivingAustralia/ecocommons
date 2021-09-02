@@ -6,8 +6,6 @@
 #' @param species_algo_str 
 #'
 #' @export EC_save_model_eval
-#'
-#'
 
 EC_save_model_eval <- function(out.evaluation, out.stats, out.lossfunction,
                                species_algo_str){

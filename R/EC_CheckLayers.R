@@ -7,8 +7,6 @@
 #'
 #' @export EC_CheckLayers
 #' @importFrom raster dropLayer
-#' 
-
 
 EC_CheckLayers <- function(model.obj, climatelayers, climate_filenames) {
   message("Checking environmental layers used for projection")

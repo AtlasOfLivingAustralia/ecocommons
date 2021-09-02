@@ -15,15 +15,13 @@
 #' @importFrom raster compareCRS
 #' @importFrom raster mask
 #' @importFrom raster stack
-#' @importFrom rgdal gBuffer
+#' @importFrom rgeos gBuffer
 #' @importFrom rgdal readOGR
 #' @importFrom rgdal writeOGR
 #' @importFrom rjson fromJSON
 #' @importFrom sp SpatialPolygons
 #' @importFrom sp SpatialPoints
 #' @importFrom sp spTransform
-#'            
-#'
 
 EC_SDM_geoconstrained <- function(current_climate, 
                                  occur, 

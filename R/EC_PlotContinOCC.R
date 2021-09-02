@@ -9,8 +9,6 @@
 #' @param outputdir 
 #'
 #' @export EC_PlotContinOCC
-#'
-#' 
 
 EC_PlotContinOCC <- function(dataToExplore, listVars, doCorrelation=TRUE, 
                                  outerTitle="", fnamePrefix="occurrence_predictors_",

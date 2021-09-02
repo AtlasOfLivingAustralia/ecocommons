@@ -11,9 +11,6 @@
 #' @importFrom dismo geoDist
 #'
 #' @export EC_modelling_geodist
-#'
-#'
-
 
 EC_modelling_geodist<- function(  a,# EC.params
                                   response_info,  # from EC_build_response

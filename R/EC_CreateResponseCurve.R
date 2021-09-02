@@ -6,8 +6,6 @@
 #' @param species_algo_str 
 #'
 #' @export EC_CreateResponseCurve
-#' 
-#' 
 
 EC_CreateResponseCurve <- function(out.model, model.name, species_algo_str) {
   if (model.name == "brt") {

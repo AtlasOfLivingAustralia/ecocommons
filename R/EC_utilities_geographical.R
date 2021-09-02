@@ -1,7 +1,6 @@
-
-#===================================================================
-# subfunctions, for the Geographical algorithms scripts
-
+#' subfunctions, for the Geographical algorithms scripts
+#' 
+#' Not exported
 
 EC_options_geographical <- function(
   a, # formerly EC.params

@@ -1,5 +1,6 @@
-#===================================================================
-# subfunctions, for the Statistical Regression algorithms scripts
+#' subfunctions, for the Statistical Regression algorithms scripts
+#' 
+#' Not exported
 
 EC_options_statregr <- function( a, # formerly EC.params
                                   response_info, # from build_response()

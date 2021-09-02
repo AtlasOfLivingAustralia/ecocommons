@@ -10,7 +10,6 @@
 #' @importFrom dismo convHull
 #'
 #' @export EC_modelling_convhull
-#'
 
 EC_modelling_convhull<- function( a,# EC.params
                                   response_info,  # from EC_build_response
