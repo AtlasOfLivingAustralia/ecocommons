@@ -88,7 +88,7 @@ all_functions <- lapply(
 all_functions_df <- do.call(rbind, all_functions)
 all_functions_df <- all_functions_df[
   order(all_functions_df$package, all_functions_df$function_name), ]
-write.csv(all_functions_df, "ecocommons_imports.csv")
+write.csv(all_functions_df, "ecocommons_imports.csv", row.names = FALSE)
 
 n_functions <- apply(
   xtabs(~ function_name + package, data = all_functions_df),
