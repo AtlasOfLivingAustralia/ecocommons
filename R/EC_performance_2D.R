@@ -14,16 +14,23 @@
 #' @importFrom reshape2 melt
 
 absmean <- function(x) abs(mean(x, na.rm=T))
+
 absdiff <- function(x) abs(diff(x, na.rm=T))
+
 pick1min <- function(x) { # w<-c(5,6,7,11,13)
   w <- which(x == min(x, na.rm=T));
   len <- length(w);
-  if (len == 1) return(w) else {if (len %% 2 ==1) {return(median(w))} else {return(median(w[-1]))}}
+  if (len == 1) return(w) else {if (len %% 2 ==1) {return(median(w))
+  } else {
+      return(median(w[-1]))
+  }
+    }
 }
 
 
 
-EC_Performance2D <- function(obs, pred, species_algo_str, make.plot="EcoCommons", kill.plot=T) {
+EC_performance_2D <- function(obs, pred, species_algo_str, 
+                              make.plot="EcoCommons", kill.plot=T) {
   library(gridExtra)
   library(pROC)
 
@@ -238,7 +245,12 @@ EC_Performance2D <- function(obs, pred, species_algo_str, make.plot="EcoCommons"
 
     # kappa = Cohen's Kappa = Accuracy of the prediction relative to that of random chance.
     Po[ell] <- acc[ell] # observed accuracy
-    Pe[ell] <- ((((tp[ell]+fp[ell])/(tp[ell]+fp[ell]+tn[ell]+fn[ell]))*((tp[ell]+fn[ell])/(tp[ell]+fp[ell]+tn[ell]+fn[ell]))) + (((fn[ell]+tn[ell])/(tp[ell]+fp[ell]+tn[ell]+fn[ell]))*((fp[ell]+tn[ell])/(tp[ell]+fp[ell]+tn[ell]+fn[ell])))) # expected accuracy by random chance
+    
+    Pe[ell] <- ((((tp[ell]+fp[ell])/(tp[ell]+fp[ell]+tn[ell]+fn[ell]))*
+                   ((tp[ell]+fn[ell])/(tp[ell]+fp[ell]+tn[ell]+fn[ell]))) + 
+                  (((fn[ell]+tn[ell])/(tp[ell]+fp[ell]+tn[ell]+fn[ell])) *
+                     ((fp[ell]+tn[ell])/(tp[ell]+fp[ell]+tn[ell]+fn[ell])))) # expected accuracy by random chance
+    
     kappa[ell] <- ((Po[ell]-Pe[ell])/(1-Pe[ell]))
   }
 

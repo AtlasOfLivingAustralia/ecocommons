@@ -1,5 +1,5 @@
 #' Load and export plot function for categorical predictor variables for
-#' the occurrence data
+#' the background data
 #' 
 #' @param dataToExplore 
 #' @param listVars 
@@ -7,10 +7,11 @@
 #' @param fnamePrefix 
 #' @param outputdir 
 #'
-#' @export EC_PlotCategOCC
+#' @export EC_plot_categ_BG
 
-EC_PlotCategOCC <- function(dataToExplore, listVars, outerTitle="", 
-                            fnamePrefix="occurrence_predictors_", outputdir="output") {
+EC_plot_categ_BG <- function(dataToExplore, listVars, outerTitle = "",
+                             fnamePrefix = "background_predictors_",
+                             outputdir = "output") {
   
   nVars = length(listVars)
   
@@ -23,14 +24,14 @@ EC_PlotCategOCC <- function(dataToExplore, listVars, outerTitle="",
   nRows = ceiling(nVars/nCols)
   
   # Barplots
+  
   png(filename = file.path(outputdir, paste0(fnamePrefix, 'barplot.png')),
       width = plotWidth, height = plotHeight)
-  par(mfrow = c(nRows,nCols), oma = c(0,0,1.5,0), ps=15)
+  par(mfrow = c(nRows,nCols), oma = c(0,0,1.5,0), ps = 15)
   for (nameVar in listVars) {
     barplot(table(dataToExplore[,c(nameVar)]), 
-            main=nameVar)
+            main = nameVar)
   }
-  title(outerTitle, outer=TRUE, line=0)
+  title(outerTitle, outer = TRUE, line = 0)
   dev.off()
-  
 }

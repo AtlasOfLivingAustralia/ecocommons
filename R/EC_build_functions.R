@@ -10,6 +10,14 @@
 #'
 #' 
 
+filt %>%
+  filter(continent == c("Asia", "Africa")) %>%
+  filter(year < 1990) %>%
+  ggplot(aes(x = lifeExp, y = gdpPercap, color = continent)) +
+  #theme(legend.position = "none") +
+  geom_point()
+
+
 EC_build_response <- function(a){
   # Set list with species data information for modelling
   list(

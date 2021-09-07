@@ -9,16 +9,17 @@
 #' @importFrom biomod2 get_formal_data
 #' @importFrom biomod2 get_variables_importance
 #' @importFrom biomod2 get_formal_data
+#' @importFrom biomod2 response.plot2
 
-EC_SaveBIOMODModelEval <- function(loaded.names, biomod.model, species_algo_str) {
+EC_save_biomod_evaluation <- function(loaded.names, biomod.model, species_algo_str) {
 
-  evaluation = get_evaluations(biomod.model)
+  evaluation = biomod2::get_evaluations(biomod.model)
 
   # Get the model predictions and observed values. Predictions is a 4-dimensional array (Predictions, Algorithm, Model run, PseudoAbsence Run)
-  predictions = get_predictions(biomod.model)
+  predictions =  biomod2::get_predictions(biomod.model)
   total_models = length(dimnames(predictions)[[3]])
 
-  obs = get_formal_data(biomod.model, "resp.var")
+  obs =  biomod2::get_formal_data(biomod.model, "resp.var")
   # In case of pseudo-absences we might have NA values in obs so replace them with 0
   obs = replace(obs, is.na(obs), 0)
 
@@ -34,15 +35,17 @@ EC_SaveBIOMODModelEval <- function(loaded.names, biomod.model, species_algo_str)
       next
     }
 
-    res = EC_Performance2D(obs, model_predictions / 1000, species_algo_str, make.plot=model_name, kill.plot=F)
-    EC_SaveModelEval(res$performance, res$stats, res$loss.summary, species_algo_str)
+    res = EC_performance_2D(obs, model_predictions / 1000, species_algo_str,
+                            make.plot = model_name, kill.plot = FALSE)
+    EC_save_eval(res$performance, res$stats, res$loss.summary, species_algo_str)
 
     # get and save the variable importance estimates
-    variableImpt = get_variables_importance(biomod.model)
+    variableImpt =  biomod2::get_variables_importance(biomod.model)
     if (!is.na(variableImpt)) {
       #EMG Note this will throw a warning message if variables (array) are returned
       EC_write_csv(variableImpt,
-                  name=paste("variableImportance", model_name, species_algo_str, "csv", sep="."))
+                  name=paste("variableImportance", model_name,
+                             species_algo_str, "csv", sep= "."))
     } else {
       message("VarImport argument not specified during model creation!")
       #EMG must create the model with the arg "VarImport" != 0
@@ -52,19 +55,20 @@ EC_SaveBIOMODModelEval <- function(loaded.names, biomod.model, species_algo_str)
   # save response curves (Elith et al 2005)
   for(name in loaded.names)
   {
-    env_data = get_formal_data(biomod.model,"expl.var")
+    env_data =  biomod2::get_formal_data(biomod.model,"expl.var")
     png(file=file.path(EC.env$outputdir, sprintf("mean_response_curves_%s.png", name)))
-    test <- response.plot2(models = name,
-                           Data = env_data,
-                           show.variables = get_formal_data(biomod.model,"expl.var.names"),
-                           fixed.var.metric = "mean")
+    test <- biomod2::response.plot2(models = name,
+                                    Data = env_data,
+                                    show.variables = bimod2::get_formal_data(biomod.model,"expl.var.names"),
+                                    fixed.var.metric = "mean")
     dev.off()
 
     # save individual response curves
     for (envname in names(test))
     {
-      png(file=file.path(EC.env$outputdir, sprintf("%s_mean_response_curves_%s.png", envname, name)))
-      plot(test[[envname]], type='l', ylim=c(0, 1.0), main=envname, xlab="", ylab="")
+      png(file=file.path(EC.env$outputdir, sprintf("%s_mean_response_curves_%s.png",
+                                                   envname, name)))
+      plot(test[[envname]], type= 'l', ylim= c(0, 1.0), main= envname, xlab= "", ylab= "")
       rug(env_data[[envname]])
       dev.off()
     }

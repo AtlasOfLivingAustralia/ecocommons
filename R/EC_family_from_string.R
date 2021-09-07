@@ -3,13 +3,13 @@
 #'
 #' @param s 
 #'
-#' @export EC_FamilyFromString
+#' @export EC_family_from_string
 
-EC_FamilyFromString <- function(s) {
-  s = gsub(pattern="\"|| ", replacement="", s) # strip quotes and spaces
-  f = gsub(pattern="\\(.*\\)", replacement="", s) # the name of the function
+EC_family_from_string <- function(s) {
+  s = gsub(pattern = "\"|| ", replacement = "", s) # strip quotes and spaces
+  f = gsub(pattern = "\\(.*\\)", replacement = "", s) # the name of the function
   
-  allowable= c("binomial",
+  allowable = c("binomial",
                "gaussian",
                "Gamma",
                "inverse.gaussian",
@@ -23,19 +23,19 @@ EC_FamilyFromString <- function(s) {
     stop(sprintf("unsupported function %s", f))
   }
   
-  fargs=gsub(pattern=".*\\(||\\)",
-             replacement = "",
-             sub(pattern = f,
-                 replacement = "",
-                 s)) #get the args inside the parentheses
+  fargs = gsub(pattern = ".*\\(||\\)",
+               replacement = "",
+               sub(pattern = f,
+               replacement = "",
+               s))  # get the args inside the parentheses
   args=list()
   
   if (fargs != "")
   {
-    l=strsplit(fargs, ",")[[1]]
+    l = strsplit(fargs, ",")[[1]]
     for( i in 1:length(l) )
     {
-      ll=strsplit(l[i],"=")[[1]]
+      ll = strsplit(l[i], "=")[[1]]
       if (length(ll) == 2)
       {
         args[ll[1]] = ll[2]
@@ -46,5 +46,5 @@ EC_FamilyFromString <- function(s) {
       }
     }
   }
-  return (do.call(what=f, args=args))
+  return (do.call(what = f, args = args))
 }

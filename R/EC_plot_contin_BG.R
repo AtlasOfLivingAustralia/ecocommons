@@ -8,10 +8,12 @@
 #' @param fnamePrefix 
 #' @param outputdir 
 #'
-#' @export EC_PlotContinBG 
+#' @export EC_plot_contin_BG 
 
-EC_PlotContinBG <- function(dataToExplore, listVars, doCorrelation=TRUE, 
-                                outerTitle="", fnamePrefix="background_predictors_", outputdir="output")  {
+EC_plot_contin_BG <- function (dataToExplore, listVars, doCorrelation = TRUE, 
+                               outerTitle = "",
+                               fnamePrefix = "background_predictors_",
+                               outputdir = "output")  {
   nVars = length(listVars)
   
   if (nVars == 0) {
@@ -25,30 +27,30 @@ EC_PlotContinBG <- function(dataToExplore, listVars, doCorrelation=TRUE,
   # Boxplots
   png(filename = file.path(outputdir, paste0(fnamePrefix, 'boxplot.png')),
       width = plotWidth, height = plotHeight)
-  par(mfrow = c(nRows,nCols), oma = c(0,0,1.5,0), ps=15)
+  par(mfrow = c(nRows, nCols), oma = c(0, 0, 1.5, 0), ps = 15)
   for (nameVar in listVars) {
-    boxplot(dataToExplore[,c(nameVar)], main=nameVar)
+    boxplot(dataToExplore[,c(nameVar)], main = nameVar)
   }
-  title(outerTitle, outer=TRUE, line=0)
+  title(outerTitle, outer = TRUE, line = 0)
   dev.off()
   
   # Histograms
   png(filename = file.path(outputdir, paste0(fnamePrefix, 'histogram.png')),
       width = plotWidth, height = plotHeight)
-  par(mfrow = c(nRows,nCols), oma = c(0,0,1.5,0), ps=15)
+  par(mfrow = c(nRows, nCols), oma = c(0, 0, 1.5, 0), ps = 15)
   for (nameVar in listVars) {
-    hist(dataToExplore[,c(nameVar)], breaks=10, xlab="", main=nameVar)
+    hist(dataToExplore[,c(nameVar)], breaks = 10, xlab = "", main = nameVar)
   }
-  title(outerTitle, outer=TRUE, line=0)
+  title(outerTitle, outer = TRUE, line = 0)
   dev.off()
   
   # Density plots
   png(filename = file.path(outputdir, paste0(fnamePrefix, 'density.png')),
       width = plotWidth, height = plotHeight)
-  par(mfrow = c(nRows,nCols), oma = c(0,0,1.5,0), ps=15)
+  par(mfrow = c(nRows, nCols), oma = c(0, 0, 1.5, 0), ps = 15)
   for (nameVar in listVars) {
-    plot(density(dataToExplore[,c(nameVar)], na.rm=TRUE), main=nameVar)
+    plot(density(dataToExplore[,c(nameVar)], na.rm = TRUE), main = nameVar)
   }
-  title(outerTitle, outer=TRUE, line=0)
+  title(outerTitle, outer = TRUE, line = 0)
   dev.off()
 }

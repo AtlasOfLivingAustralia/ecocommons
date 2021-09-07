@@ -4,11 +4,10 @@
 #' @param species add description here
 #'
 #' @export EC_area_occupancy
+#' 
 #' @importFrom ConR AOO.computing
 #' @importFrom ConR IUCN.eval
 #' @importFrom dplyr bind_rows
-#'
-#' 
 
 EC_area_occupancy <- function(occur, species) {
   writeLines('Compute Area Extent Occuopancy ...')
@@ -29,24 +28,25 @@ EC_area_occupancy <- function(occur, species) {
                                                           paste0("aoo_eoo_", species, ".csv")))
     aoo_eoo <- aoo_eoo[c('taxa', 'EOO', 'AOO', 'Nbe_unique_occ.')]
     colnames(aoo_eoo) <- c('taxa', 'EOO', 'AOO', 'Number of unique occurrences')
-    write.csv(aoo_eoo, file=file.path(EC.env$outputdir, paste0("aoo_eoo_", species, "_maxent.csv")))
+    write.csv(aoo_eoo, file=file.path(EC.env$outputdir, paste0("aoo_eoo_",
+                                                               species, "_maxent.csv")))
 
     # Run IUCN evaluation to generate map
-    IUCN.eval(DATA = occur, country_map = land, Cell_size_AOO = 2, Cell_size_locations = 10,
-              Resol_sub_pop = 5, method_locations = "fixed_grid", Rel_cell_size = 0.05,
-              DrawMap = TRUE, add.legend = TRUE,
-              file_name = NULL, export_shp = FALSE, write_shp = FALSE,
-              write_results=TRUE, protec.areas = NULL, map_pdf = FALSE, draw.poly.EOO=TRUE,
-              exclude.area = FALSE, method_protected_area = "no_more_than_one",
-              buff_width = 0.1, SubPop=FALSE, alpha=1, buff.alpha=0.1,
-              method.range="convex.hull", nbe.rep.rast.AOO=0,
-              showWarnings=TRUE, write_file_option="csv",
-              parallel=FALSE, NbeCores=2)
-  }
-  else {
-    occur = occur[, c('lat', 'lon', 'species', 'year')] # AOO and EOO evaluation per year, if applicable
+    ConR::IUCN.eval(DATA = occur, country_map = land, Cell_size_AOO = 2, Cell_size_locations = 10,
+                    Resol_sub_pop = 5, method_locations = "fixed_grid", Rel_cell_size = 0.05,
+                    DrawMap = TRUE, add.legend = TRUE,
+                    file_name = NULL, export_shp = FALSE, write_shp = FALSE,
+                    write_results=TRUE, protec.areas = NULL, map_pdf = FALSE, draw.poly.EOO=TRUE,
+                    exclude.area = FALSE, method_protected_area = "no_more_than_one",
+                    buff_width = 0.1, SubPop=FALSE, alpha=1, buff.alpha=0.1,
+                    method.range="convex.hull", nbe.rep.rast.AOO=0,
+                    showWarnings=TRUE, write_file_option="csv",
+                    parallel=FALSE, NbeCores=2)
+    } else {
+    occur = occur[, c('lat', 'lon', 'species', 'year')] # AOO/EOO evaluation per year, if applicable
 
     # Subsetting data.frames into every 5 years until the last ten years which is per year
+    
     yrmin = min(occur['year'])
     yrmax = max(occur['year'])
     if ((yrmax - yrmin) < 10) {
@@ -63,7 +63,8 @@ EC_area_occupancy <- function(occur, species) {
       remaining = (yrmax-yrmin) %% 5
       yrmin = yrmin - (4 - remaining)
       ylist = seq(yrmin, yrmax-10, 5)
-      sub_list2 = lapply(ylist, function(x) occur[occur$year>=x & occur$year <= (x+4),])
+      sub_list2 = lapply(ylist, function(x) occur[occur$year>=x & 
+                                                    occur$year <= (x+4),])
       ynames = lapply(ylist, function(x) paste0(x, '-', x+4))
       names(sub_list2) <- ynames
       sub_list = c(sub_list2, sub_list)
@@ -75,17 +76,18 @@ EC_area_occupancy <- function(occur, species) {
 
     # Get the AOO, EOO, and IUCN evaluation for each year range and all results in a list
     aoo_eoo_result <- lapply(subset, function(x){
-      IUCN.eval(DATA = x, country_map = land, Cell_size_AOO = 2, Cell_size_locations = 10,
-                Resol_sub_pop = 5, method_locations = "fixed_grid", Rel_cell_size = 0.05,
-                DrawMap = TRUE, add.legend = TRUE,
-                file_name = NULL, export_shp = FALSE, write_shp = FALSE,
-                write_results=TRUE, protec.areas = NULL, map_pdf = FALSE, draw.poly.EOO=TRUE,
-                exclude.area = FALSE, method_protected_area = "no_more_than_one",
-                buff_width = 0.1, SubPop=FALSE, alpha=1, buff.alpha=0.1,
-                method.range="convex.hull", nbe.rep.rast.AOO=0,
-                showWarnings=TRUE, write_file_option="csv",
-                parallel=FALSE, NbeCores=2)
-    })
+      ConR::IUCN.eval(DATA = x, country_map = land, Cell_size_AOO = 2, Cell_size_locations = 10,
+                      Resol_sub_pop = 5, method_locations = "fixed_grid", Rel_cell_size = 0.05,
+                      DrawMap = TRUE, add.legend = TRUE,
+                      file_name = NULL, export_shp = FALSE, write_shp = FALSE,
+                      write_results=TRUE, protec.areas = NULL, map_pdf = FALSE, draw.poly.EOO=TRUE,
+                      exclude.area = FALSE, method_protected_area = "no_more_than_one",
+                      buff_width = 0.1, SubPop=FALSE, alpha=1, buff.alpha=0.1,
+                      method.range="convex.hull", nbe.rep.rast.AOO=0,
+                      showWarnings=TRUE, write_file_option="csv",
+                      parallel=FALSE, NbeCores=2)
+      }
+      )
 
     aoo_eoo_year <- dplyr::bind_rows(aoo_eoo_result)  # combine the rows of the list into a data frame
     aoo_eoo_year['year'] = names(aoo_eoo_result)
