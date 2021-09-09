@@ -28,6 +28,10 @@ EC_options_geographical <- function(
 }
 
 
+
+#_____________________________________________________________________________
+
+
 EC_compute_geographical <- function(
   predictor_info,  # from EC_build_predictor
   a,  # formerly EC.params
@@ -47,6 +51,7 @@ EC_compute_geographical <- function(
 
 
 
+#_____________________________________________________________________________
 
 
 EC_save_geographical_model<-function(

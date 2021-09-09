@@ -56,6 +56,8 @@ EC_options_statregr <- function( a, # formerly EC.params
 }
 
 
+#_____________________________________________________________________________
+
 
 EC_compute_statregr <- function( predictor_info,  # from EC_build_predictor
                                  pa_number_point,
@@ -92,6 +94,8 @@ EC_compute_statregr <- function( predictor_info,  # from EC_build_predictor
 }
 
 
+#_____________________________________________________________________________
+
 
 save_model_object <- function ( model_compute,  # from model_compute
                                 model_algorithm,
@@ -112,8 +116,11 @@ save_model_object <- function ( model_compute,  # from model_compute
 }
 
 
+#_____________________________________________________________________________
+
 
 project_model_current_constrained <- function (predictor_info,  # from build_predictor
+                                               constraint_info,
                                                model_compute,  # from model_compute
                                                EC_options_statregr,  # from model_options_statregr
                                                response_info,  # from build_response
@@ -122,8 +129,8 @@ project_model_current_constrained <- function (predictor_info,  # from build_pre
   # Project over climate scenario. Constraint to continuous data layers
 
   if (predictor_info$genUnconstraintMap &&
-      all(enviro.data.type == 'continuous') &&
-      (!is.null(constraints) || predictor_info$generateCHull)) {
+      all(predictor_info$type == 'continuous') &&
+      (!is.null(constraint_info$constraints) || predictor_info$generateCHull)) {
     model.proj <-
       biomod2::BIOMOD_Projection (modeling.output     = model_compute$model_sdm,
                                   new.env             = predictor_info$current_climate_orig,
@@ -160,6 +167,8 @@ project_model_current_constrained <- function (predictor_info,  # from build_pre
   }
 }
 
+
+#_____________________________________________________________________________
 
 
 project_model_current <- function( model_compute,  # from model_compute
