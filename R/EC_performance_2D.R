@@ -11,7 +11,7 @@
 #' @importFrom ggplot2 ggplot 
 #' @importFrom pROC auc
 #' @importFrom pROC roc
-#' @importFrom reshape2 melt
+#' @importFrom tidyr pivot_longer
 #' 
 #' Not exported
 
@@ -289,7 +289,7 @@ EC_performance_2D <- function(obs,  # presence/absence (binary)
   if (make.plot!="") {
     # reshape the data so that it is in long rather than wide format
     # (= each row represents one item, labels are specified by 'measure' column; used by ggplot2)
-    errs <- reshape2::melt(temp, id.var="tpv",
+    errs <- tidyr::pivot_longer (temp, id.var="tpv",
                            measure.var=c("tpr", "tnr", "fpr", "fnr", "fdr",
                                          "fors", "L.diag", "L.pred", "L.all",
                                          "L.eq.diag"))

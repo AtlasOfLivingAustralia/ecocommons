@@ -11,6 +11,7 @@
 #' @importFrom biomod2 BIOMOD_Modeling
 #' @importFrom biomod2 BIOMOD_Projection
 #' @importFrom biomod2 BIOMOD_LoadModels
+#' 
 #' @export EC_modelling_ann
 
 

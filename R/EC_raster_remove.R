@@ -1,6 +1,6 @@
 #' Remove raster object and its associated raster files (i.e. grd and gri) if any
 #'
-#' #@param rasterObject 
+#' @param rasterObject 
 #'
 #' @importFrom raster filename
 #' 

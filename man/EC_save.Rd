@@ -2,7 +2,7 @@
 % Please edit documentation in R/EC_save.R
 \name{EC_save}
 \alias{EC_save}
-\title{Function to save RData in outputdir}
+\title{Function to save RData in output directory; used in most SDM algorithms}
 \usage{
 EC_save(robj, name, outputdir = EC.env$outputdir)
 }
@@ -14,5 +14,5 @@ EC_save(robj, name, outputdir = EC.env$outputdir)
 \item{outputdir}{}
 }
 \description{
-Function to save RData in outputdir
+Function to save RData in output directory; used in most SDM algorithms
 }

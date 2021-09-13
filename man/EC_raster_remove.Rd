@@ -6,9 +6,9 @@
 \usage{
 EC_raster_remove(rasterObject)
 }
-\description{
-#@param rasterObject
+\arguments{
+\item{rasterObject}{}
 }
-\details{
-#@importFrom spatial.tools raster_to_filenames
+\description{
+Remove raster object and its associated raster files (i.e. grd and gri) if any
 }

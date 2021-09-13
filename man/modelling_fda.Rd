@@ -11,11 +11,7 @@ and multiple adaptive regression splines to generate the discriminant surface}
 modelling_fda(a, response_info, predictor_info, dataset_info)
 }
 \arguments{
-\item{x}{a list (S3?) created from a json file, containing $params & $env (formerly EC.params & EC.env)}
-
-\item{EC.params}{Parameters object; appears to be a nested named list. Consider converting to S3}
-
-\item{EC.env}{Environment object; as for EC.params. Consider converting to S3}
+\item{a}{a list (S3?) created from a json file, containing $params & $env (formerly EC.params & EC.env)}
 }
 \description{
 Function to run a Flexible Discriminant Analysis (FDA) within EcoCommons.

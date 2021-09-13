@@ -2,7 +2,8 @@
 % Please edit documentation in R/EC_plot_VIP.R
 \name{EC_plot_VIP}
 \alias{EC_plot_VIP}
-\title{Generate a VIP plot}
+\title{Generate a Variable Importance (VIP) plot for a range of Species Distribution
+Modelling algorithms}
 \usage{
 EC_plot_VIP(
   fittedmodel = NULL,
@@ -36,5 +37,6 @@ EC_plot_VIP(
 \item{filename}{}
 }
 \description{
-Generate a VIP plot
+Generate a Variable Importance (VIP) plot for a range of Species Distribution
+Modelling algorithms
 }

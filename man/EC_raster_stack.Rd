@@ -25,5 +25,5 @@ EC_raster_stack(
 }
 \description{
 This function adjust raster layers to same projection, resolution and extent,
-assinging a name for your variable
+assigning a name for the variables
 }

@@ -11,7 +11,7 @@ EcoCommons platform.}
 EC_modelling_geoidw(a, response_info, predictor_info, dataset_info)
 }
 \arguments{
-\item{x}{a list (S3?) created from a json file, containing $params & $env (formerly EC.params & EC.env)}
+\item{a}{a list (S3?) created from a json file, containing $params & $env (formerly EC.params & EC.env)}
 }
 \description{
 Function to run Inverse Distance Weighted Model within EcoCommons. It is a

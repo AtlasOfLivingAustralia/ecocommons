@@ -17,7 +17,7 @@
 #' @importFrom ggdendro theme_dendro
 #' @importFrom ggplot2 ggplot
 #' @importFrom mgcv gam
-#' @importFrom reshape2 melt
+#' @importFrom tidyr pivot_longer
 #' 
 #' @export EC_plot_VIP
 
@@ -28,12 +28,7 @@ EC_plot_VIP <- function(fittedmodel=NULL,
                        pdf=TRUE, biom_vi=FALSE,output.table=FALSE, data1,
                        this.dir, filename)
 {
-  library("caret")
-  library("ggdendro")
-  library("ggplot2")
-  library("mgcv")
-  library("reshape2")
-  library("rpart")
+
 
   # README notes:
   # (1) fittedmodel: the fitted model object obtained running the biomod2 function'BIOMOD_Modeling'.
@@ -132,7 +127,7 @@ EC_plot_VIP <- function(fittedmodel=NULL,
     lower_tri <- xx
     lower_tri[upper.tri(lower_tri)] <- NA
 
-    xx.ml <- reshape2::melt(lower_tri,na.rm=TRUE)  #the argument 'na.rm=TRUE' seems not working)
+    xx.ml <- tidyr::pivot_longer(lower_tri,na.rm=TRUE)  #the argument 'na.rm=TRUE' seems not working)
 
     corx = xx.ml[,3]
     rm = which(is.na(corx)==TRUE)
@@ -445,7 +440,7 @@ EC_plot_VIP <- function(fittedmodel=NULL,
 
     lower_tri = get_lower_tri(xx)
 
-    xx.ml <- melt(lower_tri,na.rm=TRUE)  #the argument 'na.rm=TRUE' seems not working)
+    xx.ml <- tidyr::pivot_longer(lower_tri,na.rm=TRUE)  #the argument 'na.rm=TRUE' seems not working)
 
     corx = xx.ml[,3]
     rm = which(is.na(corx)==TRUE)

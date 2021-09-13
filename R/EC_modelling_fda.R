@@ -4,9 +4,9 @@
 #' response variable so that the data are in a better form for linear separation,
 #' and multiple adaptive regression splines to generate the discriminant surface
 #' 
-#' @param x a list (S3?) created from a json file, containing $params & $env (formerly EC.params & EC.env)
-#' @param EC.params Parameters object; appears to be a nested named list. Consider converting to S3
-#' @param EC.env Environment object; as for EC.params. Consider converting to S3
+#' @param a a list (S3?) created from a json file, containing $params & $env (formerly EC.params & EC.env)
+# @param EC.params Parameters object; appears to be a nested named list. Consider converting to S3
+# @param EC.env Environment object; as for EC.params. Consider converting to S3
 #' 
 #' @importFrom biomod2 BIOMOD_ModelingOptions
 #' @importFrom biomod2 BIOMOD_Modeling

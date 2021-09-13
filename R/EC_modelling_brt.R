@@ -10,10 +10,10 @@
 #' @export EC_modelling_brt
 
 
-EC_modelling_brt <- function(a,# EC.params
-                             response_info,  # from EC_build_response
-                             predictor_info,  # from EC_build_predictor
-                             dataset_info) {  # from EC_build_dataset
+EC_modelling_brt <- function (a,# EC.params
+                              response_info,  # from EC_build_response
+                              predictor_info,  # from EC_build_predictor
+                              dataset_info) {  # from EC_build_dataset
 
   # Set parameters to perform modelling
   model_algorithm <- 'BRT'

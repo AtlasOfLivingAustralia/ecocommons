@@ -3,10 +3,10 @@
 #' values of environment variables for all occurrences as the species potential
 #' range.
 #'
-#' @param a
-#' @param response_info
-#' @param predictor_info
-#' @param dataset_info
+#' @param a formerly EC.params
+#' @param response_info from EC_build_response
+#' @param predictor_info from EC_build_predictor
+#' @param dataset_info from EC_build_dataset
 #'
 #' @importFrom dismo bioclim
 #' @importFrom raster writeRaster

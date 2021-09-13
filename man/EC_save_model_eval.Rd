@@ -2,7 +2,7 @@
 % Please edit documentation in R/EC_save_model_eval.R
 \name{EC_save_model_eval}
 \alias{EC_save_model_eval}
-\title{Save a evalution model for all statistics}
+\title{Save evaluation models for all statistics in csv format}
 \usage{
 EC_save_model_eval(
   out.evaluation,
@@ -21,5 +21,5 @@ EC_save_model_eval(
 \item{species_algo_str}{}
 }
 \description{
-Save a evalution model for all statistics
+Save evaluation models for all statistics in csv format
 }

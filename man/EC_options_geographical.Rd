@@ -2,7 +2,9 @@
 % Please edit documentation in R/EC_utilities_geographical.R
 \name{EC_options_geographical}
 \alias{EC_options_geographical}
-\title{subfunctions, for the Geographical algorithms scripts}
+\title{Subfunctions for Species Distribution Modelling (SDMs) Geographical
+algorithms. It builds evaluation parameters, set data on biomod2
+structure and save the result}
 \usage{
 EC_options_geographical(a, response_info, model_algorithm)
 }

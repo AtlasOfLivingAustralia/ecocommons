@@ -2,7 +2,8 @@
 % Please edit documentation in R/EC_save_dismo_eval.R
 \name{EC_save_dismo_eval}
 \alias{EC_save_dismo_eval}
-\title{Save a model evaluation using the dismo R package}
+\title{Save a model evaluation using the dismo R package, creating response curves
+and calculating variable importance}
 \usage{
 EC_save_dismo_eval(model_name, model_obj, occur, bkgd, species_name)
 }
@@ -18,5 +19,6 @@ EC_save_dismo_eval(model_name, model_obj, occur, bkgd, species_name)
 \item{species_name}{}
 }
 \description{
-Save a model evaluation using the dismo R package
+Save a model evaluation using the dismo R package, creating response curves
+and calculating variable importance
 }

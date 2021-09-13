@@ -10,8 +10,6 @@
 #' @param absen 
 #' @param constraints 
 #' @param generateCHull 
-#'
-#' @export EC_SDM_geoconstrained
 #' 
 #' @importFrom raster compareCRS
 #' @importFrom raster crop
@@ -24,6 +22,8 @@
 #' @importFrom sp SpatialPolygons
 #' @importFrom sp SpatialPoints
 #' @importFrom sp spTransform
+#' 
+#' @export EC_SDM_geoconstrained
 
 EC_SDM_geoconstrained <- function(current_climate, 
                                  occur, 

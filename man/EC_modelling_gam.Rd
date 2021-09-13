@@ -11,10 +11,6 @@ EC_modelling_gam(a, response_info, predictor_info, dataset_info)
 }
 \arguments{
 \item{x}{a list (S3?) created from a json file, containing $params & $env (formerly EC.params & EC.env)}
-
-\item{EC.params}{Parameters object; appears to be a nested named list. Consider converting to S3}
-
-\item{EC.env}{Environment object; as for EC.params. Consider converting to S3}
 }
 \description{
 Function to run a Generalized Additive Modes (GAM) within EcoCommons.

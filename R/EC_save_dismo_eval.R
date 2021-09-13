@@ -9,7 +9,7 @@
 #'
 #' @importFrom dismo evaluate
 #' 
-#' #' @export EC_save_dismo_eval
+#' @export EC_save_dismo_eval
 
 EC_save_dismo_eval <- function (model_name,
                                 model_obj,

@@ -7,13 +7,11 @@
 # @param EC.env Environment object; as for EC.params. Consider converting to S3
 #'
 #'
-#' @importFrom backports suppressWarnings
 #' @importFrom biomod2 BIOMOD_ModelingOptions
 #' @importFrom dismo maxent
 #' @importFrom dismo nullRandom
 #' @importFrom raster extract
 #' @importFrom raster writeRaster
-#' @importFrom rgdal CRS
 #' @importFrom rmaxent limiting
 #' @importFrom rmaxent parse_lambdas
 #' @importFrom rmaxent to_cloglog
@@ -25,10 +23,10 @@
 #' @export EC_modelling_maxent
 
 
-EC_modelling_maxent <- function(a,# EC.params
-                             response_info,  # from EC_build_response
-                             predictor_info,  # from EC_build_predictor
-                             dataset_info) {  # from EC_build_dataset
+EC_modelling_maxent <- function (a,# EC.params
+                                 response_info,  # from EC_build_response
+                                 predictor_info,  # from EC_build_predictor
+                                 dataset_info) {  # from EC_build_dataset
 
   # Set parameters to perform modelling
   model_algorithm <- 'maxent'
@@ -97,8 +95,7 @@ EC_modelling_maxent <- function(a,# EC.params
   lam <- rmaxent::parse_lambdas(model_raw)
 
   # Project the raw model to model-fitting grids
-  pred.raw <- predict(model_raw, (dataset_info$current_climate,
-                                  args=c(outputformat="raw")))
+  pred.raw <- predict(model_raw, dataset_info$current_climate, args = c(outputformat="raw"))
 
   # Transform the raw output to logistic/cloglog output -> this is used to produce the habitat suitability maps
   pred.cloglog2 <- rmaxent::to_cloglog (pred.raw, from="raw", lam$entropy)
@@ -133,13 +130,14 @@ EC_modelling_maxent <- function(a,# EC.params
   # This script converts the output maps and figures to log and clog log (raw >log> cloglog)
   # These are the maxent models for the logistic and cloglog outputs
   writeLines('Running model for cloglog output ...')
-  model_rcCloglog <- dismo::maxent((dataset_info$current_climate, occ_coords,
+  model_rcCloglog <- dismo::maxent (dataset_info$current_climate,
+                                    occ_coords,
                                     bg_biased, path=file.path(EC.env$outputdir,
                                                               "cloglog"),
                                     args=maxent_args, outputformat="cloglog")
   writeLines('Running model for logistic output ...')
 
-  model_rcLogistic <- maxent((dataset_info$current_climate, occ_coords,
+  model_rcLogistic <- maxent (dataset_info$current_climate, occ_coords,
                               bg_biased, path=file.path(EC.env$outputdir,
                                                         "logistic"),
                               args=maxent_args, outputformat="logistic")
@@ -161,10 +159,10 @@ EC_modelling_maxent <- function(a,# EC.params
 
   # Plot response curves
   EC_plot_response_curve(model_rcCloglog,
-                         names((dataset_info$current_climate),
+                         names(dataset_info$current_climate),
                                response_info$occur_species, "cloglog")
   EC_plot_response_curve(model_rcLogistic,
-                         names((dataset_info$current_climate),
+                         names(dataset_info$current_climate),
                                response_info$occur_species, "logistic")
 
   ## Maxent results table
@@ -178,7 +176,7 @@ EC_modelling_maxent <- function(a,# EC.params
   ## Multivariate Environmental Similarity Surface (MESS)
   # NB. Default is full=true however this returns a raster brick with all variables.
   #Changed to full=FALSE to get only MESS result.
-  mess <- backports::suppressWarnings(mess((dataset_info$current_climate, occ_env, full=FALSE))
+  mess <- suppressWarnings(mess(dataset_info$current_climate, occ_env, full=FALSE))
   raster::writeRaster(x=mess, file.path(EC.env$outputdir,
                                         paste0("mess_",
                                                response_info$occur_species,
@@ -194,7 +192,7 @@ EC_modelling_maxent <- function(a,# EC.params
   dev.off()
 
   ## Limiting Factors Map which is categorical data
-  limiting_factors <- rmaxent::limiting((dataset_info$current_climate, model_raw)
+  limiting_factors <- rmaxent::limiting (dataset_info$current_climate, model_raw)
   png(filename=file.path(EC.env$outputdir, paste0("limitfactors_",
                                                   response_info$occur_species,
                                                   "_maxent.png")),
@@ -236,7 +234,7 @@ EC_modelling_maxent <- function(a,# EC.params
   ##  Evaluation statistics
   equal_sens_spec_threshold = EC_save_eval (occ_coords, bg_biased,
                                             model_raw,
-                                            (dataset_info$current_climate,
+                                            dataset_info$current_climate,
                                              response_info$occur_species)
   writeLines(paste0('equal_sens_spec_threshold = ', equal_sens_spec_threshold))
 
@@ -257,7 +255,7 @@ EC_modelling_maxent <- function(a,# EC.params
       (!is.null(enviro.data.constraints) || enviro.data.generateCHall)) {
 
     writeLines("Doing projection over unconstraint climate scenario ...")
-    pred.raw.unconstraint <- predict(model_raw, (dataset_info$current_climate.orig, args=c(outputformat="raw"))
+    pred.raw.unconstraint <- predict(model_raw, dataset_info$current_climate.orig, args=c(outputformat="raw"))
 
     # Transform the raw output to logistic/cloglog output -> this is used to produce the habitat suitability maps
     pred.cloglog2_unconstraint <- rmaxent::to_cloglog(pred.raw.unconstraint, from="raw", lam$entropy)

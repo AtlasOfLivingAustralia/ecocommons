@@ -2,10 +2,9 @@
 % Please edit documentation in R/EC_performance_2D.R
 \name{absmean}
 \alias{absmean}
-\title{Calculate 2D measures of predictive performance for any
-model that predicts a probability of presence (or success),
-to be compared to binary observations of presence/absence (or
-success/failure).}
+\title{Calculate 2D measures of predictive performance for any model that predicts
+a probability of presence (or success), to be compared to binary observations
+of presence/absence (or success/failure).}
 \usage{
 absmean(x)
 }
@@ -21,8 +20,7 @@ absmean(x)
 \item{kill.plot}{}
 }
 \description{
-Calculate 2D measures of predictive performance for any
-model that predicts a probability of presence (or success),
-to be compared to binary observations of presence/absence (or
-success/failure).
+Calculate 2D measures of predictive performance for any model that predicts
+a probability of presence (or success), to be compared to binary observations
+of presence/absence (or success/failure).
 }

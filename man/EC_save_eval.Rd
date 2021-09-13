@@ -2,7 +2,7 @@
 % Please edit documentation in R/EC_save_eval.R
 \name{EC_save_eval}
 \alias{EC_save_eval}
-\title{Save a evalution model for all statistics}
+\title{Save an evalution model for all statistics}
 \usage{
 EC_save_eval(out_evaluation, out_stats, out_lossfunction, species_algo_str)
 }
@@ -16,5 +16,5 @@ EC_save_eval(out_evaluation, out_stats, out_lossfunction, species_algo_str)
 \item{species_algo_str}{}
 }
 \description{
-Save a evalution model for all statistics
+Save an evalution model for all statistics
 }
