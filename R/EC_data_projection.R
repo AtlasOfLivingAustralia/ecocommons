@@ -7,12 +7,15 @@
 #' @param data 
 #' @param climate.data 
 #'
-#' @export EC_data_projection
 #' @importFrom raster compareCRS
 #' @importFrom sp SpatialPoints
 #' @importFrom sp spTransform
+#' 
+#' @export EC_data_projection
 
-EC_data_projection <- function(data, climate.data) {
+EC_data_projection <- function(data,
+                               climate.data) {
+  
   if (!is.null(data) & !raster::compareCRS(data, climate.data, verbatim=TRUE)) {
     species <- sp::SpatialPoints(data)
     if (is.na(crs(species))) {

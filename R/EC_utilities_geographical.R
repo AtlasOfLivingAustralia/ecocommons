@@ -1,13 +1,14 @@
-#' subfunctions, for the Geographical algorithms scripts
+#' Subfunctions for Species Distribution Modelling (SDMs) Geographical 
+#' algorithms. It builds evaluation parameters, set data on biomod2
+#' structure and save the result
 #' 
 #' Not exported
 
-EC_options_geographical <- function(
-  a, # formerly EC.params
-  response_info, # from build_response()
-  model_algorithm){
+EC_options_geographical <- function( a, # formerly EC.params
+                                     response_info, # from build_response()
+                                     model_algorithm){
   # Build evaluation parameters for biomod2 and dismo modelling
-  # 
+  
   list(
     biomod_eval_method <- c("KAPPA", "TSS", "ROC" ,"FAR", "SR","ACCURACY","BIAS",
                             "POD", "CSI", "ETS"), #vector of evaluation metrics
@@ -32,10 +33,9 @@ EC_options_geographical <- function(
 #_____________________________________________________________________________
 
 
-EC_compute_geographical <- function(
-  predictor_info,  # from EC_build_predictor
-  a,  # formerly EC.params
-  model_options_geographical){  # from geographical_options
+EC_compute_geographical <- function (predictor_info,  # from EC_build_predictor
+                                     a,  # formerly EC.params
+                                     model_options_geographical){  # from geographical_options
   # Set parameters on biomod2 format to run modelling
   
   EC_format_biomod2 (true.absen             = predictor_info$absen,
@@ -54,17 +54,16 @@ EC_compute_geographical <- function(
 #_____________________________________________________________________________
 
 
-EC_save_geographical_model<-function(
-  model_compute_sdm,  # from model_compute
-  model_algorithm,
-  model_options_geographical){  # from build_biomod_functions
+EC_save_geographical_model<-function (model_compute_sdm,  # from model_compute
+                                      model_algorithm,
+                                      model_options_geographical){  # from build_biomod_functions
   # Save the model and projection to personal computer
   #
   # Save out the model object
-  EC_save(model_sdm, name = "model.object.RData")
+  EC_save (model_sdm, name = "model.object.RData")
 
   # Remove the current climate rasters to release disk space
-  EC_raster_remove(predictor_info$current_climate_orig)
+  EC_raster_remove (predictor_info$current_climate_orig)
 
   # Save the projection
   EC_save_projection (model.proj, model_options_geographical$projection_name,

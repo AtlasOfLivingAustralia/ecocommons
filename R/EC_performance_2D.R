@@ -1,7 +1,6 @@
-#' Calculate 2D measures of predictive performance for any
-#' model that predicts a probability of presence (or success),
-#' to be compared to binary observations of presence/absence (or
-#' success/failure).
+#' Calculate 2D measures of predictive performance for any model that predicts 
+#' a probability of presence (or success), to be compared to binary observations 
+#' of presence/absence (or success/failure).
 #'
 #' @param obs 
 #' @param pred 
@@ -9,9 +8,12 @@
 #' @param make.plot 
 #' @param kill.plot 
 #'
+#' @importFrom ggplot2 ggplot 
 #' @importFrom pROC auc
 #' @importFrom pROC roc
 #' @importFrom reshape2 melt
+#' 
+#' Not exported
 
 absmean <- function(x) abs(mean(x, na.rm=T))
 
@@ -29,47 +31,13 @@ pick1min <- function(x) { # w<-c(5,6,7,11,13)
 
 
 
-EC_performance_2D <- function(obs, pred, species_algo_str, 
-                              make.plot="EcoCommons", kill.plot=T) {
-  library(gridExtra)
-  library(pROC)
-
-  # AIM: Calculate 2D measures of predictive performance for any
-  # model that predicts a probability of presence (or success),
-  # to be compared to binary observations of presence/absence (or
-  # success/failure).
-  #
-  # AUTHOR: S.Low-Choy, Jan 2016, Griffith University
-  # ACKNOWLEDGEMENTS: Shawn Laffan for useful discussions,
-  # Chantal Huijbers, Sarah Richmond and Linda for testcase
-  #
-  # INPUTS
-  # obs = vector of observations of presence/absence (binary)
-  # pred = vector of predicted probabilities of presence
-  #
-  # OUTPUTS
-  # Predicted presence/absence density plot and histogram
-  # Sensitivity/Specificity plot
-  # ROC plot
-  # Plot with four different error rates across varying treshold probability values
-  # 4 different loss functions (maximizing TPR+TNR, balancing all errors, or equalising error rates)
-  # Table with best probability threshold value corresponding to minimum loss
-  # Range of threshold probability values for which loss falls within 5% of minimum
-  #
-
-  # TESTING 23 July 2018 - SLC - problem with threshold = 0 when predictions only 0 or 1
-  # species_algo_str <- "SRE"; make.plot <- "EC"; kill.plot <- F; obs<-gobs; pred<-gpred
-
-
-  # TESTING 23 July 2018 - SLC - when more than one "best" value as the minimum is achieved twice!
-  # Addition Number 2
-
-
-  #############################################################
-  #
-  # ERROR CHECKING
-  #
-  # Check that observations and predictions match length
+EC_performance_2D <- function(obs,  # presence/absence (binary)
+                              pred,  # predicted probabilities of presence
+                              species_algo_str, 
+                              make.plot="EcoCommons",
+                              kill.plot=T) {
+  # Generates a predicted presence/absence density plot and histogram, 
+  # sensitivity plot and ROC plot, with error rates; and table with thresholds
   nobs <- length(obs)
   if (nobs != length(pred)) stop("Ensure that vectors for observations and 
                                  predictions are of equal length!")
@@ -91,10 +59,8 @@ EC_performance_2D <- function(obs, pred, species_algo_str,
     truth <- obs
   }
   if (is.numeric(truth)) {
-    if (any(truth==0)) {
-      # presume 0 is coded to be absence
-      # if presences are not 1s then recode them to be 1s
-      if (any(truth[truth!=0]!=1)) {
+    if (any(truth==0)) {  # presume 0 is coded to be absence
+      if (any(truth[truth!=0]!=1)) {  # if presences are not 1s then recode them to be 1s
         truth[truth!=0] <- 1
       }
     } else if (any(truth ==1)) {
@@ -106,7 +72,8 @@ EC_performance_2D <- function(obs, pred, species_algo_str,
       stop("Can't figure out coding of absence-presence as it is not 0-1 or 1-2. 
            Suggest you recode obs as a factor, with levels 0 and 1")
     } # end if any truth == 0
-  } else if (is.character(truth)) {
+  
+    } else if (is.character(truth)) {
     # look for "p" for presence, "d" for detected or "o" for occupied
     the.pres <- grep("^[pP]", truth)
     if (any(the.pres)) {
@@ -144,10 +111,7 @@ EC_performance_2D <- function(obs, pred, species_algo_str,
   if (any(pred < 0) | any(pred > 1)) stop("Predictions should be probabilities 
                                           between zero and one. (Check that predictions 
                                           are not on the log odds scale.)")
-
-  #
   # MEASURES
-  #
 
   # CREATE ERROR MATRICES
   list.tpv <- sort(unique(pred))
@@ -301,7 +265,8 @@ EC_performance_2D <- function(obs, pred, species_algo_str,
     min.v <- min(temp[,the.v], na.rm=T)
     d.minv <- (abs(temp[,the.v] - min.v) / min.v)
     the.range <- temp$tpv[ d.minv < 0.05 ]
-    rangeperf[dimnames(rangeperf)[[1]]==v, 1:2] <- c(min(the.range, na.rm=T), max(the.range, na.rm=T))
+    rangeperf[dimnames(rangeperf)[[1]]==v, 1:2] <- c(min(the.range, na.rm=T),
+                                                     max(the.range, na.rm=T))
   }
 
   rangeperf <- as.data.frame(rangeperf)
@@ -309,7 +274,8 @@ EC_performance_2D <- function(obs, pred, species_algo_str,
   rangeperf$best <- unlist(best)
 
   loss.table <- subset(rangeperf, select = c("lower", "upper", "best"))
-  row.names(loss.table) = c("Maximize TPR+TNR", "Maximize PPV+NPV", "Balance all errors", "TPR = TNR")
+  row.names(loss.table) = c("Maximize TPR+TNR", "Maximize PPV+NPV",
+                            "Balance all errors", "TPR = TNR")
   loss.table <- as.data.frame(loss.table)
 
   # Rescale
@@ -323,15 +289,17 @@ EC_performance_2D <- function(obs, pred, species_algo_str,
   if (make.plot!="") {
     # reshape the data so that it is in long rather than wide format
     # (= each row represents one item, labels are specified by 'measure' column; used by ggplot2)
-    errs <- reshape2::melt(temp, id.var="tpv", measure.var=c("tpr", "tnr", "fpr", "fnr", "fdr",
-                                                   "fors", "L.diag", "L.pred", "L.all", "L.eq.diag"))
+    errs <- reshape2::melt(temp, id.var="tpv",
+                           measure.var=c("tpr", "tnr", "fpr", "fnr", "fdr",
+                                         "fors", "L.diag", "L.pred", "L.all",
+                                         "L.eq.diag"))
     names(errs)[2] <- c("measure")
 
     # Create Presence/absence density plot across threshold probability values
     temp2 <- data.frame(list(pred=pred, obs=obs))
     png(file=file.path(EC.env$outputdir, sprintf("%s-presence-absence-plot_%s.png",
                                                  make.plot, species_algo_str)), width=480, height=480)
-    g1 <- ggplot(temp2, aes(x=pred, fill=factor(obs))) +
+    g1 <- ggplot2::ggplot(temp2, aes(x=pred, fill=factor(obs))) +
       geom_density(stat="density", alpha=0.5) +
       labs(title="Presence/absence density plot \nacross predicted probability of presence",
            x="\nPredicted probability of presence", y="Density\n") +
@@ -348,6 +316,7 @@ EC_performance_2D <- function(obs, pred, species_algo_str,
     # Create Presence/absence histogram across threshold probability values
     png(file=file.path(EC.env$outputdir, sprintf("%s-presence-absence-hist_%s.png",
                                                  make.plot, species_algo_str)), width=480, height=480)
+    
     g2 <- ggplot(temp2, aes(x=pred, fill=factor(obs)))  +
       geom_histogram(position="dodge", alpha = 0.5) +
       labs(title="Presence/absence histogram \nacross predicted probability of presence",
@@ -365,7 +334,8 @@ EC_performance_2D <- function(obs, pred, species_algo_str,
     # Create TPR-TNR plot
     png(file=file.path(EC.env$outputdir, sprintf("%s-TPR-TNR_%s.png",
                                                  make.plot, species_algo_str)), width=480, height=480)
-    g3 <- ggplot(errs[errs$measure %in% c("tpr", "tnr"), ],
+    
+    g3 <- ggplot2::ggplot(errs[errs$measure %in% c("tpr", "tnr"), ],
                  aes(x=tpv, y=value, colour=measure)) +
       geom_line(size=1.2) +
       ylim(0,1) +
@@ -386,7 +356,8 @@ EC_performance_2D <- function(obs, pred, species_algo_str,
     # Create Error rates plot: shows the values of four different error rates across the range of threshold probability values
     png(file=file.path(EC.env$outputdir, sprintf("%s-error-rates_%s.png",
                                                  make.plot, species_algo_str)), width=480, height=480)
-    g4 <- ggplot(errs[errs$measure %in% c("fpr", "fnr", "fdr", "fors"), ],
+    
+    g4 <- ggplot2::ggplot(errs[errs$measure %in% c("fpr", "fnr", "fdr", "fors"), ],
                  aes(x=tpv, y=value, colour=measure, linetype=measure)) +
       geom_line(size=1.2) +
       ylim(0,1) +
@@ -412,7 +383,8 @@ EC_performance_2D <- function(obs, pred, species_algo_str,
                                                  species_algo_str)), width=480, height=480)
     xmax1 = min(round((max(temp$fpr) + 0.2)/0.1)*0.1, 1)
     xpos = max(xmax1/2, 0.1)
-    g5 <- ggplot(temp, aes(x=fpr, y=tpr)) +
+    
+    g5 <- ggplot2::ggplot(temp, aes(x=fpr, y=tpr)) +
       geom_line(size=1.2) +
       ylim(0,1) +
       xlim(0, xmax1) +
@@ -458,7 +430,7 @@ EC_performance_2D <- function(obs, pred, species_algo_str,
     # across the range of threshold probability values
     png(file=file.path(EC.env$outputdir, sprintf("%s-loss-functions_%s.png",
                                                  make.plot, species_algo_str)), width=480, height=480)
-    g6 <- ggplot(errs[errs$measure %in% rev(c("L.diag", "L.pred", "L.all", "L.eq.diag")), ],
+    g6 <- ggplot2::ggplot(errs[errs$measure %in% rev(c("L.diag", "L.pred", "L.all", "L.eq.diag")), ],
                  aes(x=tpv, y=value, colour=measure)) +
       geom_line(size=1.2) +
       ylim(0,1) +
@@ -482,7 +454,8 @@ EC_performance_2D <- function(obs, pred, species_algo_str,
                                      levels=(c("diag", "pred", "all", "eq.diag")))
     png(file=file.path(EC.env$outputdir, sprintf("%s-loss-intervals_%s.png",
                                                  make.plot, species_algo_str)), width=480, height=480)
-    g7 <- ggplot(rangeperf, aes(x=type.of.loss, y=best, ymin=lower, ymax=upper,
+    
+    g7 <- ggplot2::ggplot(rangeperf, aes(x=type.of.loss, y=best, ymin=lower, ymax=upper,
                                 colour=type.of.loss)) +
       geom_pointrange(size=1.2) +
       geom_line(size=1.2) +

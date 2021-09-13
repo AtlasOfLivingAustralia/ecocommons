@@ -10,13 +10,16 @@
 #'
 #' @export EC_read_sp
 
-EC_read_sp <- function(filename, month_filter=NULL) {
+EC_read_sp <- function (filename,  # from response_info
+                        month_filter=NULL) {
+  
   if (!is.null(filename)) {  # return NULL if filename is not given
-    csvfile <- read.csv(filename, colClasses=c("lon"="numeric", "lat"="numeric"))
+    csvfile <- read.csv(filename, colClasses=c("lon"="numeric",
+                                               "lat"="numeric"))
 
-    col_kept <- c("lon","lat") # keep only lon and lat columns; for MM include month column
+    col_kept <- c("lon","lat")  # keep only lon and lat columns; for MM include month column
     if ('year' %in% colnames(csvfile)) {
-      col_kept = append(col_kept, 'year') # keep year column if exists
+      col_kept = append(col_kept, 'year')  # keep year column if exists
     }
     if (is.null(month_filter)) {
       csvfile = csvfile[col_kept]

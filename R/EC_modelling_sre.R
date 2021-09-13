@@ -15,12 +15,12 @@ EC_modelling_sre<- function(x){ # EC.params, EC.env){
   model_algorithm <- 'SRE'
   # No specific parameter is required to run SRE
   # General parameters to run biomod2 package modelling on Geographical algorithms
-  model_options_statregr <- EC_options_statregr (a, response_info,
+  model_options_algorithm <- EC_options_algorithm (a, response_info,
                                                  model_algorithm)
 
   # Model accuracy statistics
-  model_accuracy_sre <- c(model_options_statregr$biomod_eval_method,
-                          model_options_statregr$dismo_eval_method)
+  model_accuracy_sre <- c(model_options_algorithm$biomod_eval_method,
+                          model_options_algorithm$dismo_eval_method)
 
   # Determine the number of pseudo absence points from pa_ratio
   pa_ratio <- a$pa_ratio
@@ -30,11 +30,11 @@ EC_modelling_sre<- function(x){ # EC.params, EC.env){
   }
 
   # Define the model options
-  model_options <- biomod2::BIOMOD_ModelingOptions (SRE = model_options_statregr)
+  model_options <- biomod2::BIOMOD_ModelingOptions (SRE = model_options_algorithm)
 
   # Define model options and compute the model
   # uses biomod2 model options
-  model_compute <- EC_compute_statregr (predictor_info, pa_number_point, a,
-                                        model_options_statregr)
+  model_compute <- EC_compute_algorithm (predictor_info, pa_number_point, a,
+                                        model_options_algorithm)
 }
 

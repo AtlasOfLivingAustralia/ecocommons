@@ -2,9 +2,7 @@
 % Please edit documentation in R/EC_raster_stack.R
 \name{EC_raster_stack}
 \alias{EC_raster_stack}
-\title{Stack raster input files from user environment
-selected_layers is a list of layers to be considered when determine the
-resolution of the raster. If none, consider all layers.}
+\title{Stack raster input files from user environment}
 \usage{
 EC_raster_stack(
   filenames,
@@ -26,7 +24,6 @@ EC_raster_stack(
 \item{selected_layers}{}
 }
 \description{
-Stack raster input files from user environment
-selected_layers is a list of layers to be considered when determine the
-resolution of the raster. If none, consider all layers.
+This function adjust raster layers to same projection, resolution and extent,
+assinging a name for your variable
 }

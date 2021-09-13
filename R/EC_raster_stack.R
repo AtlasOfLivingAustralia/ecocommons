@@ -1,14 +1,14 @@
 #' Stack raster input files from user environment
-#' selected_layers is a list of layers to be considered when determine the
-#' resolution of the raster. If none, consider all layers.
+#' 
+#' This function adjust raster layers to same projection, resolution and extent,
+#' assigning a name for the variables
 #'
 #' @param filenames 
 #' @param types 
 #' @param layernames 
 #' @param resamplingflag 
 #' @param selected_layers 
-#'
-#' @export EC_raster_stack
+#' 
 #' @importFrom gdalUtils gdalwarp
 #' @importFrom raster compareRaster
 #' @importFrom sp CRS
@@ -18,13 +18,15 @@
 #' @importFrom raster stack
 #' @importFrom rgdal CRSargs
 #' @importFrom rgdal GDALinfo
+#' 
+#' @export EC_raster_stack
 
 
-EC_raster_stack <- function(filenames, 
-                           types, 
-                           layernames, 
-                           resamplingflag,
-                           selected_layers=NULL) {
+EC_raster_stack <- function (filenames,  # from predictor_info 
+                             types,  # from predictor_info  
+                             layernames,  # from predictor_info 
+                             resamplingflag,  # from constraint_info 
+                             selected_layers=NULL) {
   
   rasters <- EC_raster_resampled (filenames, types, resamplingflag,
                                  selected_layers) # adjust to same projection, resolution and extent
@@ -36,17 +38,18 @@ EC_raster_stack <- function(filenames,
   return(rasterstack)
 }
 
-#===================================================================
-### Subfunctions, listed in the order in which they appear within EC_raster_stack
 
-## Load rasters, determine common projection and convert categorical
-## rasters to factors
+#_____________________________________________________________________________
+
+# Subfunctions, listed in the order in which they appear within EC_raster_stack
+
 EC_raster_resampled  <- function(raster_filenames, 
                                 raster_types, 
                                 resamplingflag, 
                                 selected_layers=NULL,
                                 overwrite=TRUE) {
-  
+  # Load rasters, determine common projection and convert categorical
+  # and convert rasters to factors
   rasters <- lapply(raster_filenames, EC_read_raster)
   
   reference <- EC_raster_ref(rasters, resamplingflag, selected_layers) # determine common raster shape
@@ -58,10 +61,13 @@ EC_raster_resampled  <- function(raster_filenames,
 }
 
 
+#_____________________________________________________________________________
 
-## Just need to be used if raster layers are not aligned up correctly
-EC_raster_warp <- function(raster_filenames, raster_types, reference, overwrite=TRUE) {
-  
+
+EC_raster_warp <- function(raster_filenames,
+                           raster_types,
+                           reference, overwrite=TRUE) {
+  # Just need to be used if raster layers are not aligned up correctly
   rasters <- mapply(
     function(filename, type) {
       gdinfo <- rgdal::GDALinfo(filename)
@@ -74,10 +80,11 @@ EC_raster_warp <- function(raster_filenames, raster_types, reference, overwrite=
       temp_raster <- file.path(dir, paste0(basename(tempfile()), '.tif'))
       te <- extent(reference)
       
-      # This is to fix issue with NA value being treated as value 0 if nodatavalue is not set.
+      # Fix issue with NA value being treated as value 0 if nodatavalue is not set.
       if (hasNoDataValues) {
         gdalUtils::gdalwarp(filename, temp_raster,
-                            s_srs = rgdal::CRSargs(crs(r)), t_srs = rgdal::CRSargs(crs(reference)),
+                            s_srs = rgdal::CRSargs(crs(r)),
+                            t_srs = rgdal::CRSargs(crs(reference)),
                             te=c(te@xmin, te@ymin, te@xmax, te@ymax),
                             ts=c(ncol(reference), nrow(reference)),
                             # tr=c(...), ... either this or ts
@@ -86,10 +93,10 @@ EC_raster_warp <- function(raster_filenames, raster_types, reference, overwrite=
                             dstnodata=mdata[['NoDataValue']],
                             co=c("TILED=YES", "COMPRESS=LZW")
         )
-      }
-      else {
+      } else {
         gdalUtils::gdalwarp(filename, temp_raster,
-                            s_srs = rgdal::CRSargs(crs(r)), t_srs = rgdal::CRSargs(crs(reference)),
+                            s_srs = rgdal::CRSargs(crs(r)),
+                            t_srs = rgdal::CRSargs(crs(reference)),
                             te=c(te@xmin, te@ymin, te@xmax, te@ymax),
                             ts=c(ncol(reference), nrow(reference)),
                             # tr=c(...), ... either this or ts
@@ -116,15 +123,21 @@ EC_raster_warp <- function(raster_filenames, raster_types, reference, overwrite=
 }
 
 
-## Create the same projection for all layers. If a common projection is not 
-## established, it will be projected in EPSG:4326, common in EcoCommons
+#_____________________________________________________________________________
 
-EC_raster_ref <- function(rasters, resamplingflag, selected_layers) {
+
+EC_raster_ref <- function (rasters,
+                           resamplingflag,
+                           selected_layers) {
+  
+  # Create the same projection for all layers. If a common projection is not 
+  # established, it will be projected in EPSG:4326, common in EcoCommons
   empty.rasters <- lapply(rasters, function(x) { raster::projectExtent(x, crs(x)) })  # create list of empty rasters
   common.crs <- crs(empty.rasters[[1]]) # choose a common.crs if all crs in rasters are the same use that one
   
   if (! do.call(raster::compareRaster, c(empty.rasters, extent=FALSE, rowcol=FALSE, 
-                                 prj=TRUE, res=FALSE, orig=FALSE, rotation=FALSE, stopiffalse=FALSE))) {
+                                 prj=TRUE, res=FALSE, orig=FALSE, rotation=FALSE,
+                                 stopiffalse=FALSE))) {
     common.crs = crs("+init=epsg:4326") # common projection adopted in EcoCommons
     EC_log_warning(sprintf("Auto projecting to common CRS: %s", common.crs))
     empty.rasters = lapply(empty.rasters, function(x) { raster::projectExtent(x, common.crs) })
@@ -153,13 +166,14 @@ EC_raster_ref <- function(rasters, resamplingflag, selected_layers) {
 }
 
 
+#_____________________________________________________________________________
 
-## Apply same extension and projection for all rasters
-## rasters: a vector of rasters, all rasters should have same resolution
-## common.crs: crs to use to calculate intersection
 
-EC_raster_extent <- function(rasters, common.crs) {
-  extent.list = lapply(rasters, function(r) { extent(raster::projectExtent(r, common.crs)) }) # intersect all extents
+EC_raster_extent <- function(rasters,  # a vector of rasters, all rasters should have same resolution
+                             common.crs) {  # crs to use to calculate intersection
+  ## Apply same extension and projection for all rasters
+  extent.list = lapply(rasters, function(r)
+    { extent(raster::projectExtent(r, common.crs)) }) # intersect all extents
   
   common.extent = Reduce(raster::intersect, extent.list) # if all extents are the same (used to print warning)
   
@@ -169,22 +183,25 @@ EC_raster_extent <- function(rasters, common.crs) {
 }
 
 
+#_____________________________________________________________________________
 
-## Extension to STR
-EC_raster_to_STR <- function(ext)
-{
-  return(sprintf("xmin=%f xmax=%f ymin=%f ymax=%f", ext@xmin, ext@xmax, ext@ymin, ext@ymax));
+
+EC_raster_to_STR <- function(ext) {
+  ## Extension to STR
+  return(sprintf("xmin=%f xmax=%f ymin=%f ymax=%f", ext@xmin, 
+                 ext@xmax, ext@ymin, ext@ymax));
 }
 
 
+#_____________________________________________________________________________
 
-## Function to determine and resample the resolution of the user raster
-## resamplingflag: a flag to determine which resampling approach to take
-## selected_layers: a list of indexes to the raster layers to be considered 
-## when determine the resolution to be used
 
-EC_raster_resolution <- function(rasters, resamplingflag, selected_layers) {
-  get.resolution <- function(i, rasters) {
+EC_raster_resolution <- function (rasters,
+                                  resamplingflag,  # a flag with which resampling approach to take
+                                  selected_layers) {  # list of indexes to the raster layers to be considered 
+  # Determine and resample the resolution of the user raster  
+  get.resolution <- function (i,
+                              rasters) {
     # Return the resolution of the raster given by the index
     return(res(rasters[[i]]))
   }
@@ -206,4 +223,3 @@ EC_raster_resolution <- function(rasters, resamplingflag, selected_layers) {
   is.same.res = all(sapply(resolutions, function(x) all(common.res == x)))
   return (list(common.res=common.res, is.same.res=is.same.res))
 }
-

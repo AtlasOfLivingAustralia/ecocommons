@@ -2,7 +2,8 @@
 % Please edit documentation in R/EC_SDM_geoconstrained.R
 \name{EC_SDM_geoconstrained}
 \alias{EC_SDM_geoconstrained}
-\title{The constraint is the intersection between the occurrence's convex-hull
+\title{Function to geographically constrained the Species Distribution Modelling.
+The constraint is the intersection between the occurrence's convex-hull
 polygon and the constraint. Otherwise, actual constraint is the convex-hull
 polygon
 A buffer of width 1-resolution cell is applied to avoid missing environment
@@ -28,6 +29,7 @@ EC_SDM_geoconstrained(
 \item{rasterstack}{}
 }
 \description{
+Function to geographically constrained the Species Distribution Modelling.
 The constraint is the intersection between the occurrence's convex-hull
 polygon and the constraint. Otherwise, actual constraint is the convex-hull
 polygon

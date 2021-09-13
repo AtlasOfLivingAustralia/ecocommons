@@ -2,18 +2,19 @@
 % Please edit documentation in R/EC_build_functions.R
 \name{EC_build_response}
 \alias{EC_build_response}
-\title{Define functions to run algorithms scripts}
+\title{Functions to set up the data to run the algorithms scripts}
 \usage{
 EC_build_response(a)
 }
 \arguments{
 \item{param}{}
 
-\item{value}{}
+\item{value}{Not exported}
 }
 \description{
 The EcoCommons platform computes many Species Distribution Modelling
 algorithms to be selected by the user. However, some parameters are repeated
-across algorithms. This function aims to compute simple names for parameters
-used in all models.
+across algorithms. This functions aims to compute simple lists for parameters
+used in all models. It includes response, predictors and constraints,
+necessary to build the dataset to be used.
 }

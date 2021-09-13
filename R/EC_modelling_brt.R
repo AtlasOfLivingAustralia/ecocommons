@@ -22,10 +22,10 @@ EC_modelling_brt <- function(a,# EC.params
 
   # Model accuracy statistics
   biomod_eval_method <- c("KAPPA", "TSS", "ROC" ,"FAR", "SR","ACCURACY","BIAS",
-                          "POD", "CSI", "ETS"), #vector of evaluation metrics
+                          "POD", "CSI", "ETS") #vector of evaluation metrics
 
   # available from dismo::evaluate.R. Not originally implemented in biomod2::Evaluate.models.R
-  dismo_eval_method <- c("ODP", "TNR", "FPR", "FNR", "NPP", "MCR", "OR"),
+  dismo_eval_method <- c("ODP", "TNR", "FPR", "FNR", "NPP", "MCR", "OR")
 
   model_accuracy_brt <- c(biomod_eval_method, dismo_eval_method)
 
@@ -134,28 +134,28 @@ EC_modelling_brt <- function(a,# EC.params
 
 EC_options_brt <- function(a){
   # Set specific parameters to run brt algorithm
-  list( brt.fold.vector = NULL #a fold vector to be read in for cross validation with offsets
-        brt.tree.complexity = a$tree_complexity #sets the complexity of individual trees
-        brt.learning.rate = a$learning_rate #sets the weight applied to individual trees
-        brt.bag.fraction = a$bag_fraction #sets the proportion of observations used in selecting variables
-        brt.site.weights = NULL # rep(1, nrow(data)) #allows varying weighting for sites
-        brt.var.monotone = NULL # rep(0, length(gbm.x)) #restricts responses to individual predictors to monotone
-        brt.n.folds = a$n_folds #number of folds
-        brt.prev.stratify = a$prev_stratify #prevalence stratify the folds - only for presence/absence data
-        brt.family = a$family #family - bernoulli (=binomial), poisson, laplace or gaussian
-        brt.n.trees = a$n_trees #number of initial trees to fit
-        brt.step.size = brt.n.trees #numbers of trees to add at each cycle
-        brt.max.trees = a$max_trees #max number of trees to fit before stopping
-        brt.tolerance.method = a$tolerance_method #method to use in deciding to stop - "fixed" or "auto"
-        brt.tolerance = a$tolerance_value #tolerance value to use - if method == fixed is absolute, if auto is multiplier * total mean deviance
-        brt.keep.data = FALSE #Logical. keep raw data in final model
-        brt.plot.main = FALSE #Logical. plot hold-out deviance curve
-        brt.plot.folds = FALSE #Logical. plot the individual folds as well
-        brt.verbose = FALSE #Logical. control amount of screen reporting
-        brt.silent = FALSE #Logical. to allow running with no output for simplifying model)
-        brt.keep.fold.models = FALSE #Logical. keep the fold models from cross valiation
-        brt.keep.fold.vector = TRUE #Logical. allows the vector defining fold membership to be kept
-        brt.keep.fold.fit = FALSE #Logical. allows the predicted values for observations from cross-validation to be kept
+  list( brt.fold.vector = NULL, #a fold vector to be read in for cross validation with offsets
+        brt.tree.complexity = a$tree_complexity, #sets the complexity of individual trees
+        brt.learning.rate = a$learning_rate, #sets the weight applied to individual trees
+        brt.bag.fraction = a$bag_fraction, #sets the proportion of observations used in selecting variables
+        brt.site.weights = NULL, # rep(1, nrow(data)) #allows varying weighting for sites
+        brt.var.monotone = NULL, # rep(0, length(gbm.x)) #restricts responses to individual predictors to monotone
+        brt.n.folds = a$n_folds, #number of folds
+        brt.prev.stratify = a$prev_stratify, #prevalence stratify the folds - only for presence/absence data
+        brt.family = a$family, #family - bernoulli (=binomial), poisson, laplace or gaussian
+        brt.n.trees = a$n_trees, #number of initial trees to fit
+        brt.step.size = brt.n.trees, #numbers of trees to add at each cycle
+        brt.max.trees = a$max_trees, #max number of trees to fit before stopping
+        brt.tolerance.method = a$tolerance_method, #method to use in deciding to stop - "fixed" or "auto"
+        brt.tolerance = a$tolerance_value, #tolerance value to use - if method == fixed is absolute, if auto is multiplier * total mean deviance
+        brt.keep.data = FALSE, #Logical. keep raw data in final model
+        brt.plot.main = FALSE, #Logical. plot hold-out deviance curve
+        brt.plot.folds = FALSE, #Logical. plot the individual folds as well
+        brt.verbose = FALSE, #Logical. control amount of screen reporting
+        brt.silent = FALSE, #Logical. to allow running with no output for simplifying model)
+        brt.keep.fold.models = FALSE, #Logical. keep the fold models from cross valiation
+        brt.keep.fold.vector = TRUE, #Logical. allows the vector defining fold membership to be kept
+        brt.keep.fold.fit = FALSE, #Logical. allows the predicted values for observations from cross-validation to be kept
         projection_name = "current",
         species_algo_str = ifelse(is.null(a$subset),
                                   sprintf(model_algorithm,"%s_",
@@ -163,5 +163,4 @@ EC_options_brt <- function(a){
                                   sprintf(model_algorithm,"%_%s",
                                           response_info$occur_species, a$subset))
         )
-  )
 }

@@ -1,4 +1,4 @@
-# Function to geographically constrained the species distribution modelling
+#' Function to geographically constrained the Species Distribution Modelling.
 #' The constraint is the intersection between the occurrence's convex-hull 
 #' polygon and the constraint. Otherwise, actual constraint is the convex-hull 
 #' polygon
@@ -12,7 +12,9 @@
 #' @param generateCHull 
 #'
 #' @export EC_SDM_geoconstrained
+#' 
 #' @importFrom raster compareCRS
+#' @importFrom raster crop
 #' @importFrom raster mask
 #' @importFrom raster stack
 #' @importFrom rgeos gBuffer
@@ -30,7 +32,8 @@ EC_SDM_geoconstrained <- function(current_climate,
                                  generateCHull) {
   
   if (is.null(constraints) & !generateCHull) {
-    return(list("raster_obj" = current_climate, "occur" = occur, "absen" = absen))
+    return(list("raster_obj" = current_climate, "occur" = occur,
+                "absen" = absen))
   }
   
   geojson_crs <- CRS("+init=epsg:4326") # create a geojson for convex-hull polygon if no geojson
@@ -38,13 +41,13 @@ EC_SDM_geoconstrained <- function(current_climate,
     parsed_geojson <- sp::SpatialPolygons(list(Polygons(list(Polygon(rbind(c(1,1)))), ID=1)),
                                       proj4string=crs('+init=epsg:4326'))
   } else {
-    parsed_geojson <- rgdal::readOGR(dsn = paste0(constraints),
+    parsed_geojson <- rgdal::readOGR (dsn = paste0(constraints),
                                      layer = "OGRGeoJSON", verbose = FALSE)
     geojson_crs <- crs(parsed_geojson)
   }
   
   if (!compareCRS(current_climate, parsed_geojson, verbatim=TRUE)) {
-    crs(current_climate) <-crs(parsed_geojson)  # if CRS is different, reproject
+    crs(current_climate) <-crs(parsed_geojson)  # if CRS is different, re-project
   }
   
   if (!is.null(occur)) {
@@ -127,19 +130,21 @@ EC_SDM_geoconstrained <- function(current_climate,
   
   geoconstrained <- raster::stack(current_climate, EC_mask, parsed_geojson)  # mask the rasterstack (current_climate)
   
-  mylist <- list("raster_obj" = geoconstrained, "occur" = occurconstrained, "absen" = absenconstrained)
+  mylist <- list("raster_obj" = geoconstrained, "occur" = occurconstrained,
+                 "absen" = absenconstrained)
   return(mylist)
 }
 
 
 
 
-#________________________________________________________________
-## Subfunctions, listed in the order in which they appear within EC_SDM_geoconstrained()
+#_____________________________________________________________________________
+## Subfunction, as appear within EC_SDM_geoconstrained()
 
 
-## Project species distribution data and climate data in the same crs (EPSG:4326)
-EC_data_projection <- function(data, climate.data) {
+EC_data_projection <- function(data,
+                               climate.data) {
+  # Project species distribution data and climate data in the same crs (EPSG:4326)
   sp <- SpatialPoints(data)
   if (is.na(crs(sp))) {
     crs(sp) <- '+init=epsg:4326'
@@ -150,4 +155,29 @@ EC_data_projection <- function(data, climate.data) {
   }
   return(sp)
   }
+}
+
+
+#_____________________________________________________________________________
+
+
+EC_mask <- function(current_climate,
+                    parsed_geojson) {
+  # Crop the raster to the extent of the constraint region and mask it
+  cropped_raster <- raster::crop (current_climate,
+                                  extent(parsed_geojson))  # crop to constraint region before masking
+  
+  envraster_filename <- paste(EC.env$workdir, 
+                              basename(tempfile(fileext = ".grd")), sep="/")
+  
+  masked_raster <- raster::mask (cropped_raster, parsed_geojson,
+                                 filename = envraster_filename)
+  
+  if (is.factor(masked_raster)) {
+    masked_raster = as.factor(masked_raster)
+  }
+  
+  EC_raster_remove(stack(cropped_raster))  # remove cropped raster and associated raster files (i.e. grd and gri)
+  
+  return(masked_raster)
 }

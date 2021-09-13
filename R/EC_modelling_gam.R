@@ -24,12 +24,12 @@ EC_modelling_gam <- function(a,# EC.params
   # specific parameters to run GAM algorithm
   model_options_gam <- EC_options_gam (a)
   # general parameters to run biomod2 package modelling
-  model_options_statregr <- EC_options_statregr (a, response_info,
+  model_options_algorithm <- EC_options_algorithm (a, response_info,
                                                  model_algorithm)
   
   # Model accuracy statistics
-  model_accuracy_gam <- c(model_options_statregr$biomod_eval_method,
-                          model_options_statregr$dismo_eval_method)
+  model_accuracy_gam <- c(model_options_algorithm$biomod_eval_method,
+                          model_options_algorithm$dismo_eval_method)
   
   # Determine the number of pseudo absence points from pa_ratio
   pa_ratio <- EC.params$pa_ratio
@@ -43,13 +43,13 @@ EC_modelling_gam <- function(a,# EC.params
   
   # Define model options and compute the model
   # uses biomod2 model options
-  model_compute <- EC_compute_statregr (predictor_info, pa_number_point, a,
-                                        model_options_statregr, model_options_gam)
+  model_compute <- EC_compute_algorithm (predictor_info, pa_number_point, a,
+                                        model_options_algorithm, model_options_gam)
   
   
   # Save a variable importance plot (VIP) and the model object
-  model_save <- EC_save_statregr_model (model_compute, model_algorithm,
-                                        model_options_statregr)
+  model_save <- EC_save_algorithm_model (model_compute, model_algorithm,
+                                        model_options_algorithm)
   
   # Project over climate scenario. Also convert projection output from grd to
   # gtiff and save the projection. Two options:
@@ -57,12 +57,12 @@ EC_modelling_gam <- function(a,# EC.params
   # 1. projection without constraint if all env data layers are continuous
   model_projection_constrained <-
     project_model_current_constrained (predictor_info,model_compute,
-                                       model_options_statregr, response_info,
+                                       model_options_algorithm, response_info,
                                        a, model_algorithm)
   
   # 2. projection with constraint
   model_projection <- project_model_current (model_compute, predictor_info,
-                                             model_options_statregr, response_info,
+                                             model_options_algorithm, response_info,
                                              a, model_algorithm)
 
 # RETURN?? not set yet

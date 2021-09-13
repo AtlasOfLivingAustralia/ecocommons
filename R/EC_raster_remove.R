@@ -2,11 +2,15 @@
 #'
 #' #@param rasterObject 
 #'
-#' #@importFrom spatial.tools raster_to_filenames
+#' @importFrom raster filename
+#' 
+#' Not exported
 
 EC_raster_remove <- function(rasterObject) {
+  
   raster_filenames <- raster::filename(rasterObject)
-  for (fname in raster_filenames) {
+ 
+   for (fname in raster_filenames) {
     if (extension(fname)  == '.grd') {
       file.remove(fname, extension(fname, '.gri'))
     }

@@ -3,7 +3,7 @@
 ############################################################
 ##
 ## Author details: EcoCommons Platform 
-## Contact details: emailadress@
+## Contact details: comms@ecocommons.org.au
 ## Copyright statement: This script is the product of EcoCommons platform. Please
 ## run "Citation" to check how to cite this R script, etc, etc
 ## Date : ??
@@ -15,28 +15,23 @@
 ## 2) Run the SDMs with selected algorithms
 ##
 
-# Load and edit your dataset
+# 1. Load and edit your dataset
 
-# The 'param.json' file used here is generated on EcoCommons python script
+# The 'param.json' file used here is generated on the EcoCommonsplatform
 source_file <- EC_read_json(file="~/Documents/GitHub/ecocommons_ALA/inst/variables/test_constraint_map.json")
 
-print.model_parameters(source_file)
+print.model_parameters (source_file)
 
 EC.params <- source_file$params  # data file with species, environment data and parameters
 
-EC.env <- source_file$env  # set worksplace environment
+EC.env <- source_file$env  # set workplace environment
 
 
-# Set working directory (script runner takes care of it)
+# 2. Set working directory (script runner takes care of it)
 setwd(EC.env$workdir)
 
-# Set a temporary directory to raster - we do this because raster sometimes makes
-# temp files (e.g. when cropping).Might want to make this configurable - e.g. we
-# might want to control maxmemory, and/or other raster options
-# rasterOptions(tmpdir=paste(EC.env$workdir,"raster_tmp",sep="/"))
 
-
-# Set data for modelling
+# 3. Set data for modelling
 response_info <- EC_build_response(EC.params)  # species data
 
 predictor_info <- EC_build_predictor(EC.params)  # environmental data
@@ -46,7 +41,7 @@ constraint_info <- EC_build_constraint(EC.params)  # constraint area data
 dataset_info <- EC_build_dataset(response_info, predictor_info,
                               constraint_info)
 
-# Choose algorithm to run
+# 4. Choose algorithm to run
 # Include a list of available algorithms to run
 
 #===================================================================
@@ -69,9 +64,6 @@ koala_inversed_distance <- EC_modelling_geoidw (EC.params,response_info,
 koala_voronoi_hull <- EC_modelling_voronoihull (EC.params,response_info,
                                                 predictor_info, dataset_info)
 
-############
-## STOP HERE! 
-############
 
 # STATISTICAL REGRESSION ALGORITHMS
 # uses EC_utilities_prof+stat_regression + individual functions
@@ -119,20 +111,4 @@ koala_maxent <- EC_modelling_maxent (EC.params,response_info,
 koala_random_forest <- EC_modelling_rf (EC.params,response_info,
                                         predictor_info, dataset_info)
 
-
-
-#===================================================================
-## Species trait data
-## still need to work on it
-
-# Link to input dataset csv file
-trait.data.filename <- EC.params$traits_dataset$filename
-# Link to variable names of input dataset
-trait.data.params <- EC.params$traits_dataset_params
-# Read in the trait data
-trait.data <- read.csv(trait.data.filename)
-# Get the species
-trait.species <-EC.params$species
-
-
-writeLines("Done!")
+## DONE!

@@ -6,9 +6,14 @@
 #' @param outputdir 
 #' @param filename_ext 
 #' @param file_ext 
+#' 
+#' Not exported
 
-EC_file_path <- function (file_type, projection_name, species, 
-                          outputdir = EC.env$outputdir, filename_ext=NULL, 
+EC_file_path <- function (file_type,
+                          projection_name,
+                          species, 
+                          outputdir = EC.env$outputdir,
+                          filename_ext=NULL, 
                           file_ext='tif') {
   
   if (is.null(filename_ext)) {

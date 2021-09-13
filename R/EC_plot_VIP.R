@@ -1,4 +1,5 @@
-#' Generate a VIP plot
+#' Generate a Variable Importance (VIP) plot for a range of Species Distribution
+#' Modelling algorithms
 #'
 #' @param fittedmodel 
 #' @param method 
@@ -10,7 +11,6 @@
 #' @param this.dir 
 #' @param filename 
 #'
-#' @export EC_plot_VIP
 #' @importFrom biomod2 get_formal_model
 #' @importFrom biomod2 variables_importance
 #' @importFrom ggdendro dendro_data
@@ -18,6 +18,8 @@
 #' @importFrom ggplot2 ggplot
 #' @importFrom mgcv gam
 #' @importFrom reshape2 melt
+#' 
+#' @export EC_plot_VIP
 
 EC_plot_VIP <- function(fittedmodel=NULL,
                        method=c("glm","cta","gam","ann", "rf", 
@@ -460,3 +462,26 @@ EC_plot_VIP <- function(fittedmodel=NULL,
     EC_save_pdf(pheat, ncol=1, nrow=1, filename=filename1, aspdf=pdf)
   }
 }
+
+
+#_____________________________________________________________________________
+## Subfunction within EC_plot_VIP()
+
+EC_save_pdf <- function(..., 
+                        filename,
+                        aspdf,
+                        outputdir=EC.env$outputdir) {
+  # Save output in PDF format
+  
+  if (aspdf)
+  {
+    png(file=file.path(outputdir, paste(filename, 'png', sep=".")))
+    grid.arrange(...)
+    dev.off()
+  }
+  else {
+    grid.arrange(...)
+  }
+}
+
+

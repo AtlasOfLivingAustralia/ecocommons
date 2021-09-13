@@ -2,7 +2,7 @@
 % Please edit documentation in R/EC_read_json.R
 \name{EC_read_json}
 \alias{EC_read_json}
-\title{read_json}
+\title{Local function for importing json files}
 \usage{
 EC_read_json(file)
 }
@@ -10,5 +10,5 @@ EC_read_json(file)
 \item{file}{a file path}
 }
 \description{
-Local function for importing json files. Doesn't do much
+Local function for importing json files
 }

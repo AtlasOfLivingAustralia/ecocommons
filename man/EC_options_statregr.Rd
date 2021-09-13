@@ -2,7 +2,9 @@
 % Please edit documentation in R/EC_utilities_statregr.R
 \name{EC_options_statregr}
 \alias{EC_options_statregr}
-\title{subfunctions, for the Statistical Regression algorithms scripts}
+\title{Subfunctions for all Species Distribution Modelling algorithms except
+geographical ones. It includes build evaluation parameters, define and compute
+the model following biomod2 format, saving and export functions}
 \usage{
 EC_options_statregr(a, response_info, model_algorithm)
 }
