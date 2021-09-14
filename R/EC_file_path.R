@@ -7,7 +7,7 @@
 #' @param filename_ext 
 #' @param file_ext 
 #' 
-#' Not exported
+#' @keywords internal
 
 EC_file_path <- function (file_type,
                           projection_name,

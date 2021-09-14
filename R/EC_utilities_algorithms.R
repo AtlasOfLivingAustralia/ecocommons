@@ -9,7 +9,7 @@
 #' @importFrom raster raster
 #' @importFrom raster writeRaster
 #' 
-#' Not exported
+#' @keywords internal
 
 EC_options_algorithm <- function ( a, # formerly EC.params
                                   response_info, # from build_response()

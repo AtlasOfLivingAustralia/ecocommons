@@ -7,7 +7,7 @@
 #' @importFrom raster writeRaster
 #' @importFrom sp SpatialPoints
 #'
-#' Not exported
+#' @keywords internal
 
 EC_create_background <- function(rastermask,
                                  bgsize) {

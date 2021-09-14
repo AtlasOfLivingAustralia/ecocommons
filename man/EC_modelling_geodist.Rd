@@ -11,7 +11,13 @@ platform.}
 EC_modelling_geodist(a, response_info, predictor_info, dataset_info)
 }
 \arguments{
-\item{x}{a list (S3?) created from a json file, containing $params & $env (formerly EC.params & EC.env)}
+\item{a}{List created from a json file, containing source_file$params}
+
+\item{response_info}{Response object; a nested named list created on EC_build_response}
+
+\item{predictor_info}{Predictor object; a nested named list created on EC_build_predictor}
+
+\item{dataset_info}{Dataset object; a nested named list created on EC_build_dataset}
 }
 \description{
 Function to run Geographic Distance within EcoCommons. It is a geographical

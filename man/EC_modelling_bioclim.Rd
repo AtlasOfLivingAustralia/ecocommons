@@ -10,13 +10,13 @@ range.}
 EC_modelling_bioclim(a, response_info, predictor_info, dataset_info)
 }
 \arguments{
-\item{a}{formerly EC.params}
+\item{a}{List created from a json file, containing source_file$params}
 
-\item{response_info}{from EC_build_response}
+\item{response_info}{Response object; a nested named list created on EC_build_response}
 
-\item{predictor_info}{from EC_build_predictor}
+\item{predictor_info}{Predictor object; a nested named list created on EC_build_predictor}
 
-\item{dataset_info}{from EC_build_dataset}
+\item{dataset_info}{Dataset object; a nested named list created on EC_build_dataset}
 }
 \description{
 Function to run BioClim within EcoCommons. It is a

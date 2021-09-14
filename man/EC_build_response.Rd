@@ -7,9 +7,15 @@
 EC_build_response(a)
 }
 \arguments{
-\item{param}{}
+\item{a}{List created from a json file, containing source_file$params}
 
-\item{value}{Not exported}
+\item{r}{from response_info Response object; a nested named list created on EC_build_response}
+
+\item{p}{from predictor_info Predictor object; a nested named list created on EC_build_predictor}
+
+\item{c}{from constraint_info Constraint object; a nested named list created on EC_build_constraint
+
+Not exported}
 }
 \description{
 The EcoCommons platform computes many Species Distribution Modelling

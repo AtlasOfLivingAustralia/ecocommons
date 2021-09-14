@@ -6,7 +6,7 @@
 ## Contact details: comms@ecocommons.org.au
 ## Copyright statement: This script is the product of EcoCommons platform. Please
 ## run "Citation" to check how to cite this R script, etc, etc
-## Date : September 2021
+## Date: September 2021
 ##
 ## Script and data info:
 ## In this script you will: 
@@ -17,7 +17,7 @@
 
 # 1. Load and edit your dataset
 
-# The 'param.json' file used here is generated on the EcoCommonsplatform
+# The 'param.json' file used here is generated on the EcoCommons platform
 source_file <- EC_read_json (file="~/Documents/GitHub/ecocommons_ALA/inst/variables/test_constraint_map.json")
 
 print.model_parameters (source_file)
@@ -42,9 +42,6 @@ dataset_info <- EC_build_dataset (response_info, predictor_info,
                                   constraint_info)
 
 # 4. Choose algorithm to run
-# Include a list of available algorithms to run
-
-#===================================================================
 # EXAMPLES - not for the user, just for testing now
 
 # GEOGRAPHICAL TYPE ALGORITHMS

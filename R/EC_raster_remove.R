@@ -4,7 +4,7 @@
 #'
 #' @importFrom raster filename
 #' 
-#' Not exported
+#' @keywords internal
 
 EC_raster_remove <- function(rasterObject) {
   

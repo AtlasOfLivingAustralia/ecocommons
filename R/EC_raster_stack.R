@@ -11,7 +11,8 @@
 #' 
 #' @importFrom gdalUtils gdalwarp
 #' @importFrom raster compareRaster
-#' @importFrom sp CRS
+#' @importFrom raster extent
+#' @importFrom raster crs
 #' @importFrom raster intersect
 #' @importFrom raster projectExtent
 #' @importFrom raster raster
@@ -52,10 +53,10 @@ EC_raster_resampled  <- function(raster_filenames,
   # and convert rasters to factors
   rasters <- lapply(raster_filenames, EC_read_raster)
   
-  reference <- EC_raster_ref(rasters, resamplingflag, selected_layers) # determine common raster shape
+  reference <- EC_raster_ref (rasters, resamplingflag, selected_layers) # determine common raster shape
   
-  rasters <- EC_raster_warp(raster_filenames, raster_types, 
-                           reference, overwrite) # adjust rasters spatially and convert categorical to factors
+  rasters <- EC_raster_warp (raster_filenames, raster_types, 
+                             reference, overwrite) # adjust rasters spatially and convert categorical to factors
   
   return(rasters)
 }
@@ -133,12 +134,12 @@ EC_raster_ref <- function (rasters,
   # Create the same projection for all layers. If a common projection is not 
   # established, it will be projected in EPSG:4326, common in EcoCommons
   empty.rasters <- lapply(rasters, function(x) { raster::projectExtent(x, crs(x)) })  # create list of empty rasters
-  common.crs <- crs(empty.rasters[[1]]) # choose a common.crs if all crs in rasters are the same use that one
+  common.crs <- raster::crs(empty.rasters[[1]]) # choose a common.crs if all crs in rasters are the same use that one
   
   if (! do.call(raster::compareRaster, c(empty.rasters, extent=FALSE, rowcol=FALSE, 
                                  prj=TRUE, res=FALSE, orig=FALSE, rotation=FALSE,
                                  stopiffalse=FALSE))) {
-    common.crs = crs("+init=epsg:4326") # common projection adopted in EcoCommons
+    common.crs = raster::crs("+init=epsg:4326") # common projection adopted in EcoCommons
     EC_log_warning(sprintf("Auto projecting to common CRS: %s", common.crs))
     empty.rasters = lapply(empty.rasters, function(x) { raster::projectExtent(x, common.crs) })
   }
@@ -173,7 +174,7 @@ EC_raster_extent <- function(rasters,  # a vector of rasters, all rasters should
                              common.crs) {  # crs to use to calculate intersection
   ## Apply same extension and projection for all rasters
   extent.list = lapply(rasters, function(r)
-    { extent(raster::projectExtent(r, common.crs)) }) # intersect all extents
+    { raster::extent(raster::projectExtent(r, common.crs)) }) # intersect all extents
   
   common.extent = Reduce(raster::intersect, extent.list) # if all extents are the same (used to print warning)
   

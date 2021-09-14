@@ -13,7 +13,7 @@
 #' @importFrom pROC roc
 #' @importFrom tidyr pivot_longer
 #' 
-#' Not exported
+#' @keywords internal
 
 absmean <- function(x) abs(mean(x, na.rm=T))
 

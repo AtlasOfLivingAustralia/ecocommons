@@ -2,9 +2,10 @@
 #' is a machine learning model that repeatedly splits the datasets into groups
 #' based on a threshold value of one of the env variables
 #'
-#' @param a a list created from a json file, containing $params & $env (formerly EC.params & EC.env)
-# @param EC.params Parameters object; appears to be a nested named list. Consider converting to S3
-# @param EC.env Environment object; as for EC.params. Consider converting to S3
+#' @param a List created from a json file, containing source_file$params
+#' @param response_info Response object; a nested named list created on EC_build_response
+#' @param predictor_info Predictor object; a nested named list created on EC_build_predictor
+#' @param dataset_info Dataset object; a nested named list created on EC_build_dataset
 #'
 #'
 #' @importFrom biomod2 BIOMOD_ModelingOptions

@@ -3,14 +3,14 @@
 #' @param filename 
 #'
 #' @importFrom raster raster
-#' @importFrom sp CRS
+#' @importFrom raster crs
 #' 
 #' @export EC_read_raster
 
 EC_read_raster <- function(filename) {
   r = raster::raster(filename)
   if (is.na(crs(r))) {
-    crs(r) <- sp::CRS("+init=epsg:4326")
+    raster::crs(r) <- crs("+init=epsg:4326")
   }
   return(r)
 }

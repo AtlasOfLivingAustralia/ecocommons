@@ -6,10 +6,12 @@
 #' used in all models. It includes response, predictors and constraints,
 #' necessary to build the dataset to be used. 
 #'
-#' @param param 
-#' @param value 
+#' @param a List created from a json file, containing source_file$params
+#' @param r from response_info Response object; a nested named list created on EC_build_response
+#' @param p from predictor_info Predictor object; a nested named list created on EC_build_predictor
+#' @param c from constraint_info Constraint object; a nested named list created on EC_build_constraint
 #'
-#' Not exported
+#' @keywords internal
 
 EC_build_response <- function(a){  # formerly EC.params
   # Set list with species data information for modelling

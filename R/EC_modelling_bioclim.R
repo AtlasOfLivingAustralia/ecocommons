@@ -3,10 +3,10 @@
 #' values of environment variables for all occurrences as the species potential
 #' range.
 #'
-#' @param a formerly EC.params
-#' @param response_info from EC_build_response
-#' @param predictor_info from EC_build_predictor
-#' @param dataset_info from EC_build_dataset
+#' @param a List created from a json file, containing source_file$params
+#' @param response_info Response object; a nested named list created on EC_build_response
+#' @param predictor_info Predictor object; a nested named list created on EC_build_predictor
+#' @param dataset_info Dataset object; a nested named list created on EC_build_dataset
 #'
 #' @importFrom dismo bioclim
 #' @importFrom raster writeRaster

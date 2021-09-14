@@ -2,7 +2,7 @@
 #' algorithms. It builds evaluation parameters, set data on biomod2
 #' structure and save the result
 #' 
-#' Not exported
+#' @keywords internal
 
 EC_options_geographical <- function( a, # formerly EC.params
                                      response_info, # from build_response()
