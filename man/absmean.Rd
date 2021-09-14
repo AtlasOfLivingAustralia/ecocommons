@@ -24,3 +24,4 @@ Calculate 2D measures of predictive performance for any model that predicts
 a probability of presence (or success), to be compared to binary observations
 of presence/absence (or success/failure).
 }
+\keyword{internal}

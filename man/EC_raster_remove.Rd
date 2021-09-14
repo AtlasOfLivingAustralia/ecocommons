@@ -12,3 +12,4 @@ EC_raster_remove(rasterObject)
 \description{
 Remove raster object and its associated raster files (i.e. grd and gri) if any
 }
+\keyword{internal}

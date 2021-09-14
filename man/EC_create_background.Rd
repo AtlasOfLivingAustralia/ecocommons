@@ -11,3 +11,4 @@ EC_create_background(rastermask, bgsize)
 Subfunctions ONLY to run the MaxEnt algorithm. It builds evaluation parameters,
 set data on biomod2 structure and save the result
 }
+\keyword{internal}

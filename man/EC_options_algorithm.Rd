@@ -13,3 +13,4 @@ Subfunctions for all Species Distribution Modelling algorithms EXCEPT the
 Geographical ones. It includes build evaluation parameters, define and compute
 the model following biomod2 format, saving and export functions
 }
+\keyword{internal}

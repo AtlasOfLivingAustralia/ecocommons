@@ -4,7 +4,6 @@ author: "Jess"
 date: "10/08/2021"
 output: pdf_document
 ---
-
 This is a source document for changes made on the BCCVL scripts for 
 implementation on the EcoCommons R package.
 

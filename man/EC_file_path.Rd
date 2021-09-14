@@ -24,8 +24,9 @@ EC_file_path(
 
 \item{filename_ext}{}
 
-\item{file_ext}{Not exported}
+\item{file_ext}{}
 }
 \description{
 Function to generate a file name for the specified file type and extension
 }
+\keyword{internal}

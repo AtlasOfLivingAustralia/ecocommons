@@ -127,7 +127,7 @@ EC_plot_VIP <- function(fittedmodel=NULL,
     lower_tri <- xx
     lower_tri[upper.tri(lower_tri)] <- NA
 
-    xx.ml <- tidyr::pivot_longer(lower_tri,na.rm=TRUE)  #the argument 'na.rm=TRUE' seems not working)
+    xx.ml <- tidyr::pivot_longer(lower_tri, na.rm=TRUE)
 
     corx = xx.ml[,3]
     rm = which(is.na(corx)==TRUE)

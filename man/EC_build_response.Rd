@@ -13,9 +13,7 @@ EC_build_response(a)
 
 \item{p}{from predictor_info Predictor object; a nested named list created on EC_build_predictor}
 
-\item{c}{from constraint_info Constraint object; a nested named list created on EC_build_constraint
-
-Not exported}
+\item{c}{from constraint_info Constraint object; a nested named list created on EC_build_constraint}
 }
 \description{
 The EcoCommons platform computes many Species Distribution Modelling
@@ -24,3 +22,4 @@ across algorithms. This functions aims to compute simple lists for parameters
 used in all models. It includes response, predictors and constraints,
 necessary to build the dataset to be used.
 }
+\keyword{internal}

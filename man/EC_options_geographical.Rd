@@ -9,5 +9,8 @@ structure and save the result}
 EC_options_geographical(a, response_info, model_algorithm)
 }
 \description{
-Not exported
+Subfunctions for Species Distribution Modelling (SDMs) Geographical
+algorithms. It builds evaluation parameters, set data on biomod2
+structure and save the result
 }
+\keyword{internal}
