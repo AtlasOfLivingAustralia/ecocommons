@@ -44,18 +44,18 @@ EC_raster_stack <- function (filenames,  # from predictor_info
 
 # Subfunctions, listed in the order in which they appear within EC_raster_stack
 
-EC_raster_resampled  <- function(raster_filenames, 
-                                raster_types, 
-                                resamplingflag, 
-                                selected_layers=NULL,
-                                overwrite=TRUE) {
+EC_raster_resampled  <- function (filenames,  # from predictor_info 
+                                  types,  # from predictor_info  
+                                  resamplingflag, 
+                                  selected_layers=NULL,
+                                  overwrite=TRUE) {
   # Load rasters, determine common projection and convert categorical
   # and convert rasters to factors
-  rasters <- lapply(raster_filenames, EC_read_raster)
+  rasters <- lapply(filenames, EC_read_raster)
   
   reference <- EC_raster_ref (rasters, resamplingflag, selected_layers) # determine common raster shape
   
-  rasters <- EC_raster_warp (raster_filenames, raster_types, 
+  rasters <- EC_raster_warp (filenames, types, 
                              reference, overwrite) # adjust rasters spatially and convert categorical to factors
   
   return(rasters)
@@ -65,9 +65,10 @@ EC_raster_resampled  <- function(raster_filenames,
 #_____________________________________________________________________________
 
 
-EC_raster_warp <- function(raster_filenames,
-                           raster_types,
-                           reference, overwrite=TRUE) {
+EC_raster_warp <- function (filenames,  # from predictor_info 
+                            types,  # from predictor_info  
+                            reference,
+                            overwrite=TRUE) {
   # Just need to be used if raster layers are not aligned up correctly
   rasters <- mapply(
     function(filename, type) {
@@ -119,7 +120,7 @@ EC_raster_warp <- function(raster_filenames,
       }
       return(r)
     },
-    raster_filenames, raster_types)
+    filenames, types)
   return(rasters)
 }
 
@@ -132,7 +133,7 @@ EC_raster_ref <- function (rasters,
                            selected_layers) {
   
   # Create the same projection for all layers. If a common projection is not 
-  # established, it will be projected in EPSG:4326, common in EcoCommons
+  # established, it will be projected in WGS84 (EPSG:4326), common in EcoCommons
   empty.rasters <- lapply(rasters, function(x) { raster::projectExtent(x, crs(x)) })  # create list of empty rasters
   common.crs <- raster::crs(empty.rasters[[1]]) # choose a common.crs if all crs in rasters are the same use that one
   
@@ -149,7 +150,7 @@ EC_raster_ref <- function (rasters,
     EC_log_warning(sprintf("Auto cropping to common extent %s", EC_raster_to_STR(ce$common.extent)))
   }
   
-  cr <- EC_raster_resolution(empty.rasters, resamplingflag, selected_layers)
+  cr <- EC_raster_resolution (empty.rasters, resamplingflag, selected_layers)
   if (! cr$is.same.res) {
     EC_log_warning(sprintf("Auto resampling to %s resolution [%f %f]", resamplingflag,
                           cr$common.res[[1]], cr$common.res[[2]]))
@@ -208,7 +209,7 @@ EC_raster_resolution <- function (rasters,
   }
   
   if (is.null(selected_layers)) {
-    resolutions = lapply(rasters, res) # Get resolutions of the raster layers
+    resolutions = lapply(rasters, FUN = res) # Get resolutions of the raster layers
   }
   else {
     resolutions = lapply(selected_layers, get.resolution, rasters)

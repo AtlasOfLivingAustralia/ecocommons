@@ -58,8 +58,6 @@ EC_plot_VIP <- function(fittedmodel=NULL,
 
   # extract the root of filenames used by biomod to save model results
   filenames <- dir(this.dir)
-  #loc <- regexpr("_RUN[[:digit:]]", filenames[1])
-  #fileroot <- substr(filenames[1], 1, loc-1)
 
   # select the full model generated
   filekeep <-  paste(this.dir, "/", filenames[1], sep="")
@@ -258,9 +256,7 @@ EC_plot_VIP <- function(fittedmodel=NULL,
       ppv = pv + geom_col(alpha=0.6,col="green4") + coord_flip()
 
       EC_save_pdf(ppV, ncol=1, nrow=1, filename=filename, aspdf=pdf)
-    }  # end of 'if(biom_vi=TRUE)'
-    else
-    {
+    } else {
       # variable importance plot following the AIC approach
       nd = dim(data1)[2]
       RespV1 = data1[,1]

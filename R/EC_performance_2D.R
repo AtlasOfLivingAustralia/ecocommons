@@ -8,7 +8,7 @@
 #' @param make.plot 
 #' @param kill.plot 
 #'
-#' @importFrom ggplot2 ggplot 
+#' @importFrom ggplot2 ggplot
 #' @importFrom pROC auc
 #' @importFrom pROC roc
 #' @importFrom tidyr pivot_longer
@@ -246,7 +246,6 @@ EC_performance_2D <- function(obs,  # presence/absence (binary)
   temp$L.all <- apply(temp[, list.errors],1, absmean)
   temp$L.eq.diag <- apply(temp[, c("tpr", "tnr")], 1, absdiff)
 
-  # Addition Number 2, 23 July 2018
   # Check if there is more than one minimum, then pick the middle
   best <- list(
     diag = temp$tpv[pick1min(temp$L.diag) ],
@@ -254,8 +253,6 @@ EC_performance_2D <- function(obs,  # presence/absence (binary)
     all = temp$tpv[pick1min(temp$L.all == min(temp$L.all, na.rm=T))],
     eq.diag = temp$tpv[pick1min(temp$L.eq.diag==min(temp$L.eq.diag, na.rm=T))]
   )
-
-  # End Addition Number 2, 23 July 2018
 
   # Calculate the range of threshold probability values for which each of 
   # the losses fall within 5% of the best value
@@ -406,14 +403,12 @@ EC_performance_2D <- function(obs,  # presence/absence (binary)
                                  or=or, acc=acc, mcr=mcr))
     all.stats <- round(all.stats, digits = 3)
 
-    # Addition Number 2, 23 July 2018
     selected_rows = c(pick1min(temp$L.diag),
                       pick1min(temp$L.pred == min(temp$L.pred, na.rm=T)),
                       pick1min(temp$L.all == min(temp$L.all, na.rm=T)),
                       pick1min(temp$L.eq.diag == min(temp$L.eq.diag, na.rm=T)))
     stats.table <- all.stats[selected_rows, ] # select row with all stats for maximum value of loss methods
     rownames(stats.table) <- c("max TPR + TNR", "max PPV + NPV", "balance all errors", "TPR=TNR")
-    # End Addition Number 2, 23 July 2018
 
     # stats.table <- rbind(max.TPR.TNR, TPR.eq.TNR, max.Kappa)
     names(stats.table) <- c("Optimum threshold value:", "True Positive Rate (TPR)",

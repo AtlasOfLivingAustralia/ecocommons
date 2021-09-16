@@ -15,6 +15,12 @@
 ##
 ## - Run the SDMs with selected algorithms
 
+# You need devtools to install the ecocommons package from GitHub
+install.packages ("devtools")
+library (devtools)
+devtools::install_github ("AtlasOfLivingAustralia/ecocommons")
+library(ecocommons)
+
 # 1. Load and edit your dataset
 
 # The 'param.json' file used here is generated on the EcoCommons platform
@@ -104,6 +110,8 @@ koala_GBM <- EC_modelling_gbm (EC.params,response_info,
 
 koala_random_forest <- EC_modelling_rf (EC.params,response_info,
                                         predictor_info, dataset_info)
+
+
 # MAXENT
 # uses EC_utilities_maxent + individual functions
 koala_maxent <- EC_modelling_maxent (EC.params,response_info,

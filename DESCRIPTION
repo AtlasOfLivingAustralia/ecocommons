@@ -14,17 +14,20 @@ Depends:
    R (>= 4.0.0)
 Imports: 
   biomod2,
-  ConR,
   dismo,
   dplyr,
   gdalUtils,
-  gridExtra,
+  ggdendro,
+  ggplot2,
+  mgcv,
+  pROC,
   raster,
-  rasterVis,
   rgeos,
   rgdal,
   rjson,
-  sp
+  rmaxent,
+  sp,
+  tidyr
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Encoding: UTF-8
