@@ -33,19 +33,20 @@ EC_options_geographical <- function( a, # formerly EC.params
 #_____________________________________________________________________________
 
 
-EC_compute_geographical <- function (predictor_info,  # from EC_build_predictor
+EC_compute_geographical <- function (response_info,  #formaly xxx 
                                      a,  # formerly EC.params
+                                     predictor_info,  # from EC_build_predictor
                                      model_options_geographical){  # from geographical_options
   # Set parameters on biomod2 format to run modelling
   
-  EC_format_biomod2 (true.absen             = predictor_info$absen,
+  EC_format_biomod2 (true.absen             = response_info$absen_data,
                      pseudo.absen.strategy  = a$pa_strategy,
                      pseudo.absen.disk.min  = a$pa_disk_min,
                      pseudo.absen.disk.max  = a$pa_disk_max,
                      pseudo.absen.sre.quant = a$pa_sre_quant,
-                     climate.data           = predictor_info$current_climate,
-                     occur                  = predictor_info$occur,
-                     species.name           = model_options_geographical$species_name,
+                     climate.data           = predictor_info$current,
+                     occur                  = response_info$occur_data,
+                     species.name           = response_info$occur_species,
                      species_algo_str       = model_options_geographical$species_algo_str)
 }
 

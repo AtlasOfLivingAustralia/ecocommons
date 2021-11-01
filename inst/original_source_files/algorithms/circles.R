@@ -19,7 +19,7 @@
 # extract params
 # define the lon/lat of the observation records -- 2 column matrix of longitude and latitude
 occur.data = bccvl.params$species_occurrence_dataset$filename
-occur.species = bccvl.params$species_occurrence_dataset$species
+occur.species = EC.params$species_occurrence_dataset$species
 month.filter = bccvl.params$species_filter
 # define the the lon/lat of the background / psuedo absence points to use -- 2 column matrix of longitude and latitude
 absen.data = bccvl.params$species_absence_dataset$filename
@@ -116,7 +116,7 @@ if (is.null(opt.d)) {
 bccvl.save(model.sdm, bccvl.format.outfilename(filename="model.object", id_str=species_algo_str, ext="RData"))
 
 # predict for given climate scenario
-model.proj = predict(model.sdm, current.climate.scenario@layers[[1]], mask=TRUE)
+model.proj = predict(model.sdm, raster(predictor_info$current[[1]]), mask=TRUE)
 
 # remove the current.climate.scenario to release disk space
 bccvl.remove.rasterObject(current.climate.scenario)

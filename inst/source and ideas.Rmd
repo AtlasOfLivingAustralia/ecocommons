@@ -18,7 +18,7 @@ You can install the package using the following command devtools::install_github
 library(ecocommons)
 
 As BIOMOD2 has a A LOT of dependencies, it can take a while... something to think
-in the future if we decide to make the package available to the public
+in the future if we decide to make the package available to the public.
 
 After you download it, you will see 4 documents and 3 folders. README and DESCRIPTION
 explains a bit about the package. The NAMESPACE shows all the functions that are 

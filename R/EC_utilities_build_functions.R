@@ -43,7 +43,7 @@ EC_build_predictor <- function(a) { # formerly EC.params
 
 
 EC_build_constraint <- function(a) {  # formerly EC.params
-  # Read if exist a region constraint modelling to run the algorithms, 
+  # Read (if exist) a region constraint modelling to run the algorithms, 
   # either specified by the user or applying a Convex Hull; can be NULL
   list (
     seed = a$random_seed,
@@ -68,33 +68,31 @@ EC_build_constraint <- function(a) {  # formerly EC.params
 #_____________________________________________________________________________
 
 
-EC_build_dataset <- function( r,  # formerly response_info 
-                              p,  # formerly predictor_info,
-                              c) {  # formerly constraint_info  
-  # Read current species and climate data and apply constrained region to the model
-  my_list<- list(
-  # read current climate data
-  current_climate <- EC_raster_stack(p$current, p$type, p$layer,
-                                    resamplingflag = c$resampling),
+EC_build_dataset <- function( p,  # formerly predictor_info,
+                              c,  # formerly constraint_info 
+                              r) {  # formerly response_info  
+# read current climate data
+current_climate <- EC_raster_stack(p$current, p$type, p$layer,
+                                  resamplingflag = c$resampling)
   
-  # read in the necessary observation, background and environmental data
-  occur <- EC_read_sp(r$occur_data,
-                     r$month_filter),
-  absen <- EC_read_sp(r$absen_data,
-                     r$month_filter),
+# read in the occurrence and absence data (if available); optional month filtering
+occur <- EC_read_sp(r$occur_data,
+                   r$month_filter)
+absen <- EC_read_sp(r$absen_data,
+                   r$month_filter)
   
-  # geographically constrained modelling
-  if (is.null(c$constraints) || c$generateCHull) {
-    constrained_results <- EC_SDM_geoconstrained(current_climate, occur, absen,
-                                                c$constraints, c$generateCHull);
+# if no constrain regions is given, geographically constrained modelling with Convex Hull
+constrained_results <- EC_SDM_geoconstrained(current_climate, occur, absen,
+                                              c$constraints, c$generateCHull)
     
-    # save a copy of the climate dataset
-    current_climate_orig = current_climate
-    current_climate = constrained_results$raster
-    occur = constrained_results$occur
-    absen = constrained_results$absen
-  }
+  # save a copy of the climate dataset
+mylist<- list (
+  "current_climate_orig" = current_climate,
+  "occur" = constrained_results$occur,
+  "absen" = constrained_results$absen,
+  "current_climate" = constrained_results$masked_raster
   )
-  label <- c("current_climate","occur","absen","constrained_results")
-  setNames(my_list, label)
+
+return(mylist)
+
 }

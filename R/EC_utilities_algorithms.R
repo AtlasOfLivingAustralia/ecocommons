@@ -265,11 +265,13 @@ EC_GRD_to_GTIFF <- function(folder,
     dtype = raster::dataType(grd)
     if (is.null(noDataValue)) {
       raster::writeRaster(grd, filename, datatype=dataType(grd),
-                          format="GTiff", options=c("COMPRESS=LZW", "TILED=YES"), overwrite=TRUE)
+                          format="GTiff", options=c("COMPRESS=LZW", "TILED=YES"),
+                          overwrite=TRUE)
     }
     else {
       raster::writeRaster(grd, filename, datatype=dataType(grd), NAflag=noDataValue,
-                          format="GTiff", options=c("COMPRESS=LZW", "TILED=YES"), overwrite=TRUE)
+                          format="GTiff", options=c("COMPRESS=LZW", "TILED=YES"),
+                          overwrite=TRUE)
     }
     file.remove(file.path(folder, paste(grdname, c("grd","gri"), sep=".")))  # remove grd files
   }

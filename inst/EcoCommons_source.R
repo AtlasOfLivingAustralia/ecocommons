@@ -21,6 +21,7 @@ library (devtools)
 devtools::install_github ("AtlasOfLivingAustralia/ecocommons")
 library(ecocommons)
 
+
 # 1. Load and edit your dataset
 
 # The 'param.json' file used here is generated on the EcoCommons platform
@@ -44,8 +45,8 @@ predictor_info <- EC_build_predictor (EC.params)  # environmental data
 
 constraint_info <- EC_build_constraint (EC.params)  # constraint area data
 
-dataset_info <- EC_build_dataset (response_info, predictor_info,
-                                  constraint_info)
+dataset_info <- EC_build_dataset (predictor_info,constraint_info,
+                                  response_info)
 
 # 4. Choose algorithm to run
 # EXAMPLES - not for the user, just for testing now

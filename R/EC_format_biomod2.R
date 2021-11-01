@@ -39,6 +39,9 @@ EC_format_biomod2 <- function (true.absen               = NULL,
                                generate.background.data = FALSE,
                                species_algo_str         = NULL) {
   
+  climate.data <- stack(climate.data)
+  occur <- read.csv(occur, h = T)
+  
   # Initialise parameters to default value if not specified
   if (is.null(pseudo.absen.strategy)) {
     pseudo.absen.strategy = 'random'

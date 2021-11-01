@@ -29,7 +29,7 @@ EC_modelling_circles<- function( a,  # EC.params
 
   # Define model options and compute the model
   # uses biomod2 model options
-  model_compute <- EC_compute_geographical (predictor_info, a,
+  model_compute <- EC_compute_geographical (response_info, a, predictor_info,
                                             model_options_geographical)
   
 
@@ -60,7 +60,7 @@ EC_modelling_circles<- function( a,  # EC.params
 EC_options_circles <- function(a){
   # Set specific parameters to run "circles"
   list(
-    opt.d = a$d # radius around circles; if not specified it is computed from the mean inter-point distance 
+    opt.d = a$d # radius around circles in meters; if not specified it is computed from the mean inter-point distance 
  )
 }
   

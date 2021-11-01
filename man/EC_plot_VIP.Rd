@@ -7,7 +7,7 @@ Modelling algorithms}
 \usage{
 EC_plot_VIP(
   fittedmodel = NULL,
-  method = c("glm", "cta", "gam", "ann", "rf", "gbm", "mars", "maxent"),
+  method = c("glm", "cta", "gam", "ann", "rf", "gbm", "mars", "maxent.p"),
   cor.method = c("pearson", "spearman"),
   pdf = TRUE,
   biom_vi = FALSE,
