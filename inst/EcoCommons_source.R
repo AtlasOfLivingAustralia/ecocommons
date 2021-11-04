@@ -18,7 +18,7 @@
 # You need devtools to install the ecocommons package from GitHub
 install.packages ("devtools")
 library (devtools)
-devtools::install_github ("AtlasOfLivingAustralia/ecocommons")
+devtools::install_github ("AtlasOfLivingAustralia/ecocommons") # CHECK NOW PSEUDO-ABSENCE BRANCH
 library(ecocommons)
 
 
