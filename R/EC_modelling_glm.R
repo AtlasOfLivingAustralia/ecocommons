@@ -52,15 +52,16 @@ EC_modelling_glm <- function(EC.params,       # EC.params
   
   
   # Generate and save a variable importance plot (VIP) and the model object
-  x.data <- attr(model_compute$model_data, "data.env.var")
-  y.data <- attr(model_compute$model_data, "data.species")
+  x.data <- attr(model_compute, "data.env.var")
+  y.data <- attr(model_compute, "data.species")
   data1 <- data.frame(y.data, x.data)
   
-  EC_plot_VIP_glm (method = model_algorithm, data1 = data1, pdf = TRUE,
-                   filename = paste('vip_plot', EC_options_algorithm$species_algo_str,
+  EC_plot_VIP_glm (fittedmodel = model_sdm,
+                   data1 = data1,
+                   pdf = TRUE,
+                   filename = paste('vip_plot', model_options_algorithm$species_algo_str,
                                     sep = "_"),
-                   this.dir = paste(EC_options_algorithm$species_name,
-                                    "/models/EcoCommons", sep = ""))
+                   this.dir = EC.env$outputdir)
     
   # Project over climate scenario. Also convert projection output from grd to
   # gtiff and save the projection. Two options:
@@ -88,16 +89,16 @@ EC_modelling_glm <- function(EC.params,       # EC.params
 EC_options_glm <- function(a){
   # Set specific parameters to run GLM algorithm
   list(
-  	type = a$type,	 # "simple", "quadratic" or "polynomial"; off if myFormula is not NULL
+  	type      = a$type,	 # "simple", "quadratic" or "polynomial"; off if myFormula is not NULL
   	interaction_level = a$interaction_level,  # integer; off if myFormula is not NULL
   	# myFormula = NULL,  # specific formula; if not NULL, type and interaction.level are args are switched off
-  	test = a$test,  # "AIC", "BIC" or "none"
-  	family = a$family,  # e.g. "binomial", "gaussian", "gamma", "inverse.gaussian"
-  	mustart = a$mustart,  # starting values for the vector of means
-  	control = list(
+  	test      = a$test,  # "AIC", "BIC" or "none"
+  	family    = a$family,  # e.g. "binomial", "gaussian", "gamma", "inverse.gaussian"
+  	mustart   = a$mustart,  # starting values for the vector of means
+  	control   = list(
   		epsilon = a$control_epsilon,  # positive convergence tolerance
-  		maxit = a$control_maxit,  # integer giving the maximal number of IWLS iterations
-  		trace = a$control_trace  # logical indicating if output should be produced for each iteration
+  		maxit   = a$control_maxit,  # integer giving the maximal number of IWLS iterations
+  		trace   = a$control_trace  # logical indicating if output should be produced for each iteration
   	)
   )
 }
@@ -106,33 +107,30 @@ EC_options_glm <- function(a){
 #_____________________________________________________________________________
 
 
-EC_plot_VIP_glm <- function (fittedmodel    = NULL,  # or object obtained from biomod2 "BIOMOD_Modelling"
-                             method       = model_sdm,
+EC_plot_VIP_glm <- function (fittedmodel  = NULL,  # or object obtained from biomod2 "BIOMOD_Modelling"
                              cor.method   = c("pearson", "spearman"),  # 'person' for linear data; 'spearman' for non-linear; rank-based
                              pdf          = TRUE,
                              biom_vi      = FALSE,  # function/algorithm other than biomod2 "variables_importance"
                              output.table = FALSE,  # csv file with GLM parameters and the 95% confidence interval
-                             data1 ) {  # data frame with response and predictors variables; should contain all predict variables
+                             data1,  # data frame with response and predictors variables; should contain all predict variables
+                             this.dir,  # route to access biomod2 model (not the model name)
+                             filename) {  # to be saved without the file extension
   
   data1$y.data[is.na(data1$y.data)] <- 0
   
-  # extract the root of filenames used by biomod2 to save model results
-  filenames <- dir(paste(EC_options_algorithm$species_name,
-                         "/models/EcoCommons", sep = ""))
-  
   # select the full model generated
-  filekeep <-  paste(this.dir, "/", filenames[1], sep= "")
+  filekeep <-  paste(this.dir, "model.object.RData", sep= "/")
   
   working <- load(filekeep)
-  fittedmodel <- biomod2::getFormalModel(eval(parse(text = working)))
+  fittedmodel <- biomod2::BIOMOD_LoadModels(working)
   
   fitteddata = fittedmodel$data  # these are the data used by biomod2 for model fitting
-  nd = dim(fitteddata)[2]
-  sub.data = fitteddata[,2:nd, drop=FALSE]
+  nd         = dim(fitteddata)[2]
+  sub.data   = fitteddata[,2:nd, drop=FALSE]
   # Can only scale numeric data
   cat.data = Filter(is.factor, sub.data)
   sub.data = Filter(is.numeric, sub.data)
-  RespV = fitteddata[,1, drop=FALSE]
+  RespV    = fitteddata[,1, drop=FALSE]
   rescaled.data <- scale(sub.data)
   
   # attributes(rescaled.data)
@@ -154,10 +152,13 @@ EC_plot_VIP_glm <- function (fittedmodel    = NULL,  # or object obtained from b
   names(df1) = c("xvar", "meanest", "lower", "upper")
   df1$xvar = factor(df1$xvar, labels = rownames(df1))
   
-  p1 <- ggplot2::ggplot(df1, aes(x= xvar, y= meanest)) + geom_hline(yintercept = 0) + labs(x= " ")
+  p1 <- ggplot2::ggplot(df1, aes(x= xvar, y= meanest)) + 
+    geom_hline(yintercept = 0) + 
+    labs(x= " ")
   
   ps = p1 + geom_errorbar(aes(ymin= lower,ymax= upper),lwd= 0.8,width= 0.25) +
-    labs(y="relative effect size") +  labs(title="         scaled data") + coord_flip()
+    labs(y="relative effect size") +  labs(title="         scaled data") +
+    coord_flip()
   
   df2 = as.data.frame(cbind(1:nx, round(raw, 3)))
   names(df2) = c("xvar", "meanest", "lower", "upper")
@@ -193,7 +194,8 @@ EC_plot_VIP_glm <- function (fittedmodel    = NULL,  # or object obtained from b
   pheat <- ggplot2::ggplot(xx.ml, aes(X1, X2)) + geom_tile(aes(fill = value), colour= "black") +
     scale_fill_gradient2(low = "green4", high = "violetred", mid= "white",
                          midpoint=0, limit=c(-1,1)) + labs(y=" ") + theme_minimal() +
-    scale_x_discrete(limits= rownames(xx)) + scale_y_discrete(limits= colnames(xx)) + coord_fixed() +
+    scale_x_discrete(limits= rownames(xx)) + scale_y_discrete(limits= colnames(xx)) + 
+    coord_fixed() +
     theme(axis.title.x= element_blank(),legend.position = "bottom", axis.text.x= element_text(angle= -90)) +
     guides(fill= guide_legend(title= "correlation"))
   

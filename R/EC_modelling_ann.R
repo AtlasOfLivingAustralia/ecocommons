@@ -59,7 +59,9 @@ EC_modelling_ann <- function(EC.params,       # EC.params
   y.data <- attr(model_compute, "data.species")  # pseudo- absence data
   data1 <- data.frame(y.data, x.data)
   
-  EC_plot_VIP_ann (fittedmodel = model_sdm, data1 = data1, pdf = TRUE,
+  EC_plot_VIP_ann (fittedmodel = model_sdm,
+                   data1 = data1,
+                   pdf = TRUE,
                    filename = paste('vip_plot', model_options_algorithm$species_algo_str,
                                 sep = "_"),
                    this.dir = EC.env$outputdir)

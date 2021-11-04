@@ -52,15 +52,16 @@ modelling_fda <- function(EC.params,       # EC.params
   
   
   # Generate and save a variable importance plot (VIP) and the model object
-  x.data <- attr(model_compute$model_data, "data.env.var")
-  y.data <- attr(model_compute$model_data, "data.species")
+  x.data <- attr(model_compute, "data.env.var")
+  y.data <- attr(model_compute, "data.species")
   data1 <- data.frame(y.data, x.data)
   
-  EC_plot_VIP_fda (method = model_algorithm, data1 = data1, pdf = TRUE,
-                   filename = paste('vip_plot', EC_options_algorithm$species_algo_str,
+  EC_plot_VIP_fda (fittedmodel = model_sdm,
+                   data1 = data1,
+                   pdf = TRUE,
+                   filename = paste('vip_plot', model_options_algorithm$species_algo_str,
                                     sep = "_"),
-                   this.dir = paste(EC_options_algorithm$species_name,
-                                    "/models/EcoCommons", sep = ""))
+                   this.dir = EC.env$outputdir)
   
   # Project over climate scenario. Also convert projection output from grd to
   # gtiff and save the projection. Two options:
@@ -100,17 +101,20 @@ EC_options_fda <- function(a){
 #_____________________________________________________________________________
 
 
-EC_plot_VIP_fda <- function (fittedmodel    = NULL,  # or object obtained from biomod2 "BIOMOD_Modelling"
-                             method       = model_sdm,
+EC_plot_VIP_fda <- function (fittedmodel  = NULL,  # or object obtained from biomod2 "BIOMOD_Modelling"
                              cor.method   = c("pearson", "spearman"),  # 'person' for linear data; 'spearman' for non-linear; rank-based
                              pdf          = TRUE,
                              biom_vi      = FALSE,  # function/algorithm other than biomod2 "variables_importance"
                              output.table = FALSE,  # csv file with GLM parameters and the 95% confidence interval
-                             data1 ) {  # data frame with response and predictors variables; should contain all predict variables
+                             data1,  # data frame with response and predictors variables; should contain all predict variables
+                             this.dir,  # route to access biomod2 model (not the model name)
+                             filename) {  # to be saved without the file extension
   
   data1$y.data[is.na(data1$y.data)] <- 0
   
-  # extract the root of filenames used by biomod2 to save model results
-  filenames <- dir(paste(EC_options_algorithm$species_name,
-                         "/models/EcoCommons", sep = "")) 
+  # select the full model generated
+  filekeep <-  paste(this.dir, "model.object.RData", sep= "/")
+  
+  working <- load(filekeep)
+  fittedmodel <- biomod2::BIOMOD_LoadModels(working)
 }

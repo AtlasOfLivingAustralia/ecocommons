@@ -55,15 +55,16 @@ EC_modelling_cta <- function(EC.params,        # EC.params
   
   
   # Generate and save a variable importance plot (VIP) and the model object
-  x.data <- attr(model_compute$model_data, "data.env.var")
-  y.data <- attr(model_compute$model_data, "data.species")
+  x.data <- attr(model_compute, "data.env.var")
+  y.data <- attr(model_compute, "data.species")
   data1 <- data.frame(y.data, x.data)
   
-  EC_plot_VIP_cta (method = model_algorithm, data1 = data1, pdf = TRUE,
-                   filename = paste('vip_plot', EC_options_algorithm$species_algo_str,
+  EC_plot_VIP_cta (fittedmodel = model_sdm,
+                   data1 = data1,
+                   pdf = TRUE,
+                   filename = paste('vip_plot', model_options_algorithm$species_algo_str,
                                     sep = "_"),
-                   this.dir = paste(EC_options_algorithm$species_name,
-                                    "/models/EcoCommons", sep = ""))  
+                   this.dir = EC.env$outputdir) 
 
   # Project over climate scenario. Also convert projection output from grd to
   # gtiff and save the projection. Two options:
@@ -93,15 +94,15 @@ EC_options_cta <- function(a){
         # parms = "default", #optional parameters for the splitting function
         # cost = NULL, #a vector of non-negative costs, one for each variable in the model. Defaults to one for all variables
         control = list(
-          minsplit = a$control_minsplit, #the minimum number of observations that must exist in a node in order for a split to be attempted
-          minbucket = a$control_minbucket, #the minimum number of observations in any terminal <leaf> node
-          cp = a$control_cp, #complexity parameter
-          maxcompete = a$control_maxcompete, #number of competitor splits retained in the output
-          maxsurrogate = a$control_maxsurrogate, #number of surrogate splits retained in the output
-          usesurrogate = a$control_usesurrogate, #how to use surrogates in the splitting proces
-          xval = a$control_xval, #number of cross-validations
+          minsplit       = a$control_minsplit, #the minimum number of observations that must exist in a node in order for a split to be attempted
+          minbucket      = a$control_minbucket, #the minimum number of observations in any terminal <leaf> node
+          cp             = a$control_cp, #complexity parameter
+          maxcompete     = a$control_maxcompete, #number of competitor splits retained in the output
+          maxsurrogate   = a$control_maxsurrogate, #number of surrogate splits retained in the output
+          usesurrogate   = a$control_usesurrogate, #how to use surrogates in the splitting proces
+          xval           = a$control_xval, #number of cross-validations
           surrogatestyle = a$control_surrogatestyle, #controls the selection of a best surrogate
-          maxdepth = a$control_maxdepth  #Set the maximum depth of any node of the final tree, with the root node counted as depth 0. Values greater than 30 rpart will give nonsense results on 32-bit machines
+          maxdepth       = a$control_maxdepth  #Set the maximum depth of any node of the final tree, with the root node counted as depth 0. Values greater than 30 rpart will give nonsense results on 32-bit machines
           )
         )
 }
@@ -109,25 +110,22 @@ EC_options_cta <- function(a){
 
 #_____________________________________________________________________________
 
-EC_plot_VIP_cta <- function (fittedmodel    = NULL,  # or object obtained from biomod2 "BIOMOD_Modelling"
-                         method       = model_sdm,
-                         cor.method   = c("pearson", "spearman"),  # 'person' for linear data; 'spearman' for non-linear; rank-based
-                         pdf          = TRUE,
-                         biom_vi      = FALSE,  # function/algorithm other than biomod2 "variables_importance"
-                         output.table = FALSE,  # csv file with GLM parameters and the 95% confidence interval
-                         data1 ) {  # data frame with response and predictors variables; should contain all predict variables
+EC_plot_VIP_cta <- function (fittedmodel  = NULL,  # or object obtained from biomod2 "BIOMOD_Modelling"
+                             cor.method   = c("pearson", "spearman"),  # 'person' for linear data; 'spearman' for non-linear; rank-based
+                             pdf          = TRUE,
+                             biom_vi      = FALSE,  # function/algorithm other than biomod2 "variables_importance"
+                             output.table = FALSE,  # csv file with GLM parameters and the 95% confidence interval
+                             data1,  # data frame with response and predictors variables; should contain all predict variables
+                             this.dir,  # route to access biomod2 model (not the model name)
+                             filename) {  # to be saved without the file extension
   
   data1$y.data[is.na(data1$y.data)] <- 0
   
-  # extract the root of filenames used by biomod2 to save model results
-  filenames <- dir(paste(EC_options_algorithm$species_name,
-                         "/models/EcoCommons", sep = ""))
-  
   # select the full model generated
-  filekeep <-  paste(this.dir, "/", filenames[1], sep= "")
+  filekeep <-  paste(this.dir, "model.object.RData", sep= "/")
   
   working <- load(filekeep)
-  fittedmodel <- biomod2::getFormalModel(eval(parse(text= working)))
+  fittedmodel <- biomod2::BIOMOD_LoadModels(working)
   
   # variable importance is part of the model fitting outcomes with 'rpart' algorithm and
   # this information can be used for generating the variable importance plot
@@ -137,10 +135,13 @@ EC_plot_VIP_cta <- function (fittedmodel    = NULL,  # or object obtained from b
   df0 = as.data.frame(cbind(1:nx,varimp0))
   df0$V1 = factor(df0$V1, labels = rev(names(varimp0)))
   
-  p <- ggplot2::ggplot(df0, aes(x=V1, y=rev(varimp0))) + labs(x=" ") +
-    labs(y= "variable importance score") + labs(title= "part of the 'rpart' model output")
+  p <- ggplot2::ggplot(df0, aes(x=V1, y=rev(varimp0))) + 
+    labs(x=" ") +
+    labs(y= "variable importance score") + 
+    labs(title= "part of the 'rpart' model output")
   
-  pp0 = p + geom_col(alpha=0.6,col="blue") + coord_flip()
+  pp0 = p + geom_col(alpha=0.6,col="blue") + 
+    coord_flip()
   
   ddata <- ggdendro::dendro_data(fittedmodel)
   ppt = ggplot2::ggplot() +
@@ -151,19 +152,22 @@ EC_plot_VIP_cta <- function (fittedmodel    = NULL,  # or object obtained from b
   
   # variable importance plot using the inbuilt biomod2 function 'variables_importance'
   
-  nd = dim(data1)[2]
-  subdata1 = data1[,2:nd, drop=FALSE]
+  nd        = dim(data1)[2]
+  subdata1  = data1[,2:nd, drop=FALSE]
   vi_biomod = biomod2::variables_importance(fittedmodel,data=subdata1)$mat
-  nx = length(vi_biomod)
-  dfvi = as.data.frame(cbind(1:nx,vi_biomod[,1]))
-  dfvi$V1 = factor(dfvi$V1, labels = rev(rownames(vi_biomod)))
-  pv <- ggplot2::ggplot(dfvi, aes(x=V1, y=rev(vi_biomod[,1]))) + labs(x="predictor variables") +
-    labs(y="variable importance score") + labs(title="biomod2 function 'variables_importance'")
+  nx        = length(vi_biomod)
+  dfvi      = as.data.frame(cbind(1:nx,vi_biomod[,1]))
+  dfvi$V1   = factor(dfvi$V1, labels = rev(rownames(vi_biomod)))
+  pv <- ggplot2::ggplot(dfvi, aes(x=V1, y=rev(vi_biomod[,1]))) +
+    labs(x="predictor variables") +
+    labs(y="variable importance score") + 
+    labs(title="biomod2 function 'variables_importance'")
+  
   ppv = pv + geom_col(alpha=0.6,col="green4") + coord_flip()
   
-  if (biom_vi)
-  {
+  if (biom_vi) {
     EC_save_pdf(ppt, ppv, ncol=2, nrow=1, filename=filename, aspdf=pdf)
+    
   } else {
     EC_save_pdf(ppt, pp0, ncol=2, nrow=1, filename=filename, aspdf=pdf)
   }

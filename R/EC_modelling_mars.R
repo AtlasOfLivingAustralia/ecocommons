@@ -52,15 +52,16 @@ EC_modelling_mars <- function( EC.params,       # EC.params
   
   
   # Generate and save a variable importance plot (VIP) and the model object
-  x.data <- attr(model_compute$model_data, "data.env.var")
-  y.data <- attr(model_compute$model_data, "data.species")
+  x.data <- attr(model_compute, "data.env.var")
+  y.data <- attr(model_compute, "data.species")
   data1 <- data.frame(y.data, x.data)
   
-  EC_plot_VIP_mars (method = model_algorithm, data1 = data1, pdf = TRUE,
-                   filename = paste('vip_plot', EC_options_algorithm$species_algo_str,
-                                    sep = "_"),
-                   this.dir = paste(EC_options_algorithm$species_name,
-                                    "/models/EcoCommons", sep = ""))
+  EC_plot_VIP_mars (fittedmodel = model_sdm,
+                    data1 = data1,
+                    pdf = TRUE,
+                    filename = paste('vip_plot', model_options_algorithm$species_algo_str,
+                                     sep = "_"),
+                    this.dir = EC.env$outputdir)
   
   # Project over climate scenario. Also convert projection output from grd to
   # gtiff and save the projection. Two options:
@@ -87,14 +88,14 @@ EC_modelling_mars <- function( EC.params,       # EC.params
 EC_options_mars <- function(a){
   # Set specific parameters to run GAM algorithm
   list(
-    type = a$type, #"simple", "quadratic" or "polynomial"; switched off if myFormula is not NULL
+    type     = a$type, #"simple", "quadratic" or "polynomial"; switched off if myFormula is not NULL
     interaction.level = a$interaction_level,   # integer; interaction between variables. Switched off if myFormula is not NULL
     # myFormula = NULL, #specific formula; if not NULL, type and interaction.level args are switched off (N/A for EcoCommons)
-    nk =  a$nk, # maximum number of model terms
-    penalty= a$penalty, #generalized cross validation (gcv) penalty per knot
-    thresh = a$thresh, #forward stepwise stopping threshold
-    nprune = a$nprune, #maximum number of terms in the pruned model
-    pmethod = a$pmethod #pruning method
+    nk       =  a$nk, # maximum number of model terms
+    penalty  = a$penalty, #generalized cross validation (gcv) penalty per knot
+    thresh   = a$thresh, #forward stepwise stopping threshold
+    nprune   = a$nprune, #maximum number of terms in the pruned model
+    pmethod  = a$pmethod #pruning method
   )
 }
 
@@ -103,41 +104,36 @@ EC_options_mars <- function(a){
 #_____________________________________________________________________________
 
 
-EC_plot_VIP_mars <- function (fittedmodel    = NULL,  # or object obtained from biomod2 "BIOMOD_Modelling"
-                             method       = model_sdm,
-                             cor.method   = c("pearson", "spearman"),  # 'person' for linear data; 'spearman' for non-linear; rank-based
-                             pdf          = TRUE,
-                             biom_vi      = FALSE,  # function/algorithm other than biomod2 "variables_importance"
-                             output.table = FALSE,  # csv file with GLM parameters and the 95% confidence interval
-                             data1 ) {  # data frame with response and predictors variables; should contain all predict variables
+EC_plot_VIP_mars <- function (fittedmodel  = NULL,  # or object obtained from biomod2 "BIOMOD_Modelling"
+                              cor.method   = c("pearson", "spearman"),  # 'person' for linear data; 'spearman' for non-linear; rank-based
+                              pdf          = TRUE,
+                              biom_vi      = FALSE,  # function/algorithm other than biomod2 "variables_importance"
+                              output.table = FALSE,  # csv file with GLM parameters and the 95% confidence interval
+                              data1,  # data frame with response and predictors variables; should contain all predict variables
+                              this.dir,  # route to access biomod2 model (not the model name)
+                              filename) {  # to be saved without the file extension
   
   data1$y.data[is.na(data1$y.data)] <- 0
   
-  # extract the root of filenames used by biomod2 to save model results
-  filenames <- dir(paste(EC_options_algorithm$species_name,
-                         "/models/EcoCommons", sep = ""))
-  
   # select the full model generated
-  filekeep <-  paste(this.dir, "/", filenames[1], sep= "")
+  filekeep <-  paste(this.dir, "model.object.RData", sep= "/")
   
-  # Note that the model class generated from MARS algorithm is not supported by
-  #  the inbuilt biomod2 function 'variables_importance', neither the AIC approach is applicable.
-  # However, the function 'varImp' in package 'caret' accept the MARS model object for estimating
-  #  the variable importance. GCV = generalized cross validation
   working <- load(filekeep)
-  fittedmodel <- biomod2::getFormalModel(eval(parse(text=working)))
+  fittedmodel <- biomod2::BIOMOD_LoadModels(working)
   
   # variable importance plot using the inbuilt function 'varImp' from package 'caret'
-  nd = dim(data1)[2]
-  RespV1 = data1[,1]; subdata1 = data1[,2:nd]
-  
+  nd      = dim(data1)[2]
+  RespV1  = data1[,1]; subdata1 = data1[,2:nd]
   var_imp = varImp(fittedmodel)
-  nx = length(var_imp[,1])
-  dfvi = as.data.frame(cbind(1:nx,var_imp[,1]))
+  nx      = length(var_imp[,1])
+  dfvi    = as.data.frame(cbind(1:nx,var_imp[,1]))
   dfvi$V1 = factor(dfvi$V1, labels = rev(rownames(var_imp)))
-  pv <- ggplot2::ggplot(dfvi, aes(x=V1, y=rev(var_imp[,1]))) + labs(x="predictor variables") +
-    labs(y="relative reduction in GCV") + labs(title="function 'varImp' in package 'caret'")
-  ppv = pv + geom_col(alpha=0.6,col="red") + coord_flip()
+  pv <- ggplot2::ggplot(dfvi, aes(x= V1, y= rev(var_imp[,1]))) + 
+    labs(x="predictor variables") +
+    labs(y="relative reduction in GCV") + 
+    labs(title="function 'varImp' in package 'caret'")
   
-  EC_save_pdf(ppv, ncol=1, nrow=1, filename=filename, aspdf=pdf)
+  ppv = pv + geom_col(alpha = 0.6, col ="red") + coord_flip()
+  
+  EC_save_pdf(ppv, ncol = 1, nrow = 1, filename = filename, aspdf = pdf)
 }
