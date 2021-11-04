@@ -18,8 +18,7 @@ EC_format_biomod2(
   save.pseudo.absen = TRUE,
   save.env.absen = TRUE,
   save.env.occur = TRUE,
-  generate.background.data = FALSE,
-  species_algo_str = NULL
+  generate.background.data = FALSE
 )
 }
 \arguments{
@@ -48,8 +47,6 @@ EC_format_biomod2(
 \item{save.env.occur}{}
 
 \item{generate.background.data}{}
-
-\item{species_algo_str}{}
 }
 \description{
 It generates pseudo absence points if true absence data are not available or

@@ -7,10 +7,14 @@ learning model that grows numerous decision trees on random subsets and
 averages the predictions of the trees to estimate the importance of each
 environment variable}
 \usage{
-EC_modelling_rf(a, response_info, predictor_info, dataset_info)
+EC_modelling_rf(EC.params, response_info, model_compute)
 }
 \arguments{
-\item{a}{a list created from a json file, containing $params & $env (formerly EC.params & EC.env)}
+\item{EC.params}{List created from a json file, containing source_file$params}
+
+\item{response_info}{Response object; a nested named list created on EC_build_response}
+
+\item{mode_compute}{Model data parameters; a nested named list created on EC_build_dataset}
 }
 \description{
 Function to run a Random Forest (RF) within EcoCommons. It is a machine

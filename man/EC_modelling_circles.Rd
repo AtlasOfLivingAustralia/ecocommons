@@ -5,16 +5,24 @@
 \title{Function to run a Circles within EcoCommons. It is a geographical
 model to predict a species within a set radius around occurrence records.}
 \usage{
-EC_modelling_circles(a, response_info, predictor_info, dataset_info)
+EC_modelling_circles(
+  EC.params,
+  response_info,
+  dataset_info,
+  predictor_info,
+  model_compute
+)
 }
 \arguments{
-\item{a}{List created from a json file, containing source_file$params}
+\item{EC.params}{List created from a json file, containing source_file$params}
 
 \item{response_info}{Response object; a nested named list created on EC_build_response}
 
+\item{dataset_info}{Dataset object; a nested named list created on EC_build_dataset}
+
 \item{predictor_info}{Predictor object; a nested named list created on EC_build_predictor}
 
-\item{dataset_info}{Dataset object; a nested named list created on EC_build_dataset}
+\item{model_compute}{Model compute; a bimod2 object}
 }
 \description{
 Function to run a Circles within EcoCommons. It is a geographical

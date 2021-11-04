@@ -8,16 +8,14 @@ by averaging values of nearby occurrences. It uses the biomod2 package on R
 to set up parameters, dismo functions, and the input data generated on the
 EcoCommons platform.}
 \usage{
-EC_modelling_geoidw(a, response_info, predictor_info, dataset_info)
+EC_modelling_geoidw(EC.params, response_info, model_compute)
 }
 \arguments{
-\item{a}{List created from a json file, containing source_file$params}
+\item{EC.params}{List created from a json file, containing source_file$params}
 
 \item{response_info}{Response object; a nested named list created on EC_build_response}
 
-\item{predictor_info}{Predictor object; a nested named list created on EC_build_predictor}
-
-\item{dataset_info}{Dataset object; a nested named list created on EC_build_dataset}
+\item{model_compute}{Model compute; a bimod2 object}
 }
 \description{
 Function to run Inverse Distance Weighted Model within EcoCommons. It is a

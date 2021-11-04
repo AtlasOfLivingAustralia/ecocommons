@@ -17,7 +17,6 @@
 #' @param save.env.absen 
 #' @param save.env.occur 
 #' @param generate.background.data 
-#' @param species_algo_str 
 #'
 #' @importFrom biomod2 BIOMOD_FormatingData
 #' 
@@ -36,11 +35,9 @@ EC_format_biomod2 <- function (true.absen               = NULL,
                                save.pseudo.absen        = TRUE,
                                save.env.absen           = TRUE,
                                save.env.occur           = TRUE,
-                               generate.background.data = FALSE,
-                               species_algo_str         = NULL) {
+                               generate.background.data = FALSE) {
   
   climate.data <- stack(climate.data)
-  occur <- read.csv(occur, h = T)
   
   # Initialise parameters to default value if not specified
   if (is.null(pseudo.absen.strategy)) {
@@ -74,6 +71,7 @@ EC_format_biomod2 <- function (true.absen               = NULL,
   # generate background data as pseudo absence points
   if (pseudo.absen.strategy != 'none' & generate.background.data) {
     biomod.data.pa <- c(rep(1, nrow(occur)), rep(0, nrow(absen)))
+    
     myBackgrdData <-
       biomod2::BIOMOD_FormatingData (resp.var  = biomod.data.pa,
                                      expl.var  = climate.data,
@@ -97,7 +95,7 @@ EC_format_biomod2 <- function (true.absen               = NULL,
   
   biomod.data <- rbind(occur[,c("lon", "lat")], absen[,c("lon", "lat")])
   biomod.data.pa <- c(rep(1, nrow(occur)), rep(0, nrow(absen)))
-  
+
   myBiomodData <-
     biomod2::BIOMOD_FormatingData (resp.var  = biomod.data.pa,
                                    expl.var  = climate.data,
@@ -112,11 +110,11 @@ EC_format_biomod2 <- function (true.absen               = NULL,
   
   # save the pseudo absence points generated to file
   pa_filename <- EC_outfile_name (filename="pseudo_absences",
-                                  id_str=species_algo_str, ext="csv")
+                                  id_str=species.name, ext="csv")
   absenv_filename <- EC_outfile_name (filename="absence_environmental",
-                                      id_str=species_algo_str, ext="csv")
+                                      id_str=species.name, ext="csv")
   occenv_filename <- EC_outfile_name (filename="occurrence_environmental",
-                                      id_str=species_algo_str, ext="csv")
+                                      id_str=species.name, ext="csv")
   if (pseudo.absen.rep != 0) {
     pseudoAbsen <- myBiomodData@coord[c(which(is.na(myBiomodData@data.species))),
                                       c('lon', 'lat')]
@@ -132,7 +130,7 @@ EC_format_biomod2 <- function (true.absen               = NULL,
   else if (nrow(absen) > 0) {
     # save true-absence/background data generated
     if (!is.null(true.absen)) {
-      pa_filename = EC_outfile_name(filename="absence", id_str=species_algo_str,
+      pa_filename = EC_outfile_name(filename="absence", id_str=species.name,
                                     ext="csv")  # rename true-absence file
     }
     EC_write_csv(absen, pa_filename, rownames = FALSE)
@@ -165,3 +163,15 @@ EC_merge_save <- function(env,
   
   EC_write_csv (data, ofname, rownames = FALSE)
 }
+
+
+#===================================================================
+
+EC_outfile_name <- function(filename,
+                            id_str, 
+                            ext) {
+  
+  return(sprintf("%s_%s.%s", filename, id_str, ext))
+}
+
+

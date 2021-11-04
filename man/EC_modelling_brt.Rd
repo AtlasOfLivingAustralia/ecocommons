@@ -7,16 +7,16 @@ is a machine learning model that uses a combo of decision trees and boosting
 to iteratively fit random subsets of data so that each new tree takes the
 error of the last trees into acocunt}
 \usage{
-EC_modelling_brt(a, response_info, predictor_info, dataset_info)
+EC_modelling_brt(EC.params, response_info, predictor_info, dataset_info)
 }
 \arguments{
-\item{a}{List created from a json file, containing source_file$params}
-
 \item{response_info}{Response object; a nested named list created on EC_build_response}
 
 \item{predictor_info}{Predictor object; a nested named list created on EC_build_predictor}
 
 \item{dataset_info}{Dataset object; a nested named list created on EC_build_dataset}
+
+\item{a}{List created from a json file, containing source_file$params}
 }
 \description{
 Function to run an Boosted Regression Tree (BRT) within EcoCommons. It

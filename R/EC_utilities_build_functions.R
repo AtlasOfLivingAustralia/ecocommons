@@ -20,8 +20,10 @@ EC_build_response <- function(a){  # formerly EC.params
     occur_species = a$species_occurrence_dataset$species,
     month_filter  = a$species_filter,
     absen_data    = a$species_absence_dataset$filename,  # background/pseudo-absence points- 2 column matrix
+    pa_ratio      = a$pa_ratio, # pseudo-absence ratio; used later on to create pseudo-absence points
+    
     # OPTIONAL bias file from user
-    bias_data     = a$bias_dataset$filename
+    bias_data         = a$bias_dataset$filename
   )
 }
 
@@ -47,6 +49,11 @@ EC_build_constraint <- function(a) {  # formerly EC.params
   # either specified by the user or applying a Convex Hull; can be NULL
   list (
     seed = a$random_seed,
+    #if (is.null(seed)) {
+    #  seed = runif(1, -2^31, 2^31-1)
+    #}
+    #seed = as.integer(seed)
+    #set.seed(seed)
     constraints = readLines(a$modelling_region$filename),  # geographic constraints
     #if (!is.null (a$modelling_region$filename)) {
     #  constraints <- readLines(a$modelling_region$filename)
@@ -80,16 +87,24 @@ occur <- EC_read_sp(r$occur_data,
                    r$month_filter)
 absen <- EC_read_sp(r$absen_data,
                    r$month_filter)
-  
+
 # if no constrain regions is given, geographically constrained modelling with Convex Hull
 constrained_results <- EC_SDM_geoconstrained(current_climate, occur, absen,
                                               c$constraints, c$generateCHull)
+
+if (r$pa_ratio > 0) {
+  pa_number_point = floor(r$pa_ratio * nrow(constrained_results$occur))
+} else {
+  pa_number_point = 0
+}
+
     
   # save a copy of the climate dataset
 mylist<- list (
   "current_climate_orig" = current_climate,
   "occur" = constrained_results$occur,
   "absen" = constrained_results$absen,
+  "pa_number_point" = pa_number_point,
   "current_climate" = constrained_results$masked_raster
   )
 

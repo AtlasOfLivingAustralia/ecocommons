@@ -11,7 +11,7 @@
 #' @export EC_modelling_brt
 
 
-EC_modelling_brt <- function (a,# EC.params
+EC_modelling_brt <- function (EC.params,# EC.params
                               response_info,  # from EC_build_response
                               predictor_info,  # from EC_build_predictor
                               dataset_info) {  # from EC_build_dataset
@@ -19,23 +19,16 @@ EC_modelling_brt <- function (a,# EC.params
   # Set parameters to perform modelling
   model_algorithm <- 'BRT'
   # specific parameters to run brt algorithm
-  model_options_brt <- EC_options_brt (a)
+  model_options_brt <- EC_options_brt (EC.params)
 
   # Model accuracy statistics
-  biomod_eval_method <- c("KAPPA", "TSS", "ROC" ,"FAR", "SR","ACCURACY","BIAS",
-                          "POD", "CSI", "ETS") #vector of evaluation metrics
+  # some are available from biomod2::Evaluate.models.R - "KAPPA", "TSS", "ROC" ,
+  #"FAR", "SR", "ACCURACY", "BIAS", "POD", "CSI", "ETS"
+  # others from dismo::evaluate.R - "ODP", "TNR", "FPR", "FNR", "NPP", "MCR", "OR"
+  model_accuracy = c("KAPPA", "TSS", "ROC" ,"FAR", "SR", "ACCURACY", "BIAS",
+                     "POD", "CSI", "ETS", "ODP", "TNR", "FPR", "FNR", "NPP",
+                     "MCR", "OR")
 
-  # available from dismo::evaluate.R. Not originally implemented in biomod2::Evaluate.models.R
-  dismo_eval_method <- c("ODP", "TNR", "FPR", "FNR", "NPP", "MCR", "OR")
-
-  model_accuracy_brt <- c(biomod_eval_method, dismo_eval_method)
-
-  # Determine the number of pseudo absence points from pa_ratio
-  pa_ratio <- a$pa_ratio
-  pa_number_point <- 0
-  if (pa_ratio > 0) {
-    pa_number_point <- floor(pa_ratio * nrow(occur))
-  }
 
   # Define model options and compute the model
   # uses biomod2 model options
@@ -133,7 +126,7 @@ EC_modelling_brt <- function (a,# EC.params
 #_____________________________________________________________________________
 # subfunctions to run EC_modelling_brt()
 
-EC_options_brt <- function(a){
+EC_options_brt <- function(a){  # formarly EC.params
   # Set specific parameters to run brt algorithm
   list( brt.fold.vector = NULL, #a fold vector to be read in for cross validation with offsets
         brt.tree.complexity = a$tree_complexity, #sets the complexity of individual trees

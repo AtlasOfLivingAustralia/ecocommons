@@ -7,10 +7,14 @@ model to predict species occur within Voronoi Hulls which surround known
 occurrences. It uses the biomod2 package on R to set up parameters, dismo
 functions, and the input data generated on the EcoCommons platform.}
 \usage{
-EC_modelling_voronoihull(a, response_info, predictor_info, dataset_info)
+EC_modelling_voronoihull(EC.params, response_info, model_compute)
 }
 \arguments{
-\item{a}{a list (S3?) created from a json file, containing $params & $env (formerly EC.params & EC.env)}
+\item{EC.params}{List created from a json file, containing source_file$params}
+
+\item{response_info}{Response object; a nested named list created on EC_build_response}
+
+\item{model_compute}{Model compute; a bimod2 object}
 }
 \description{
 Function to run Voronoi Hull Model within EcoCommons. It is a geographical

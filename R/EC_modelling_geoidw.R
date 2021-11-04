@@ -4,43 +4,32 @@
 #' to set up parameters, dismo functions, and the input data generated on the
 #' EcoCommons platform.
 #'
-#' @param a List created from a json file, containing source_file$params
+#' @param EC.params List created from a json file, containing source_file$params
 #' @param response_info Response object; a nested named list created on EC_build_response
-#' @param predictor_info Predictor object; a nested named list created on EC_build_predictor
-#' @param dataset_info Dataset object; a nested named list created on EC_build_dataset
+#' @param model_compute Model compute; a bimod2 object
 #'
 #' @importFrom dismo geoIDW
 #'
 #' @export EC_modelling_geoidw
 
-EC_modelling_geoidw<- function(  a,# EC.params
-                                 response_info,  # from EC_build_response
-                                 predictor_info,  # from EC_build_predictor
-                                 dataset_info) {  # from EC_build_dataset 
+EC_modelling_geoidw<- function (EC.params,
+                                response_info, # from build_response
+                                model_compute) {
 
   # Set parameters to perform modelling
   model_algorithm <- 'geoidw'
+  
   ## general parameters to run biomod2 package modelling on Geographical algorithms
-  model_options_geographical <- EC_options_geographical (a, response_info,
+  model_options_geographical <- EC_options_geographical (EC.params, response_info,
                                                          model_algorithm)
-
-  # Model accuracy statistics
-  model_accuracy_geoidw <- c(model_options_geographical$biomod_eval_method,
-                             model_options_geographical$dismo_eval_method)
-
-  # Define model options and compute the model
-  # uses biomod2 model options
-  model_compute <- EC_compute_geographical (predictor_info, a, 
-                                            model_options_geographical)
-
-
+ 
   # Parameters to perform modelling
-  coord <- model_compute_sdm@coord
+  coord <- model_compute@coord
   occur <- coord[c(which(model_compute@data.species == 1)), names(coord)]
   absen <- coord[c(which(model_compute@data.species == 0 | is.na(model_compute@data.species))),
                  names(coord)]
 
-  model_sdm <- geoIDW (p = occur, a = absen)
+  model_sdm <- dismo::geoIDW (p = occur, a = absen)
 
   # Save out the model object
   model_save <- EC_save_geographical_model (model_compute,

@@ -26,28 +26,27 @@ EC_options_algorithm <- function ( a, # formerly EC.params
     # number of resampling of each variable; measure the importance of each variable for each model
     VarImport  = a$var_import, # default 0
 
-    biomod_eval_method <- c("KAPPA", "TSS", "ROC" ,"FAR", "SR", "ACCURACY",
-                            "BIAS", "POD", "CSI", "ETS"), #vector of evaluation metrics
-
-    # available from dismo::evaluate.R. Not originally implemented in biomod2::Evaluate.models.R
-    dismo_eval_method <- c("ODP", "TNR", "FPR", "FNR", "NPP", "MCR", "OR"),
-
+    # Model accuracy statistics
+    # some are available from biomod2::Evaluate.models.R - "KAPPA", "TSS", "ROC" ,
+    #"FAR", "SR", "ACCURACY", "BIAS", "POD", "CSI", "ETS"
+    # others from dismo::evaluate.R - "ODP", "TNR", "FPR", "FNR", "NPP", "MCR", "OR"
+   # model_accuracy = c("KAPPA", "TSS", "ROC" ,"FAR", "SR", "ACCURACY", "BIAS",
+   #                     "POD", "CSI", "ETS", "ODP", "TNR", "FPR", "FNR", "NPP",
+   #                     "MCR", "OR"),
+    biomod_eval_meth = c("KAPPA", "TSS", "ROC" ,"FAR", "SR", "ACCURACY", "BIAS", "POD", "CSI", "ETS"), #vector of evaluation metrics
+ 
     rescale_all_models = a$rescale_all_models,  # if TRUE- model prediction scaled with binomial
     do_full_models = a$do_full_models,  # if TRUE, evaluation of whole dataset
     model_id = a$modeling_id,   # default= random; name of modeling procedure
 
-    # matrix, data.frame or a 3D array filled with TRUE/FALSE to specify which
-    # part of data must be used for models calibration (TRUE) and for models
-    # validation (FALSE). Each column correspund to a "RUN"
-    # biomod.DataSplitTable = NULL
-
     species_name = response_info$occur_species,
     projection_name = "current",
     species_algo_str = ifelse(is.null(a$subset),
-                              sprintf(model_algorithm,"%s_",
+                              paste0(model_algorithm,"_",
                                       response_info$occur_species),
-                              sprintf(model_algorithm,"%_%s",
+                              paste0(model_algorithm,"_",
                                       response_info$occur_species, a$subset)),
+    
     PA_nb_rep = 0,
     PA_nb_absences = 0,
     xy_new_env = NULL,  # optional coordinates. Ignored if new.env is a rasterStack
@@ -65,114 +64,52 @@ EC_options_algorithm <- function ( a, # formerly EC.params
   )
 }
 
-
 #_____________________________________________________________________________
 
 
-EC_compute_algorithm <- function( predictor_info,  # from EC_build_predictor
-                                 pa_number_point,
-                                 a,  # formerly EC.params
-                                 EC_options_algorithm){  # from EC_options_algorithm
-  # Define model options and compute the model
-  # 1. Format the data as required by the biomod package
-  model_data <- EC_format_biomod2 ( true.absen             = predictor_info$absen,
-                                    pseudo.absen.points    = pa_number_point,
-                                    pseudo.absen.strategy  = a$pa_strategy,
-                                    pseudo.absen.disk.min  = a$pa_disk_min,
-                                    pseudo.absen.disk.max  = a$pa_disk_max,
-                                    pseudo.absen.sre.quant = a$pa_sre_quant,
-                                    climate.data           = predictor_info$current_climate,
-                                    occur                  = predictor_info$occur,
-                                    species.name           = EC_options_algorithm$species_name,
-                                    species_algo_str       = EC_options_algorithm$species_algo_str)
-
-  # 2. Compute the model
-  model_sdm <-
-    biomod2::BIOMOD_Modeling (data               = model_data,
-                              models             = model_algorithm,
-                              models.options     = model_options,
-                              NbRunEval          = EC_options_algorithm$NbRunEval,
-                              DataSplit          = EC_options_algorithm$DataSplit,
-                              Yweights           = EC_options_algorithm$Yweights,
-                              Prevalence         = EC_options_algorithm$Prevalence,
-                              VarImport          = EC_options_algorithm$VarImport,
-                              models.eval.meth   = EC_options_algorithm$biomod_eval_meth,
-                              SaveObj            = TRUE,
-                              rescal.all.models  = EC_options_algorithm$rescal_all_models,
-                              do.full.models     = EC_options_algorithm$do_full_models,
-                              modeling.id        = EC_options_algorithm$model_id)
-}
-
-
-#_____________________________________________________________________________
-
-
-save_model_object <- function ( model_compute,  # from model_compute
-                                model_algorithm,
-                                EC_options_algorithm){  # from build_biomod_functions
-  # Save a variable importance plot (VIP) and the model object
-
-  # save a VIP plot
-  x.data <- attr(model_compute$model_data, "data.env.var")
-  y.data <- attr(model_compute$model_data, "data.species")
-  data1 <- data.frame(y.data, x.data)
-  EC_plot_VIP (method = model_algorithm, data1 = data1, pdf = TRUE,
-              filename = paste('vip_plot', EC_options_algorithm$species_algo_str,
-                               sep = "_"),
-              this.dir = paste(EC_options_algorithm$species_name,
-                              "/models/EcoCommons", sep = ""))
-  # save out the model object
-  EC_save (model_compute$model_sdm, name = "model.object.RData")
-}
-
-
-#_____________________________________________________________________________
-
-
-project_model_current_constrained <- function (predictor_info,  # from build_predictor
-                                               constraint_info,
-                                               model_compute,  # from model_compute
-                                               EC_options_algorithm,  # from model_options_algorithm
-                                               response_info,  # from build_response
-                                               a,   # formerly EC.params
-                                               model_algorithm){
+project_model_current_constrained <- function ( constraint_info, # from build_constraint
+                                                predictor_info,  # from build_predictor
+                                                model_sdm,
+                                                dataset_info,    # from build_dataset
+                                                model_options_algorithm, # from EC_options_algorithm
+                                                model_algorithm,
+                                                a) { # formerly EC.params
+                                                
   # Project over climate scenario. Constraint to continuous data layers
 
-  if (predictor_info$genUnconstraintMap &&
+  if (constraint_info$genUnconstraintMap &&
       all(predictor_info$type == 'continuous') &&
-      (!is.null(constraint_info$constraints) || predictor_info$generateCHull)) {
+      (!is.null(constraint_info$constraints) || constraint_info$generateCHull)) {
     model.proj <-
-      biomod2::BIOMOD_Projection (modeling.output     = model_compute$model_sdm,
-                                  new.env             = predictor_info$current_climate_orig,
-                                  proj.name           = EC_options_algorithm$projection_name,
-                                  xy.new.env          = EC_options_algorithm$xy_new_env,
-                                  selected.models     = EC_options_algorithm$selected_models,
-                                  binary.meth         = EC_options_algorithm$binary_method,
-                                  filtered.meth       = EC_options_algorithm$filtered.method,
-                                  #compress            = EC_options_algorithm$compress,
-                                  build.clamping.mask = EC_options_algorithm$build_clamping_mask,
-                                  silent              = EC_options_algorithm$silent,
-                                  do.stack            = EC_options_algorithm$stack,
-                                  keep.in.memory      = EC_options_algorithm$keep_in_memory,
-                                  output.format       = EC_options_algorithm$output_format,
+      biomod2::BIOMOD_Projection (modeling.output     = model_sdm,
+                                  new.env             = dataset_info$current_climate_orig,
+                                  proj.name           = model_options_algorithm$projection_name,
+                                  xy.new.env          = model_options_algorithm$xy_new_env,
+                                  selected.models     = model_options_algorithm$selected_models,
+                                  binary.meth         = model_options_algorithm$binary_method,
+                                  filtered.meth       = model_options_algorithm$filtered.method,
+                                  build.clamping.mask = model_options_algorithm$build_clamping_mask,
+                                  silent              = model_options_algorithm$silent,
+                                  do.stack            = model_options_algorithm$stack,
+                                  keep.in.memory      = model_options_algorithm$keep_in_memory,
+                                  output.format       = model_options_algorithm$output_format,
                                   on_0_1000           = FALSE)
 
     # remove the current climate rasters to release disk space
-    EC_raster_remove (predictor_info$current_climate_orig)
+    EC_raster_remove (dataset_info$current_climate_orig)
 
     # convert projection output from grd to gtiff
     EC_GRD_to_GTIFF (file.path(getwd(),
-                             response_info$occur_species,
-                             paste("proj", EC_options_algorithm$projection_name,
+                             dataset_info$occur_species,
+                             paste("proj", model_options_algorithm$projection_name,
                                    sep="_")),
                   
                    algorithm = ifelse(is.null(a$subset), model_algorithm,
                                       sprintf(model_algorithm, "_%s", a$subset)),
-                  
                    filename_ext = "unconstrained")
 
     # save the projection
-    EC_save_projection (model.proj, EC_options_algorithm$species_algo_str,
+    EC_save_projection (model.proj, model_options_algorithm$species_algo_str,
                         filename_ext="unconstrained")
   }
 }
@@ -181,51 +118,51 @@ project_model_current_constrained <- function (predictor_info,  # from build_pre
 #_____________________________________________________________________________
 
 
-project_model_current <- function( model_compute,  # from model_compute
-                                   predictor_info,  # from build_predictor
-                                   EC_options_algorithm,  # from model_options_algorithm
-                                   response_info,  # from build_response
-                                   a,
-                                   model_algorithm ){
+project_model_current <- function( model_sdm,
+                                   dataset_info,    # from build_dataset
+                                   model_options_algorithm, # from EC_options_algorithm
+                                   model_algorithm,
+                                   a) { # formerly EC.params
+
   # Project over climate scenario, without constraint
 
   model.proj <-
-    biomod2::BIOMOD_Projection(modeling.output     = model_compute$model_sdm,
-                               new.env             = predictor_info$current_climate,
-                               proj.name           = EC_options_algorithm$projection_name,
-                               xy.new.env          = EC_options_algorithm$xy_new_env,
-                               selected.models     = EC_options_algorithm$selected_models,
-                               binary.meth         = EC_options_algorithm$binary_method,
-                               filtered.meth       = EC_options_algorithm$filtered.method,
-                               #compress           = EC_options_algorithm$compress,
-                               build.clamping.mask = EC_options_algorithm$build_clamping_mask,
-                               silent              = EC_options_algorithm$silent,
-                               do.stack            = EC_options_algorithm$stack,
-                               keep.in.memory      = EC_options_algorithm$keep_in_memory,
-                               output.format       = EC_options_algorithm$output_format,
+    biomod2::BIOMOD_Projection(modeling.output     = model_sdm,
+                               new.env             = dataset_info$current_climate,
+                               proj.name           = model_options_algorithm$projection_name,
+                               xy.new.env          = model_options_algorithm$xy_new_env,
+                               selected.models     = model_options_algorithm$selected_models,
+                               binary.meth         = model_options_algorithm$binary_method,
+                               filtered.meth       = model_options_algorithm$filtered.method,
+                               build.clamping.mask = model_options_algorithm$build_clamping_mask,
+                               silent              = model_options_algorithm$silent,
+                               do.stack            = model_options_algorithm$stack,
+                               keep.in.memory      = model_options_algorithm$keep_in_memory,
+                               output.format       = model_options_algorithm$output_format,
                                on_0_1000           = FALSE)
 
   # remove the current_climate to release disk space
-  EC_raster_remove (predictor_info$current_climate)
+  EC_raster_remove (dataset_info$current_climate)
 
   # convert projection output from grd to gtiff
   EC_GRD_to_GTIFF (file.path(getwd(),
-                           response_info$occur_species,
-                           paste("proj", EC_options_algorithm$projection_name,
+                           dataset_info$occur_species,
+                           paste("proj", model_options_algorithm$projection_name,
                                  sep="_")),
-                 algorithm = ifelse(is.null(a$subset), model_algorithm,
-                                    sprintf(model_algorithm,"_%s", a$subset)))
-
-
+                 algorithm = ifelse(is.null(a$subset),
+                                    paste0(model_algorithm),
+                                    paste0(model_algorithm,"_",
+                                           a$subset)))
+  
   # output is saved as part of the projection, format specified in arg 'opt.biomod.output.format'
-  loaded.model <- biomod2::BIOMOD_LoadModels (model_compute$model_sdm,
+  loaded_model <- biomod2::BIOMOD_LoadModels (model_sdm,
                                               models = model_algorithm)
 
-  EC_save_model_eval (loaded.model, model_compute$model_sdm,
-                      EC_options_algorithm$species_algo_str)
+  EC_save_model_eval (loaded_model, model_sdm,
+                      model_options_algorithm$species_algo_str)
 
   # save the projection
-  EC_save_projection (model.proj, EC_options_algorithm$species_algo_str)
+  EC_save_projection (model.proj, model_options_algorithm$species_algo_str)
 
 }
 

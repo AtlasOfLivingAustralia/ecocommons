@@ -7,16 +7,14 @@ It is an statistic regression that builds multiple linear regression
 models by partiontioning the data and running linear regressions on
 each partition.}
 \usage{
-EC_modelling_gam(a, response_info, predictor_info, dataset_info)
+EC_modelling_gam(EC.params, response_info, model_compute)
 }
 \arguments{
-\item{a}{List created from a json file, containing source_file$params}
+\item{EC.params}{List created from a json file, containing source_file$params}
 
 \item{response_info}{Response object; a nested named list created on EC_build_response}
 
-\item{predictor_info}{Predictor object; a nested named list created on EC_build_predictor}
-
-\item{dataset_info}{Dataset object; a nested named list created on EC_build_dataset}
+\item{mode_compute}{Model data parameters; a nested named list created on EC_build_dataset}
 }
 \description{
 Function to run a Generalized Additive Modes (GAM) within EcoCommons.
