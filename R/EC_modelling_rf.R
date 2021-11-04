@@ -52,15 +52,16 @@ EC_modelling_rf <- function(EC.params,       # EC.params
   
   
   # Generate and save a variable importance plot (VIP) and the model object
-  x.data <- attr(model_compute$model_data, "data.env.var")
-  y.data <- attr(model_compute$model_data, "data.species")
+  x.data <- attr(model_compute, "data.env.var")
+  y.data <- attr(model_compute, "data.species")
   data1 <- data.frame(y.data, x.data)
   
-  EC_plot_VIP_rf (method = model_algorithm, data1 = data1, pdf = TRUE,
-               filename = paste('vip_plot', EC_options_algorithm$species_algo_str,
-                                sep = "_"),
-               this.dir = paste(EC_options_algorithm$species_name,
-                                "/models/EcoCommons", sep = ""))  
+  EC_plot_VIP_rf (fittedmodel = model_sdm,
+                  data1 = data1,
+                  pdf = TRUE,
+                  filename = paste('vip_plot', model_options_algorithm$species_algo_str,
+                                   sep = "_"),
+                  this.dir = EC.env$outputdir)
   
   
   # Project over climate scenario. Also convert projection output from grd to
@@ -88,35 +89,32 @@ EC_modelling_rf <- function(EC.params,       # EC.params
 EC_options_rf <- function(a){
   # Set specific parameters to run rf algorithm
   list( do.classif =  a$do.classif,
-        ntree =  a$ntree,
-        mtry = if (a$mtry == "default") a$mtry else as.integer(a$mtry),
-        nodesize=  a$nodesize,
-        maxnodes = a$maxnodes
+        ntree      =  a$ntree,
+        mtry       = if (a$mtry == "default") a$mtry else as.integer(a$mtry),
+        nodesize   = a$nodesize,
+        maxnodes   = a$maxnodes
   )
 }
 
 
 #_____________________________________________________________________________
 
-EC_plot_VIP_rf <- function (fittedmodel    = NULL,  # or object obtained from biomod2 "BIOMOD_Modelling"
-                            method       = model_sdm,
+EC_plot_VIP_rf <- function (fittedmodel  = NULL,  # or object obtained from biomod2 "BIOMOD_Modelling"
                             cor.method   = c("pearson", "spearman"),  # 'person' for linear data; 'spearman' for non-linear; rank-based
                             pdf          = TRUE,
                             biom_vi      = FALSE,  # function/algorithm other than biomod2 "variables_importance"
                             output.table = FALSE,  # csv file with GLM parameters and the 95% confidence interval
-                            data1 ) {  # data frame with response and predictors variables; should contain all predict variables
+                            data1,  # data frame with response and predictors variables; should contain all predict variables
+                            this.dir,  # route to access biomod2 model (not the model name)
+                            filename) {  # to be saved without the file extension
   
   data1$y.data[is.na(data1$y.data)] <- 0
   
-  # extract the root of filenames used by biomod2 to save model results
-  filenames <- dir(paste(EC_options_algorithm$species_name,
-                         "/models/EcoCommons", sep = ""))
-  
   # select the full model generated
-  filekeep <-  paste(this.dir, "/", filenames[1], sep= "")
+  filekeep <-  paste(this.dir, "model.object.RData", sep= "/")
   
   working <- load(filekeep)
-  fittedmodel <- biomod2::getFormalModel(eval(parse(text=working)))
+  fittedmodel <- biomod2::BIOMOD_LoadModels(working)
   
   # Random forests (rf) provide an improvement over bagged trees by way of a small tweak
   #  that decorrelates the trees.
@@ -128,18 +126,20 @@ EC_plot_VIP_rf <- function (fittedmodel    = NULL,  # or object obtained from bi
   #  measuring the classification tree model performance and Gini index is a measure of total variance
   #  across the K classes.
   
-  nd = dim(data1)[2]
-  RespV1 = data1[,1]; subdata1 = data1[,2:nd]
-  
-  out.rf = fittedmodel$importance
-  rfImp = out.rf[,1]
-  nx = length(rfImp)
-  
-  dfrf = as.data.frame(cbind(1:nx,rfImp))
+  nd      = dim(data1)[2]
+  RespV1  = data1[,1]; subdata1 = data1[,2:nd]
+  out.rf  = fittedmodel$importance
+  rfImp   = out.rf[,1]
+  nx      = length(rfImp)
+  dfrf    = as.data.frame(cbind(1:nx,rfImp))
   dfrf$V1 = factor(dfrf$V1, labels = rev(names(rfImp)))
-  prf <- ggplot2::ggplot(dfrf, aes(x=V1, y=rev(rfImp))) + labs(x="predictor variables") +
-    labs(y="mean decrease in Gini index") + labs(title="part of rf model fitting outputs")
-  pprf = prf + geom_col(alpha=0.6,col="blue") + coord_flip()
   
-  EC_save_pdf(pprf, ncol=1, nrow=1, filename=filename, aspdf=pdf)
+  prf <- ggplot2::ggplot(dfrf, aes(x=V1, y=rev(rfImp))) + 
+    labs(x="predictor variables") +
+    labs(y="mean decrease in Gini index") + 
+    labs(title="part of rf model fitting outputs")
+  
+  pprf = prf + geom_col(alpha = 0.6, col = "blue") + coord_flip()
+  
+  EC_save_pdf(pprf, ncol = 1, nrow = 1, filename = filename, aspdf = pdf)
 }

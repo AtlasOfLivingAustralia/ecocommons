@@ -18,17 +18,6 @@ EC_modelling_sre<- function(x){ # EC.params, EC.env){
   model_options_algorithm <- EC_options_algorithm (a, response_info,
                                                  model_algorithm)
 
-  # Model accuracy statistics
-  model_accuracy_sre <- c(model_options_algorithm$biomod_eval_method,
-                          model_options_algorithm$dismo_eval_method)
-
-  # Determine the number of pseudo absence points from pa_ratio
-  pa_ratio <- a$pa_ratio
-  pa_number_point <- 0
-  if (pa_ratio > 0) {
-    pa_number_point <- floor(pa_ratio * nrow(occur))
-  }
-
   # Define the model options
   model_options <- biomod2::BIOMOD_ModelingOptions (SRE = model_options_algorithm)
 

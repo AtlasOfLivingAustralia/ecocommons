@@ -20,13 +20,14 @@ EC_modelling_geodist <- function (EC.params,
   model_algorithm <- 'geodist'
   
   # General parameters to run biomod2 package modelling on Geographical algorithms
-  model_options_geographical <- EC_options_geographical (EC.params, response_info,
+  model_options_geographical <- EC_options_geographical (EC.params,
+                                                         response_info,
                                                          model_algorithm)
 
   # Parameters to perform modelling
   coord <- model_compute@coord
   occur <- coord[c(which(model_compute@data.species == 1)), names(coord)]
-  model_sdm <- dismo::geoDist(p= occur, lonlat=TRUE)
+  model_sdm <- dismo::geoDist(p = occur, lonlat=TRUE)
 
   # Save out the model object
   model_save <- EC_save_geographical_model (model_compute,

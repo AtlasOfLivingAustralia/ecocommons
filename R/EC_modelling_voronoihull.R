@@ -19,7 +19,8 @@ EC_modelling_voronoihull<- function (EC.params,
   model_algorithm <- 'voronoihull'
   
   ## general parameters to run biomod2 package modelling on Geographical algorithms
-  model_options_geographical <- EC_options_geographical (EC.params, response_info,
+  model_options_geographical <- EC_options_geographical (EC.params,
+                                                         response_info,
                                                          model_algorithm)
  
   # Parameters to perform modelling

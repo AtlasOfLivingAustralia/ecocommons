@@ -23,7 +23,8 @@ EC_modelling_circles<- function( EC.params,
   model_options_circles <- opt.d = EC.params$d  # radius around circles in meters; if not specified it is computed from the mean inter-point distance 
 
   # General parameters to run biomod2 package modelling on Geographical algorithms
-  model_options_geographical <- EC_options_geographical (EC.params, response_info,
+  model_options_geographical <- EC_options_geographical (EC.params,
+                                                         response_info,
                                                          model_algorithm)
   # Parameters to perform modelling
   if (is.null(model_options_circles$opt.d)) {
@@ -36,6 +37,7 @@ EC_modelling_circles<- function( EC.params,
   # Predict for given climate scenario
   model.proj <- predict(model_sdm, predictor_info$current_climate[[1]],
                         mask= TRUE)
+  
   # Save out the model object
   model_save <- EC_save_geographical_model (model_compute,
                                             model_algorithm,
