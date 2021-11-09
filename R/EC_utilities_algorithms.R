@@ -99,7 +99,7 @@ project_model_current_constrained <- function ( constraint_info, # from build_co
     EC_raster_remove (dataset_info$current_climate_orig)
 
     # convert projection output from grd to gtiff
-    EC_GRD_to_GTIFF (file.path(getwd(),
+    EC_GRD_to_GTIFF (file.path(EC.env$outputdir,
                              dataset_info$occur_species,
                              paste("proj", model_options_algorithm$projection_name,
                                    sep="_")),
@@ -145,7 +145,7 @@ project_model_current <- function( model_sdm,
   EC_raster_remove (dataset_info$current_climate)
 
   # convert projection output from grd to gtiff
-  EC_GRD_to_GTIFF (file.path(getwd(),
+  EC_GRD_to_GTIFF (file.path(EC.env$outputdir,
                            dataset_info$occur_species,
                            paste("proj", model_options_algorithm$projection_name,
                                  sep="_")),

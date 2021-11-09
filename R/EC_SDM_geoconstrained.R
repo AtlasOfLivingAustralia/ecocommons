@@ -122,7 +122,7 @@ EC_SDM_geoconstrained <- function(current_climate,
   cropped_raster <- raster::crop(current_climate,
                                  extent(parsed_geojson))  # crop to constraint region before masking
   
-  envraster_filename <- paste(EC.env$workdir, 
+  envraster_filename <- paste(EC.env$outputdir, 
                               basename(tempfile(fileext = ".grd")), sep = "/")
   
   geoconstrained <- raster::mask(cropped_raster, parsed_geojson,

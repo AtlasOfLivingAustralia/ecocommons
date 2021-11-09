@@ -25,7 +25,7 @@ library(ecocommons)
 # 1. Load and edit your dataset
 
 # The 'param.json' file used here is generated on the EcoCommons platform
-source_file <- EC_read_json (file="~/Documents/GitHub/ecocommons_ALA/inst/variables/test_constraint_map_ann.json")
+source_file <- EC_read_json (file="~/Documents/GitHub/ecocommons_ALA/inst/variables/test_constraint_map_circles.json")
 
 print.model_parameters (source_file)
 
@@ -69,51 +69,10 @@ model_compute <- EC_format_biomod2 (true.absen               = dataset_info$abse
                                     save.env.occur           = TRUE,
                                     generate.background.data = FALSE)
 
-# OPTION 2: return a json here; than can implement each algorithm separately
-
-
-#OPTION 1: If it is just one JSON, read below:
-
-if ( 'ANN' | 'CTA' | 'GBM' | 'RF' | 'FDA' | 'GAM' | 'GLM' | 'MARS')
-  # machine learning and statistical regression
-  
-  # specific parameters restricted to each algorithm
-  model_options_ann <- EC_options_ann (EC.params$ann) # if all algorithms are in the same list
-
-  # general parameters to run biomod2 package modelling
-  model_options_algorithm <- EC_options_algorithm (EC.params, response_info,
-                                                 model_algorithm)
-
-  # Define the model options
-  model_options <- biomod2::BIOMOD_ModelingOptions (ANN = model_options$ann,
-                                                    GLM = model_options$glm)  # if a list is created
-
-
-  # Use define model options (created on model_compute) and compute the model
-  # uses biomod2 model options
-  model_sdm <-
-    biomod2::BIOMOD_Modeling (data               = model_compute,
-                              models             = model_algorithm,  # can be a list of multiple algorithms
-                              models.options     = model_options,
-                              NbRunEval          = model_options_algorithm$NbRunEval,
-                              DataSplit          = model_options_algorithm$DataSplit,
-                              Yweights           = model_options_algorithm$Yweights,
-                              Prevalence         = model_options_algorithm$Prevalence,
-                              VarImport          = model_options_algorithm$VarImport,
-                              models.eval.meth   = model_options_algorithm$biomod_eval_meth,
-                              SaveObj            = TRUE,
-                              rescal.all.models  = model_options_algorithm$rescal_all_models,
-                              do.full.models     = model_options_algorithm$do_full_models,
-                              modeling.id        = model_options_algorithm$model_id)
-  
-  # save out the model object
-  EC_save (model_sdm, name = "model.object.RData")
-  
-
-
 
 
 #########____________EXAMPLES______________#########
+# For testing, not for users
   
 # GEOGRAPHICAL TYPE ALGORITHMS
 koala_circles <- EC_modelling_circles (EC.params,response_info,

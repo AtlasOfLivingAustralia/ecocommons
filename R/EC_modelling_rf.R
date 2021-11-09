@@ -43,7 +43,7 @@ EC_modelling_rf <- function(EC.params,       # EC.params
                               VarImport          = model_options_algorithm$VarImport,
                               models.eval.meth   = model_options_algorithm$biomod_eval_meth,
                               SaveObj            = TRUE,
-                              rescal.all.models  = model_options_algorithm$rescal_all_models,
+                              rescal.all.models  = model_options_algorithm$rescale_all_models,
                               do.full.models     = model_options_algorithm$do_full_models,
                               modeling.id        = model_options_algorithm$model_id)
   

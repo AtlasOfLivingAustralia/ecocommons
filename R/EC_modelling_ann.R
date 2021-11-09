@@ -33,8 +33,8 @@ EC_modelling_ann <- function(EC.params,       # EC.params
   model_options <- biomod2::BIOMOD_ModelingOptions (ANN = model_options_ann)
   
   
-  # Use define model options (created on model_compute) and compute the model
-  # uses biomod2 model options
+  # Use define model options (created on model_compute and model_options), it will
+  # compute the model using biomod2
   model_sdm <-
     biomod2::BIOMOD_Modeling (data               = model_compute,
                               models             = model_algorithm,
@@ -50,21 +50,24 @@ EC_modelling_ann <- function(EC.params,       # EC.params
                               do.full.models     = model_options_algorithm$do_full_models,
                               modeling.id        = model_options_algorithm$model_id)
   
+  
   # save out the model object
   EC_save (model_sdm, name = "model.object.RData")
 
   
   # Generate and save a variable importance plot (VIP) and the model object
+  
   x.data <- attr(model_compute, "data.env.var")  # occurence data
   y.data <- attr(model_compute, "data.species")  # pseudo- absence data
   data1 <- data.frame(y.data, x.data)
   
   EC_plot_VIP_ann (fittedmodel = model_sdm,
-                   data1 = data1,
-                   pdf = TRUE,
-                   filename = paste('vip_plot', model_options_algorithm$species_algo_str,
-                                sep = "_"),
-                   this.dir = EC.env$outputdir)
+                   data1       = data1,
+                   pdf         = TRUE,
+                   filename    = paste('vip_plot',
+                                       model_options_algorithm$species_algo_str,
+                                       sep = "_"),
+                   this.dir    = EC.env$workdir)
   
   # Project over climate scenario. Also convert projection output from grd to
   # gtiff and save the projection. Two options:
@@ -90,12 +93,12 @@ EC_modelling_ann <- function(EC.params,       # EC.params
 
 EC_options_ann <- function(a){  # formely EC.params
   # Set specific parameters to run ANN algorithm
+  
   list( NbCV  = a$nbcv, #nb of cross validation to find best size and decay parameters
         size  = a$size, #number of units in the hidden layer
         decay = a$decay, #parameter for weight decay
         rang  = a$rang, #Initial random weights on [-rang, rang]
-        maxit = a$maxit #maximum number of iterations. Default 100
-  )
+        maxit = a$maxit ) #maximum number of iterations. Default 100
 }
 
 
@@ -103,26 +106,30 @@ EC_options_ann <- function(a){  # formely EC.params
 
 
 EC_plot_VIP_ann <- function (fittedmodel  = NULL,  # or object obtained from biomod2 "BIOMOD_Modelling"
-                             cor.method   = c("pearson", "spearman"),  # 'person' for linear data; 'spearman' for non-linear; rank-based
+                             cor.method   = c("pearson", "spearman"),  # 'person' for linear data; 'spearman' for non-linear
                              pdf          = TRUE,
                              biom_vi      = FALSE,  # function/algorithm other than biomod2 "variables_importance"
-                             output.table = FALSE,  # csv file with GLM parameters and the 95% confidence interval
+                             output.table = FALSE,  # optional csv file with  parameters and the 95% confidence interval
                              data1,  # data frame with response and predictors variables; should contain all predict variables
                              this.dir,  # route to access biomod2 model (not the model name)
                              filename) {  # to be saved without the file extension
   
-  data1$y.data[is.na(data1$y.data)] <- 0
+  data1$y.data[is.na(data1$y.data)] <- 0  # thransfom NAs in '0'
+  
+  # extract the root of filenames used by biomod2 to save model results
+  filenames <- dir("~/Documents/GitHub/ecocommons_ALA/inst/variables/Koala/")
   
   # select the full model generated
-  filekeep <-  paste(this.dir, "model.object.RData", sep= "/")
+  filekeep <- paste(this.dir, "/Koala/", filenames[1], sep= "")
+
   
   working <- load(filekeep)
-  fittedmodel <- biomod2::BIOMOD_LoadModels(working)
+  fittedmodel <- biomod2::BIOMOD_LoadModels(b)
   
   # variable importance plot using the inbuilt biomod2 function 'variables_importance'
   nd        = dim(data1)[2]
   RespV1    = data1[,1]; subdata1 = data1[,2:nd]
-  vi_biomod = biomod2::variables_importance(fittedmodel,data=subdata1)$mat
+  vi_biomod = biomod2::variables_importance(fittedmodel, data = subdata1)
   nx        = length(vi_biomod)
   dfvi      = as.data.frame(cbind(1:nx,vi_biomod[,1]))
   dfvi$V1   = factor(dfvi$V1, labels = rev(rownames(vi_biomod)))

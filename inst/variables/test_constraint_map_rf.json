@@ -1,0 +1,61 @@
+{
+    "user": { "uuid": "owner-uuid" },
+    "params": {
+        "species_occurrence_dataset": {
+            "commonName": "Drop Bear", 
+            "species": "Koala", 
+            "filename": "~/Documents/GitHub/ecocommons_ALA/inst/variables/koala_occurrence.csv"
+        }, 
+        "environmental_datasets": [
+            {
+                "layer": "B01", 
+                "filename": "~/Documents/GitHub/ecocommons_ALA/inst/variables/bioclim_01.tif", 
+                "type": "continuous"
+            }, 
+            {
+                "layer": "B03", 
+                 "filename": "~/Documents/GitHub/ecocommons_ALA/inst/variables/bioclim_03.tif", 
+                "type": "continuous"
+            } 
+        ],
+        "species_absence_dataset": null, 
+        "bias_dataset": null,
+        "function": "rf",
+        "modelling_region": {
+           "filename": "~/Documents/GitHub/ecocommons_ALA/inst/variables/modelling_region-redland.json"}, 
+        "generate_convexhull": false, 
+        "unconstraint_map": true, 
+        "modeling_id": "EcoCommons",
+        "selected_models": "all",
+
+      "scale_down": false,
+      "compress": "gzip",
+      "pa_ratio": 1.0,
+      "pa_strategy": "random",
+      "pa_sre_quant": 0.025,
+      "pa_disk_min": 0.0,
+      "pa_disk_max": null,
+      "random_seed": 1234,
+      "nb_run_eval": 10,
+      "data_split": 100,
+      "prevalence": 0.7,
+      "var_import": 0,
+      "rescale_all_models": true,
+      "do_full_models": true,
+      "do.classif": true,
+      "ntree":  500,
+      "mtry": "default",
+      "nodesize": 1,
+      "maxnodes": null,
+      "unconstraint_map": true,
+      "generate_convexhull": false,
+        "modelling_region1": "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"id\":\"geo_constraints\",\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[-20042147.0259706,-5628083.962101154],[20032870.772802792,-5628083.962101154],[20032870.772802792,5628083.962101155],[-20042147.0259706,5628083.962101155],[-20042147.0259706,-5628083.962101154]]]},\"properties\":{}}],\"crs\":{\"type\":\"name\",\"properties\":{\"name\":\"urn:ogc:def:crs:EPSG::3857\"}},\"properties\":{\"constraint_method\":{\"title\":\"Use Environmental Envelope\",\"id\":\"use_enviro_env\"}}}"
+    }, 
+         
+    "env": {
+        "inputdir": "~/Documents/GitHub/ecocommons_ALA/inst/variables", 
+        "workdir": "~/Documents/GitHub/ecocommons_ALA/inst/variables", 
+        "outputdir": "~/Documents/GitHub/ecocommons_ALA/inst/variables/output", 
+        "scriptdir": "~/Documents/GitHub/ecocommons_ALA/R"
+    }
+}  

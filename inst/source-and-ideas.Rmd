@@ -228,7 +228,7 @@ top level. In addition = closely resembles ==, which is the logical operator for
  - Add Author(s) per function, and include link to report bugs
  - Change raster to terra
  - Write up an user case for EcoCommons blog
- - Pseudo-absences- same for all algorithms; perform before clipping; Rob is lookinf for alternatives to improve it
+ - Pseudo-absences- same for all algorithms; perform before clipping; Rob is looking for alternatives to improve it
  - Display default settings for users
  - Check for auto-correlation between variables for statistical regression algorithms
  - VIP plots per algorithm (making the process faster)
@@ -236,3 +236,24 @@ top level. In addition = closely resembles ==, which is the logical operator for
  - Check where random seed is used - and how
  - Improve outputs in general - nicier graphs, datasheet for all algorithms
  - Ways to run multiple algorithms at the same time?
+ 
+ ***
+
+> ### **Packages version being used**
+
+R:         4.1.0 (2021-05-18)
+RStudio:   1.4.1717
+biomod2:	 3.5.1  
+dismo:  	 1.3-5  
+gdalUtils: 2.0.3.2    
+ggdendro:  0.1.22  
+ggplot2:   3.3.5  
+mgcv:   	 1.8.38  
+pROC:      1.18.0  
+raster:    3.5-2  
+rgdal:     1.5-27  
+rgeos:     0.5-18  
+rjson:     0.2.20  
+rmaxent --- github  	
+sp:        1.4-5  
+tidyr:     1.1.4  
