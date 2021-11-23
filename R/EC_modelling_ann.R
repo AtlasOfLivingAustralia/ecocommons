@@ -8,7 +8,7 @@
 #'
 #' @importFrom biomod2 BIOMOD_ModelingOptions
 #' @importFrom biomod2 BIOMOD_Modeling
-#' @importFrom biomod2 getFormalModel
+#' @importFrom biomod2 get_formal_model
 #' @importFrom biomod2 variables_importance
 #' @importFrom ggplot2 ggplot
 #' 
@@ -44,7 +44,7 @@ EC_modelling_ann <- function(EC.params,       # EC.params
                               Yweights           = model_options_algorithm$Yweights,
                               Prevalence         = model_options_algorithm$Prevalence,
                               VarImport          = model_options_algorithm$VarImport,
-                              models.eval.meth   = model_options_algorithm$biomod_eval_meth,
+                              models.eval.meth   = model_options_algorithm$biomod_eval_method,
                               SaveObj            = TRUE,
                               rescal.all.models  = model_options_algorithm$rescale_all_models,
                               do.full.models     = model_options_algorithm$do_full_models,
@@ -56,10 +56,10 @@ EC_modelling_ann <- function(EC.params,       # EC.params
 
   
   # Generate and save a variable importance plot (VIP) and the model object
-  
+  # rename data to save as data frame
   x.data <- attr(model_compute, "data.env.var")  # occurence data
   y.data <- attr(model_compute, "data.species")  # pseudo- absence data
-  data1 <- data.frame(y.data, x.data)
+  data1  <- data.frame(y.data, x.data)
   
   EC_plot_VIP_ann (fittedmodel = model_sdm,
                    data1       = data1,
@@ -67,21 +67,33 @@ EC_modelling_ann <- function(EC.params,       # EC.params
                    filename    = paste('vip_plot',
                                        model_options_algorithm$species_algo_str,
                                        sep = "_"),
-                   this.dir    = EC.env$workdir)
+                   this.dir    = paste(response_info$occur_species,
+                                       "/models/",
+                                       EC.params$modeling_id,
+                                       sep=""))
+  
   
   # Project over climate scenario. Also convert projection output from grd to
   # gtiff and save the projection. Two options:
   
   # 1. projection without constraint if all env data layers are continuous
+  #DEBUG THIS ONE
   model_projection_constrained <-
-    project_model_current_constrained (constraint_info, predictor_info, model_sdm,
-                                       dataset_info, model_options_algorithm,
-                                       model_algorithm, EC.params)
+    project_model_current_constrained (constraint_info,
+                                       predictor_info,
+                                       model_sdm,
+                                       dataset_info,
+                                       model_options_algorithm,
+                                       model_algorithm,
+                                       EC.params)
   
   # 2. projection with constraint
-  model_projection <- project_model_current (model_sdm, dataset_info,
-                                             model_options_algorithm, model_algorithm,
-                                             EC.params)
+  model_projection <- project_model_current (model_sdm,
+                                             dataset_info,
+                                             model_options_algorithm,
+                                             model_algorithm)
+  
+
   
   # RETURN?? not set yet
   
@@ -105,7 +117,7 @@ EC_options_ann <- function(a){  # formely EC.params
 #_____________________________________________________________________________
 
 
-EC_plot_VIP_ann <- function (fittedmodel  = NULL,  # or object obtained from biomod2 "BIOMOD_Modelling"
+EC_plot_VIP_ann <- function (fittedmodel  = NULL,  # or object obtained from biomod2::BIOMOD_Modelling
                              cor.method   = c("pearson", "spearman"),  # 'person' for linear data; 'spearman' for non-linear
                              pdf          = TRUE,
                              biom_vi      = FALSE,  # function/algorithm other than biomod2 "variables_importance"
@@ -117,31 +129,31 @@ EC_plot_VIP_ann <- function (fittedmodel  = NULL,  # or object obtained from bio
   data1$y.data[is.na(data1$y.data)] <- 0  # thransfom NAs in '0'
   
   # extract the root of filenames used by biomod2 to save model results
-  filenames <- dir("~/Documents/GitHub/ecocommons_ALA/inst/variables/Koala/")
+  filenames <- dir(this.dir)
   
   # select the full model generated
-  filekeep <- paste(this.dir, "/Koala/", filenames[1], sep= "")
-
-  
+  filekeep <- paste(this.dir, "/", filenames[1], sep= "")
   working <- load(filekeep)
-  fittedmodel <- biomod2::BIOMOD_LoadModels(b)
+  fittedmodel <- biomod2::get_formal_model(eval(parse(text = working)))
   
   # variable importance plot using the inbuilt biomod2 function 'variables_importance'
   nd        = dim(data1)[2]
   RespV1    = data1[,1]; subdata1 = data1[,2:nd]
-  vi_biomod = biomod2::variables_importance(fittedmodel, data = subdata1)
-  nx        = length(vi_biomod)
-  dfvi      = as.data.frame(cbind(1:nx,vi_biomod[,1]))
-  dfvi$V1   = factor(dfvi$V1, labels = rev(rownames(vi_biomod)))
+  vi_biomod = biomod2::variables_importance(model = fittedmodel, data = subdata1)
+  nx        = length(vi_biomod$mat)
+  dfvi      = as.data.frame(cbind(1:nx,vi_biomod$mat[,1]))
+  dfvi$V1   = factor(dfvi$V1, labels = rev(rownames(vi_biomod$mat)))
   pv <- ggplot2::ggplot(dfvi,
-                        aes(x = V1, y = rev(vi_biomod[,1]))) + 
+                        aes(x = V1, y = rev(vi_biomod$mat[,1]))) + 
     labs(x = "predictor variables") +
     labs(y = "variable importance score") + 
     labs(title = "biomod2 function 'variables_importance'")
   
   ppv = pv + geom_col(alpha = 0.6, col = "green4") + coord_flip()
   
-  EC_save_pdf(ppv, ncol = 1, nrow = 1, filename = paste('vip_plot', 
-                                                  filename,
-                                                  sep = "_"), aspdf = pdf)
+  EC_save_pdf(ppv,
+              ncol     = 1,
+              nrow     = 1,
+              filename = paste ('vip_plot', filename, sep = "_"),
+              aspdf    = pdf)
 }

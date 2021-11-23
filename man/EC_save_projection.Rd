@@ -4,10 +4,10 @@
 \alias{EC_save_projection}
 \title{Function to save projection}
 \usage{
-EC_save_projection(proj.model, species_algo_str, filename_ext = NULL)
+EC_save_projection(model_proj, species_algo_str, filename_ext = NULL)
 }
 \arguments{
-\item{proj.model}{}
+\item{model_proj}{}
 
 \item{species_algo_str}{}
 

@@ -1,0 +1,5 @@
+"","lower","upper","best"
+"Maximize TPR+TNR",0.607,0.687,0.607
+"Maximize PPV+NPV",0.425,0.771,0.6
+"Balance all errors",0.534,0.687,0.6
+"TPR = TNR",Inf,-Inf,0.6

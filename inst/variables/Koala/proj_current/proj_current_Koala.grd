@@ -1,0 +1,26 @@
+[general]
+creator=R package 'raster'
+created=2021-11-23 14:10:54
+[georeference]
+nrows=25
+ncols=21
+xmin=152.575
+ymin=-28.425
+xmax=153.625
+ymax=-27.175
+projection=+proj=longlat +datum=WGS84 +no_defs
+[data]
+datatype=INT2S
+byteorder=little
+nbands=1
+bandorder=BIL
+categorical=FALSE
+minvalue=0
+maxvalue=1
+nodatavalue=-9999
+[legend]
+legendtype=
+values=
+color=
+[description]
+layername=Koala_PA1_Full_ANN

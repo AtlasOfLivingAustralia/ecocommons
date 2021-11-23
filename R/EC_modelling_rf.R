@@ -114,7 +114,7 @@ EC_plot_VIP_rf <- function (fittedmodel  = NULL,  # or object obtained from biom
   filekeep <-  paste(this.dir, "model.object.RData", sep= "/")
   
   working <- load(filekeep)
-  fittedmodel <- biomod2::BIOMOD_LoadModels(working)
+  fittedmodel <- biomod2::BIOMOD_LoadModels(model_sdm)
   
   # Random forests (rf) provide an improvement over bagged trees by way of a small tweak
   #  that decorrelates the trees.

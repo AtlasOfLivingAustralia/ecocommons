@@ -5,13 +5,7 @@
 \title{Function to run a Circles within EcoCommons. It is a geographical
 model to predict a species within a set radius around occurrence records.}
 \usage{
-EC_modelling_circles(
-  EC.params,
-  response_info,
-  dataset_info,
-  predictor_info,
-  model_compute
-)
+EC_modelling_circles(EC.params, response_info, dataset_info, predictor_info)
 }
 \arguments{
 \item{EC.params}{List created from a json file, containing source_file$params}

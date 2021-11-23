@@ -1,14 +1,16 @@
 #' Function to save projection 
 #'
-#' @param proj.model 
+#' @param model_proj 
 #' @param species_algo_str 
 #' @param filename_ext 
+#' 
+#' @importFrom raster plot
 #'
 #' @export EC_save_projection
 
-EC_save_projection <- function(proj.model,
+EC_save_projection <- function(model_proj,
                                species_algo_str,
-                               filename_ext= NULL) {
+                               filename_ext = NULL) {
   
   if (!is.null(filename_ext)) {
     basename = paste ("proj", 'current', species_algo_str, filename_ext, sep = "_")
@@ -20,7 +22,7 @@ EC_save_projection <- function(proj.model,
   
   png(file = file.path(EC.env$outputdir, paste(basename, 'png', sep = ".")))
   
-  plot(proj.model, on_0_1000=FALSE)
+  raster::plot (model_proj)
   
   dev.off()
 }

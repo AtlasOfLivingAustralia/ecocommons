@@ -27,13 +27,15 @@ EC_options_algorithm <- function ( a, # formerly EC.params
     VarImport  = a$var_import, # default 0
 
     # Model accuracy statistics
-    # some are available from biomod2::Evaluate.models.R - "KAPPA", "TSS", "ROC" ,
-    #"FAR", "SR", "ACCURACY", "BIAS", "POD", "CSI", "ETS"
-    # others from dismo::evaluate.R - "ODP", "TNR", "FPR", "FNR", "NPP", "MCR", "OR"
-   # model_accuracy = c("KAPPA", "TSS", "ROC" ,"FAR", "SR", "ACCURACY", "BIAS",
-   #                     "POD", "CSI", "ETS", "ODP", "TNR", "FPR", "FNR", "NPP",
-   #                     "MCR", "OR"),
-    biomod_eval_meth = c("KAPPA", "TSS", "ROC" ,"FAR", "SR", "ACCURACY", "BIAS", "POD", "CSI", "ETS"), #vector of evaluation metrics
+    # some are available from biomod2::Evaluate.models.R
+    biomod_eval_method = c("KAPPA", "TSS", "ROC", "FAR", "SR", "ACCURACY", "BIAS", "POD", "CSI", "ETS"), #vector of evaluation metrics
+    # others from dismo::evaluate.R 
+    dismo_eval_method = c("ODP", "TNR", "FPR", "FNR", "NPP", "MCR", "OR"),
+    
+    # model accuracy statistics - combine stats from dismo and biomod2 for consistent output
+    model_accuracy = c("KAPPA", "TSS", "ROC", "FAR", "SR", "ACCURACY", "BIAS", 
+                       "POD", "CSI", "ETS", "ODP", "TNR", "FPR", "FNR", "NPP",
+                       "MCR", "OR"),
  
     rescale_all_models = a$rescale_all_models,  # if TRUE- model prediction scaled with binomial
     do_full_models = a$do_full_models,  # if TRUE, evaluation of whole dataset
@@ -69,18 +71,18 @@ EC_options_algorithm <- function ( a, # formerly EC.params
 
 project_model_current_constrained <- function ( constraint_info, # from build_constraint
                                                 predictor_info,  # from build_predictor
-                                                model_sdm,
+                                                model_sdm,       # from model created using biomod2::BIOMOD_Modeling
                                                 dataset_info,    # from build_dataset
                                                 model_options_algorithm, # from EC_options_algorithm
                                                 model_algorithm,
-                                                a) { # formerly EC.params
+                                                a) {             # formerly EC.params
                                                 
   # Project over climate scenario. Constraint to continuous data layers
 
   if (constraint_info$genUnconstraintMap &&
       all(predictor_info$type == 'continuous') &&
       (!is.null(constraint_info$constraints) || constraint_info$generateCHull)) {
-    model.proj <-
+    model_proj <-
       biomod2::BIOMOD_Projection (modeling.output     = model_sdm,
                                   new.env             = dataset_info$current_climate_orig,
                                   proj.name           = model_options_algorithm$projection_name,
@@ -100,17 +102,18 @@ project_model_current_constrained <- function ( constraint_info, # from build_co
 
     # convert projection output from grd to gtiff
     EC_GRD_to_GTIFF (file.path(EC.env$outputdir,
-                             dataset_info$occur_species,
-                             paste("proj", model_options_algorithm$projection_name,
-                                   sep="_")),
+                               dataset_info$occur_species,
+                               paste("proj", model_options_algorithm$projection_name,
+                                     sep="_")),
                   
                    algorithm = ifelse(is.null(a$subset), model_algorithm,
                                       sprintf(model_algorithm, "_%s", a$subset)),
                    filename_ext = "unconstrained")
 
     # save the projection
-    EC_save_projection (model.proj, model_options_algorithm$species_algo_str,
-                        filename_ext="unconstrained")
+    EC_save_projection (model_proj,
+                        model_options_algorithm$species_algo_str,
+                        filename_ext = "unconstrained")
   }
 }
 
@@ -118,15 +121,14 @@ project_model_current_constrained <- function ( constraint_info, # from build_co
 #_____________________________________________________________________________
 
 
-project_model_current <- function( model_sdm,
-                                   dataset_info,    # from build_dataset
+project_model_current <- function( model_sdm,               # from model created using biomod2::BIOMOD_Modeling
+                                   dataset_info,            # from build_dataset
                                    model_options_algorithm, # from EC_options_algorithm
-                                   model_algorithm,
-                                   a) { # formerly EC.params
+                                   model_algorithm) {       # formerly EC.params
 
   # Project over climate scenario, without constraint
 
-  model.proj <-
+  model_proj <-
     biomod2::BIOMOD_Projection(modeling.output     = model_sdm,
                                new.env             = dataset_info$current_climate,
                                proj.name           = model_options_algorithm$projection_name,
@@ -155,14 +157,21 @@ project_model_current <- function( model_sdm,
                                            a$subset)))
   
   # output is saved as part of the projection, format specified in arg 'opt.biomod.output.format'
+  
+  # extract the root of filenames used by biomod2 to save model results
+  filenames <- dir(this.dir)
+  
+  
   loaded_model <- biomod2::BIOMOD_LoadModels (model_sdm,
                                               models = model_algorithm)
 
-  EC_save_model_eval (loaded_model, model_sdm,
-                      model_options_algorithm$species_algo_str)
+  EC_save_BIOMOD_model_eval (loaded_model,
+                             model_sdm,
+                             model_options_algorithm$species_algo_str)
 
   # save the projection
-  EC_save_projection (model.proj, model_options_algorithm$species_algo_str)
+  EC_save_projection (model_proj,
+                      model_options_algorithm$species_algo_str)
 
 }
 
@@ -173,11 +182,12 @@ project_model_current <- function( model_sdm,
 
 EC_GRD_to_GTIFF <- function(folder,
                             algorithm,
-                            filename_ext=NULL,
-                            noDataValue=NULL) {
+                            filename_ext = NULL,
+                            noDataValue  = NULL) {
   # Convert all .gri/.grd found in folder to gtiff
-  grdfiles <- list.files(path=folder,
-                         pattern="^.*\\.grd")
+  
+  grdfiles <- list.files(path    = folder,
+                         pattern = "^.*\\.grd")
   for (grdfile in grdfiles) {
     
     ext <- file_ext(grdfile)
@@ -193,23 +203,24 @@ EC_GRD_to_GTIFF <- function(folder,
       proj4string(grd) <- crs
     }
     
-    basename = paste(grdname, algorithm, sep="_")
+    basename = paste(grdname, algorithm, sep = "_")
     if (!is.null(filename_ext)) {
       basename = paste(grdname, algorithm, filename_ext, sep="_")
     }
     filename = file.path(folder, paste(basename, 'tif', sep="."))
     
     dtype = raster::dataType(grd)
+    
     if (is.null(noDataValue)) {
-      raster::writeRaster(grd, filename, datatype=dataType(grd),
-                          format="GTiff", options=c("COMPRESS=LZW", "TILED=YES"),
-                          overwrite=TRUE)
+      raster::writeRaster(grd, filename, datatype = dataType(grd),
+                          format = "GTiff", options = c("COMPRESS=LZW", "TILED=YES"),
+                          overwrite = TRUE)
     }
     else {
-      raster::writeRaster(grd, filename, datatype=dataType(grd), NAflag=noDataValue,
-                          format="GTiff", options=c("COMPRESS=LZW", "TILED=YES"),
-                          overwrite=TRUE)
+      raster::writeRaster(grd, filename, datatype = dataType(grd), NAflag = noDataValue,
+                          format = "GTiff", options = c("COMPRESS= LZW", "TILED= YES"),
+                          overwrite = TRUE)
     }
-    file.remove(file.path(folder, paste(grdname, c("grd","gri"), sep=".")))  # remove grd files
+    file.remove(file.path(folder, paste(grdname, c("grd","gri"), sep = ".")))  # remove grd files
   }
 }

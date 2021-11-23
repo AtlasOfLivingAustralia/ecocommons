@@ -9,8 +9,8 @@
 
 EC_write_csv <- function(robj, 
                          name, 
-                         outputdir=EC.env$outputdir,
-                         rownames=TRUE) {
+                         outputdir = EC.env$outputdir,
+                         rownames  = TRUE) {
   
   filename = file.path(outputdir, name)
   

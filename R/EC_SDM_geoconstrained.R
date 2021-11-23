@@ -128,6 +128,8 @@ EC_SDM_geoconstrained <- function(current_climate,
   geoconstrained <- raster::mask(cropped_raster, parsed_geojson,
                                  filename = envraster_filename)
   
+  geoconstrained <- stack(geoconstrained)
+  
   EC_raster_remove(stack(cropped_raster))
   
   # return the masked raster stack and constrained occurrence points

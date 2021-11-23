@@ -1,0 +1,18 @@
+"","max.TPR...TNR","max.PPV...NPV","balance.all.errors","TPR..TNR"
+"Optimum threshold value:",0.607,0.6,0.6,0.6
+"True Positive Rate (TPR)",0.849,0.849,0.849,0.849
+"True Negative Rate (TNR)",0.83,0.792,0.792,0.792
+"False Positive Rate (FPR)",0.17,0.208,0.208,0.208
+"False Negative Rate (FNR)",0.151,0.151,0.151,0.151
+"False Discovery Rate (FDR)",0.167,0.196,0.196,0.196
+"False Omission Rate (FOR)",0.154,0.16,0.16,0.16
+"Positive Predictive Value (PPV)",0.833,0.804,0.804,0.804
+"Negative Predictive Value (NPV)",0.846,0.84,0.84,0.84
+"Cohen's Kappa",0.679,0.642,0.642,0.642
+"True Skill Statistic (TSS)",0.679,0.642,0.642,0.642
+"Bias Score (BS)",1.019,1.057,1.057,1.057
+"Critical Success Index (CSI)",0.726,0.703,0.703,0.703
+"Equitable Threat Score (ETS)",0.514,0.472,0.472,0.472
+"Odds-Ratio (OR)",27.5,21.477,21.477,21.477
+"Accuracy",0.84,0.821,0.821,0.821
+"Misclassification Rate",0.16,0.179,0.179,0.179

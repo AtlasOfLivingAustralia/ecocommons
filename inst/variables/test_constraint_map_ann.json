@@ -54,7 +54,7 @@
     "env": {
         "inputdir": "~/Documents/GitHub/ecocommons_ALA/inst/variables", 
         "workdir": "~/Documents/GitHub/ecocommons_ALA/inst/variables", 
-        "outputdir": "~/Documents/GitHub/ecocommons_ALA/inst/variables/output", 
+        "outputdir": "~/Documents/GitHub/ecocommons_ALA/inst/variables/output/", 
         "scriptdir": "~/Documents/GitHub/ecocommons_ALA/R"
     }
 }  

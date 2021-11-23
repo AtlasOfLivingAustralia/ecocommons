@@ -25,7 +25,7 @@ library(ecocommons)
 # 1. Load and edit your dataset
 
 # The 'param.json' file used here is generated on the EcoCommons platform
-source_file <- EC_read_json (file="~/Documents/GitHub/ecocommons_ALA/inst/variables/test_constraint_map_circles.json")
+source_file <- EC_read_json (file="~/Documents/GitHub/ecocommons/inst/variables/test_constraint_map_ann.json")
 
 print.model_parameters (source_file)
 
@@ -45,6 +45,8 @@ setwd(EC.env$workdir)
   # parameter.print
 
 # 4. Set data for modelling
+
+## check access to build_functions 
 response_info <- EC_build_response (EC.params)  # species data
 
 predictor_info <- EC_build_predictor (EC.params)  # environmental data
@@ -55,6 +57,8 @@ dataset_info <- EC_build_dataset (predictor_info, constraint_info,
                                   response_info)  # read data and constraint to region of interest
 
 # Compute the model using biomod2 format; create pseudo-absence if no true absence is given
+
+#think about a better name
 model_compute <- EC_format_biomod2 (true.absen               = dataset_info$absen,
                                     pseudo.absen.points      = dataset_info$pa_number_point,
                                     pseudo.absen.strategy    = 'random',

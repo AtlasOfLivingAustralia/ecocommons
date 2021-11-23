@@ -26,6 +26,7 @@
 
         "scale_down": false,
         "pa_strategy": "random",
+        "pa_ratio": 0,
         "pa_sre_quant": null,
         "pa_disk_min": 0.0,
         "pa_disk_max": null,

@@ -440,12 +440,12 @@ EC_plot_VIP <- function(fittedmodel = NULL,  # or object obtained from biomod2 "
 EC_save_pdf <- function(..., 
                         filename,
                         aspdf,
-                        outputdir=EC.env$outputdir) {
+                        outputdir = EC.env$outputdir) {
   # Save output in PDF format
   
   if (aspdf)
   {
-    png(file=file.path(outputdir, paste(filename, 'png', sep=".")))
+    png(file = file.path(outputdir, paste(filename, 'png', sep=".")))
     grid.arrange(...)
     dev.off()
   }

@@ -69,29 +69,29 @@ EC_format_biomod2 <- function (true.absen               = NULL,
     }
   
   # generate background data as pseudo absence points
-  if (pseudo.absen.strategy != 'none' & generate.background.data) {
-    biomod.data.pa <- c(rep(1, nrow(occur)), rep(0, nrow(absen)))
+  #if (pseudo.absen.strategy != 'none' & generate.background.data) {
+   # biomod.data.pa <- c(rep(1, nrow(occur)), rep(0, nrow(absen)))
     
-    myBackgrdData <-
-      biomod2::BIOMOD_FormatingData (resp.var  = biomod.data.pa,
-                                     expl.var  = climate.data,
-                                     resp.name = species.name,
-                                     PA.nb.rep = pseudo.absen.rep,
-                                     PA.nb.absences = pseudo.absen.points,
-                                     PA.strategy = pseudo.absen.strategy,
-                                     PA.dist.min = pseudo.absen.disk.min,
-                                     PA.dist.max = pseudo.absen.disk.max,
-                                     PA.sre.quant = pseudo.absen.sre.quant)
-    
+    #myBackgrdData <-
+     # biomod2::BIOMOD_FormatingData (resp.var  = biomod.data.pa,
+      #                               expl.var  = climate.data,
+       #                              resp.name = species.name,
+        #                             PA.nb.rep = pseudo.absen.rep,
+         #                            PA.nb.absences = pseudo.absen.points,
+          #                           PA.strategy = pseudo.absen.strategy,
+           #                          PA.dist.min = pseudo.absen.disk.min,
+            #                         PA.dist.max = pseudo.absen.disk.max,
+             #                        PA.sre.quant = pseudo.absen.sre.quant)
+    #
     # get background data as absence data
-    colnames(myBackgrdData@coord) <- c('lon', 'lat')
-    absen <- myBackgrdData@coord[c(which(is.na(myBackgrdData@data.species))),
-                                 c('lon', 'lat')]
+    #colnames(myBackgrdData@coord) <- c('lon', 'lat')
+    #absen <- myBackgrdData@coord[c(which(is.na(myBackgrdData@data.species))),
+     #                            c('lon', 'lat')]
     
     # do not generate pseudo absence in next call to BIOMOD_FormatingData
-    pseudo.absen.rep = 0
-    pseudo.absen.strategy = 'none'
-  }
+    #pseudo.absen.rep = 0
+    #pseudo.absen.strategy = 'none'
+  #}
   
   biomod.data <- rbind(occur[,c("lon", "lat")], absen[,c("lon", "lat")])
   biomod.data.pa <- c(rep(1, nrow(occur)), rep(0, nrow(absen)))
@@ -126,8 +126,7 @@ EC_format_biomod2 <- function (true.absen               = NULL,
     if (save.env.absen) {
       EC_merge_save (climate.data, pseudoAbsen, species.name, absenv_filename)
     }
-  }
-  else if (nrow(absen) > 0) {
+  } else if (nrow(absen) > 0) {
     # save true-absence/background data generated
     if (!is.null(true.absen)) {
       pa_filename = EC_outfile_name(filename="absence", id_str=species.name,
